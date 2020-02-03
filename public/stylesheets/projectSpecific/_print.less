@@ -1,0 +1,82 @@
+/*
+*  SuitedTo Print Stylesheet
+*  DO NOT IMPORT INTO _project.less, compile individually
+*/
+
+
+@baseFontSize:          14px;
+@baseFontFamily:        "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+.row{margin-left:-20px;*zoom:1;*zoom:1;}.row:before,.row:after{display:table;content:"";}
+.row:after{clear:both;}
+.row:before,.row:after{display:table;content:"";}
+.row:after{clear:both;}
+[class*="span"]{float:left;margin-left:20px;float:left;margin-left:20px;}
+.span1{width:60px;width:60px;}
+.span2{width:140px;width:140px;}
+.span3{width:220px;width:220px;}
+.span4{width:300px;width:300px;}
+.span5{width:380px;width:380px;}
+.span6{width:460px;width:460px;}
+.span7{width:540px;width:540px;}
+.span8{width:620px;width:620px;}
+.span9{width:700px;width:700px;}
+.span10{width:780px;width:780px;}
+.span11{width:860px;width:860px;}
+.span12,.container{width:940px;width:940px;}
+.container{width:940px;margin-left:auto;margin-right:auto;*zoom:1;*zoom:1;width:940px;margin-left:auto;margin-right:auto;*zoom:1;*zoom:1; font-family: @baseFontFamily;}.container:before,.container:after{display:table;content:"";}
+.container:after{clear:both;}
+.container:before,.container:after{display:table;content:"";}
+
+
+ .container h1 {
+    display:block;
+    float:right;
+ }
+
+.logo {
+    float:left;
+   margin-top: 10px;
+    clear:both;
+}
+.printVertPosNeg {
+    margin: 5px 5px;
+}
+.printNotes {
+    background: #fff;
+    min-height: 400px;
+    height:100%;
+    border-radius: 15px;
+    border: 1px solid #c9c9c9;
+}
+.controlBox{
+
+    background: #ebebeb;
+    padding:15px;
+    margin-bottom:10px;
+    height: 80px;
+    width:100%;
+    border-radius: 15px;
+    border: 1px solid #c9c9c9;
+}
+
+em {
+    margin:0;
+    font-size: .75em;
+}
+hr {
+clear:both;
+width: 100%;
+}
+h3 {
+    margin-bottom: 5px;
+}
+p {
+    margin-top: 0;
+    padding-top: 0;
+}
+@media print
+{
+  .page-break  { display:block; page-break-before:always; }
+  .noPrint {display:none;}
+}

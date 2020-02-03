@@ -1,0 +1,72 @@
+#{extends 'standardPage.html' /}
+#{set title:'Prep Coupons' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+#{set tableId:'prepCoupons' /}
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Prep Coupons<a href="/prepadmin/newprepcoupon"><button class="btn btn-success pull-right">New Coupon</button></a></h1>
+            <p>*Note: Deletes don't go through to Stripe at this time. <b>AFTER</b> you delete a coupon here you'll need to delete the matching coupon in Stripe if there is one.</p>
+        </div>
+    </div>
+</div>
+
+
+#{standardError /}
+
+
+<div class="row ">
+    <div class="span12">
+        <table id="prepCoupons" class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Pay Periods</th>
+                <th>Max Uses</th>
+                <th>Current Uses</th>
+                <th>Discount %</th>
+                <th></th><!--delete link-->
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    #{ajaxTable "prepCoupons", source:"prepcoupon.PrepCouponTable", objectTableName: '_oTable'}
+        sDom: "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+                aaSorting: [[0, 'desc']],
+            fnRowCallback: function (nRow, aData, iDisplayIndex) {
+        var id = aData[0];
+        var hrefValue = '<a class="btn btndanger" href="@{PrepAdmin.deletePrepCoupon()}/' + id + '">Delete</a>';
+        $('td:eq(6)', nRow).html(hrefValue);
+
+        return nRow;
+    }
+
+
+
+    #{/ajaxTable}
+    });
+
+    $.extend($.fn.dataTableExt.oStdClasses, {
+        "sSortAsc":"header headerSortDown",
+        "sSortDesc":"header headerSortUp",
+        "sSortable":"header sorting"
+    });
+</script>

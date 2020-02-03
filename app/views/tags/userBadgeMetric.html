@@ -1,0 +1,15 @@
+    <div class="span6 userBadgeListItem clearfix">
+
+        <div class="userBadge clearfix vertical">
+            <div class="userBadgeIcon" rel="popover" data-placement="top" data-content="&lt;img class='userBadgeIconPopover' src='${_metric.icon}'/&gt; ${_metric.description}" data-original-title="Badge: ${_metric.title}"><img src="${_metric.icon}" />
+            </div>
+        </div>
+        <div class="userBadgeInfo">
+            <div class="userBadgeName">
+                <div class="userBadgeTitle">${_metric.title}</div>
+                <span class="userBadgeMultiplier"><span>&times; ${_metric.usersEarnedCount}</span> ${(_metric.usersEarnedCount != 1)?"users":"user"}</span>
+            </div>
+            <div class="userBadgeDescription">${_metric.description}</div>
+        </div>
+
+    </div>

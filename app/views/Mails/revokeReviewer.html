@@ -1,0 +1,33 @@
+#{extends 'blowyEmail.html' /}
+<!-- // Begin Module: Standard Content \\ -->
+<table border="0" cellpadding="20" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div mc:edit="std_content01">
+                <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                    <tr>
+                        <td valign="top"></td>
+                        <td><h4 class="h4">Hey #{if user.displayName}${user.displayName}#{/if}#{else}${user.fullName}#{/else},</h4>
+                            We're sorry, but it looks like you no longer have the street cred credentials to be eligible as a reviewer. Reviewers are required to have a street cred score of 400.  Don't worry, you can quickly boost your score back to 400 by adding and rating questions!
+
+                            <br><br>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td valign="top"></td>
+                        <td>
+                            Sincerely, <br>
+                            The SuitedTo TEAM
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
+<!-- // End Module: Standard Content \\ -->

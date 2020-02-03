@@ -1,0 +1,23 @@
+#{ifErrors}
+<div class="row">
+    <div class="span12">
+        <div class="alert alert-error">
+            #{errors}
+            #{if error.message != 'validation.object'}
+                <p>${error}</p>
+            #{/if}
+            #{/errors}
+        </div>
+    </div>
+</div>
+#{/ifErrors}
+
+#{if flash.error}
+<div class="row">
+    <div class="span12">
+        <div class="alert alert-error">
+            <p>&{flash.error}</p>
+        </div>
+    </div>
+</div>
+#{/if}

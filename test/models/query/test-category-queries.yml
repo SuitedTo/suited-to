@@ -1,0 +1,63 @@
+
+
+Company(ourCompany):
+  name: ourCompany
+
+Company(theirCompany):
+  name: theirCompany
+
+User(me):
+  name: me@me.com
+  password: secret
+  fullName: me
+  company: ourCompany
+
+User(coworker):
+  name: cw@cw.com
+  password: secret
+  fullName: cw
+  company: ourCompany
+
+User(nonCoworker):
+  name: ncw@ncw.com
+  password: secret
+  fullName: ncw
+  company: theirCompany
+
+User(userWithoutCompany):
+  name: unc@unc.com
+  password: secret
+  fullName: unc
+
+Category(newCoworkerCreatedCategory):
+  name: newCategory
+  status: NEW
+  creator: coworker
+
+Category(newNonCoworkerCreatedCategory):
+  name: newCategory
+  status: NEW
+  creator: nonCoworker
+
+Category(privateCoworkerCreatedCategory):
+  name: privateCategory
+  status: PRIVATE
+  creator: coworker
+
+Category(privateNonCoworkerCreatedCategory):
+  name: privateCategory
+  status: PRIVATE
+  creator: nonCoworker
+
+Category(publicCategory):
+  name: publicCategory
+  status: PUBLIC
+
+Category(betaCategory):
+  name: betaCategory
+  status: BETA
+
+
+
+
+

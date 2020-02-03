@@ -1,0 +1,481 @@
+*{ Displays part 2 of the company registration page.
+ {
+ { Parameters:
+ {   company - A company object representing information gathered about the new
+ {         company so far.  Guaranteed to have contactEmail set, but not 
+ {         necessarily anything else.  If accountType is set, this form will 
+ {         default to setting up an account of that type.  If it is not, this 
+ {         form will choose its own default.  Required.
+ {   password - The password for the contact account of the company.  Must be a
+ {         valid password.  Required.
+ {   user - An optional user object containing information gathered about the
+ {         contact user so far.  Might be null indicating no information has
+ {         been gathered.
+ }*
+
+#{extends 'standardPageNoNav.html' /}
+ 
+#{set title: "Almost done!" /}
+#{set 'moreScripts'}
+    #{script 'changes-alert.js' /}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'password_strength.min.js' /}
+#{/set}
+#{set 'moreStyles'}
+#{/set}
+
+%{
+    accountType = company.accountType;
+    cf = play.Play.configuration;
+}%
+
+<div class="row">
+    <div class="span12">
+        <h1>${title}</h1>
+    </div>
+</div>
+
+#{standardError /}
+
+#{form @completeCompanyRegistration(), id:'registrationForm', class:'form-vertical', autocomplete:"off"}
+<input type="hidden" id="company.contactEmail" name="company.contactEmail" value="${company.contactEmail}"/>
+<input type="hidden" id="password" name="password" value="${password}"/>
+<input type='hidden' name='stripeToken' id="stripeToken" value=""/>
+<input id="googleOpenIdEmail" name="user.googleOpenIdEmail" type="hidden" value="${user?.googleOpenIdEmail}"/>
+<input id="googleOpenIdUrl" name="user.googleOpenIdUrl" type="hidden" value="${user?.googleOpenIdUrl}"/>
+
+<div class="loginWrapper"><div class="row-fluid"><div class="span12  form-horizontal"><div class="well">
+    <legend>Company Information</legend>
+
+    <fieldset>
+        <div class="control-group">
+            <label for="company.name" class="required control-label">Company Name</label>
+            <div class="controls">
+                <input type="text" id="company.name" name="company.name" class="input-large" value="${company?.name}"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="company.address" class="control-label">Company Address</label>
+            <div class="controls">
+                <textarea class="input-large" id="company.address" name="company.address" rows="2">${company?.address}</textarea>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div class="control-group">
+            <label for="company.contactName" class="required control-label">Your Name</label>
+            <div class="controls">
+                <input type="text" id="company.contactName" name="company.contactName" class="input-large" value="${company?.contactName}"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="displayName" class="control-label">Display Name</label>
+            <div class="controls">
+                <input type="text" id="displayName" name="displayName" class="input-large" value="${user?.displayName}" placeholder="Display Name"/>
+                <p class="help-block"><span class="muted"><small>Your display name will be used to identify you if you contribute content outside
+                    of your organization</small></span></p>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="company.contactJobTitle" class="control-label">Your Job Title</label>
+            <div class="controls">
+                <input type="text" id="company.contactJobTitle" name="company.contactJobTitle" class="input-large" value="${company?.contactJobTitle}"/>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <div class="control-group">
+            <label class="control-label">Your Phone</label>
+            <div class="controls">
+                <input type="text" name="phoneNumber" id="phoneNumber" value="${company?.contactPhone?.phoneNumberValue}" class="input-large"/>
+            </div>
+        </div>
+    </fieldset>
+    <hr/>
+    <fieldset id="accountType">
+        <div class="control-group" >
+            <label class="required control-label">Account Type</label>
+
+            <div class="controls" >
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label class="radio inline">
+                            <input id="standardRadio" type="radio" name="company.accountType" value="STANDARD"
+                                #{if enums.AccountType.STANDARD.equals(company.accountType)}checked="checked"#{/if}/>
+                            <span><strong>Standard</strong> - ${enums.AccountType.STANDARD.price.formatCurrency('USD')} per month</span>
+                            <ul>
+                                <li>Starts with a 14 day free trial</li>
+                                <li>Free features plus</li>
+                                <li>Store 25 private questions</li>
+                                <li>Track candidates &amp; feedback</li>
+                                <li>Maintain 15 active interviews</li>
+                                <li>Up to 40 users</li>
+                            </ul>
+                        </label>
+                    </div>
+
+                    <div class="span6">
+                        <label class="radio inline">
+                            <input id="enterpriseRadio" type="radio" name="company.accountType" value="ENTERPRISE"
+                                #{if enums.AccountType.ENTERPRISE.equals(company.accountType)}checked="checked"#{/if}/>
+                            <span><strong>Enterprise</strong> - ${enums.AccountType.ENTERPRISE.price.formatCurrency('USD')} per month</span>
+                            <ul>
+                                <li>Standard features plus</li>
+                                <li>Unlimited private questions</li>
+                                <li>Unlimited active interviews</li>
+                                <li>Up to 500 users</li>
+                            </ul>
+                        </label>
+                    </div>
+                </div>
+                <div id="accountDowngradeStandard" class="alert fade in">
+                    <strong>It's ok. You can downgrade your account and still enjoy many of the benefits of
+                        SuitedTo.</strong><br/>
+                    Before you save anything please review the following changes that will occur to your company's
+                    account once you hit the Save button.
+                    <ul>
+                        #{if interviewCount > 15}
+                            <li>All but your most recently created 15 interviews will be deleted from the system.
+                            </li>
+                        #{/if}
+                        #{if currentUserCount > 40}
+                            <li>SuitedTo Standard account allows up to 40 active or invited users. Your company
+                                has ${currentUserCount}
+                                active or invited users. Because we have no way of knowing which ones you actually
+                                want to keep, all users in your company
+                                except you will be deactivated. You can reactivate up to 40 users through the Users
+                                menu
+                            </li>
+                        #{/if}
+                        <li>If your company has private questions, all but the highest rated 25 private questions
+                            associated with your company will be withdrawn.
+                        </li>
+                    </ul>
+
+                </div>
+                <div id="accountUpgrade" class="alert alert-info fade in">
+                    <strong>Alright, let's do this!</strong> You'll be able to enjoy all the new benefits of your
+                    upgraded account type just as soon as you hit the save button at the bottom of this page. Any
+                    additional costs for the current billing cycle will be prorated and reflected in your next
+                    monthly bill.
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset id="paymentInfo">
+        <h3>Payment Information: </h3>
+        <div class="paymentInfoFreeTrial hide"><p>Optional during free trial. <a href="#" class="showCreditCard">Add credit card info.</a></p></div>
+        <div class="paymentInfoFreeTrialHide hide"><p><a href="#" class="hideCreditCard">I do not wish to add a credit card at this time.</a></p></div>
+
+        <div id="paymentInfoFields">
+
+        <div class="alert-error alert" id="payment-errors"></div>
+
+        <div class="control-group">
+            <label class="control-label required">Credit Card Number</label>
+            <div class="controls">
+                <input id="creditCard" type="text" class="input-large card-number" value="#{if card}************${card?.getLast4()}#{/if}"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label required">Security Code</label>
+            <div class="controls">
+                <input id="securityCode" type="text" class="input-mini card-cvc" size="4" value="#{if card}***#{/if}"/> <span class="help-inline"><small class="muted">(or "CVC" or "CVV")</small></span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label required">Expiration Date</label>
+            <div class="controls">
+                <input id="expirationMonth" type="text" size="2" class="input-mini card-expiry-month" value="${card?.getExpMonth()}" placeholder="mm"/>
+                <span> / </span>
+                <input id="expirationYear" type="text" size="4" class="input-mini card-expiry-year" value="${card?.getExpYear()}" placeholder="yyyy"/> <span class="help-inline"><small class="muted">(mm/yyyy)</small></span>
+            </div>
+        </div>
+
+        </div>
+    </fieldset>
+    <hr />
+    <div class="controls">
+        <label class="checkbox required" id="TOSLabel" for="agreeTOS">
+            <input type="checkbox" id="agreeTOS" name="agreeTOS" />
+            I agree to the <a id="TOS" href="http://www.suitedto.com/legal/terms-of-service/" target="_blank">Terms of Service</a>.
+        </label>
+    </div>
+    <div class="form-actions">
+        <button id="submitBtn" class="submit-button btn btn-primary btn-large no-change-check" type="submit">Complete Sign Up</button>
+    </div>
+</div></div></div></div>
+#{/form}
+
+<script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+
+<script type="text/javascript">
+/* Payment Validation */
+
+    if (typeof Stripe !== 'undefined'){
+        Stripe.setPublishableKey("${cf.get("stripe.publishable_key")}");        
+    }
+
+    function stripeResponseHandler(status, response) {
+        if (response.error) {
+
+            // show the errors on the form
+            $("#payment-errors").show();
+            $("#payment-errors").text(response.error.message);
+            $(".submit-button").removeAttr("disabled");
+        } else {
+            var form$ = $("#companyForm");
+            // token contains id, last4, and card type
+            var token = response['id'];
+            // insert the token into the form so it gets submitted to the server
+            $("#stripeToken").val(token);
+            // and submit
+            form$.get(0).submit();
+        }
+    }
+
+    var currentCC = {
+        num : $('#creditCard').val(),
+        cvv : $('#securityCode').val(),
+        mm : $('#expirationMonth').val(),
+        yy : $('#expirationYear').val()
+    };
+
+    function paymentRequired(){
+
+        //determine if a user has a free account
+        var initialAccountType = "${company?.accountType?.name()}",
+            freeAccount = $("input:radio[name='company.accountType']:checked").val() == 'FREE',
+            standardAccount = $("input:radio[name='company.accountType']:checked").val()=='STANDARD',
+            enterpriseAccount = $("input:radio[name='company.accountType']:checked").val()=='ENTERPRISE',
+            compId = '${company?.id}',
+            existingCompany = $("#company").val(),
+            trialExpired = ${company?.isTrialExpired() ? company.isTrialExpired() : false},
+            couponCode = $("#couponCode").val(),
+            delinquentPayment = ${delinquentPayment ? delinquentPayment : false},
+            cardLast4 = '${card?.getLast4()}',
+            //isNewCard = $('#creditCard').val().indexOf('****') == -1;
+            isNewCard = $('#creditCard').val() !== currentCC.num;
+            isNewCardCVV = $('#securityCode').val() !== currentCC.cvv;
+            isNewCardMM = $('#expirationMonth').val() !== currentCC.mm;
+            isNewCardYY = $('#expirationYear').val() !== currentCC.yy;
+        
+        var hundredPercentCoupon = couponCode && couponCode.indexOf("100") != -1;
+
+//        determine whether this company is entitled to the 14 day free trial
+//        if the company is just signing up, there is no payment necessary
+//        else if the company is using the standard account and has exceeded 14 days,
+//        the user will be directed to the company management page for payment
+
+        
+        var acctChanged = !(initialAccountType == $("input:radio[name='company.accountType']:checked").val())
+
+        //console.log(initialAccountType, acctChanged, freeAccount, standardAccount, enterpriseAccount, compId, trialExpired, couponCode, delinquentPayment, cardLast4, isNewCard);
+
+        var printData = {
+            "initialAccountType"    : initialAccountType,
+            "acctChanged"           : acctChanged,
+            "freeAccount"           : freeAccount,
+            "standardAccount"       : standardAccount,
+            "enterpriseAccount"     : enterpriseAccount,
+            "compId"                : compId,
+            "trialExpired"          : trialExpired,
+            "couponCode"            : couponCode,
+            "delinquentPayment"     : delinquentPayment,
+            "cardLast4"             : cardLast4,
+            "isNewCard"             : isNewCard
+        }
+        //console.log(printData);
+
+        // New logic
+        if (isNewCard || isNewCardCVV || isNewCardMM || isNewCardYY) {
+            //console.log('Yes: ','Case 1.5 - Is new Credit Card');
+            return true;
+        } else if (hundredPercentCoupon){
+            //console.log('No: ','Case 1 - 100 Percent Coupon');
+            return false;
+        } else if (!compId && !standardAccount) {
+            //console.log('Yes: ','Case 1.6 - No compId and NOT selecting STANDARD');
+            return true;
+        } else if (initialAccountType === "STANDARD" && freeAccount){
+            //console.log('No: ','Case 2 - Initial account is STANDARD and selection is FREE');
+            return false;
+        } else if (trialExpired === false && !(enterpriseAccount && initialAccountType === "STANDARD")){
+            //console.log('No: ','Case 3 - Trial has NOT expired AND acct is STANDARD and is NOT trying to switch to ENTERPRISE ||OR|| is New STANDARD registration');
+            return false;
+        } else if (delinquentPayment){
+            //console.log('Yes: ','Case 4 - Trial has expired AND acct is DELINQUENT');
+            return true;
+        } else if (!!(cardLast4)){
+            //console.log('No: ','Case 5 - Account HAS Credit Card');
+            return false;
+        } else { 
+            //console.log('Yes: ','Case 6 - All Other Scenarios, including no credit card on file');
+            return true;
+        }
+    }
+
+    $(document).ready(function () {
+        $("#payment-errors").hide();
+
+        $('input[name="company.accountType"]').change(function(){
+            if($(this).val() === 'STANDARD') {
+                if($('#creditCard').val() === ''){
+                    $('.paymentInfoFreeTrial').show();
+                    $('.paymentInfoFreeTrialHide, #paymentInfoFields').hide();
+                } else {
+                    $('.paymentInfoFreeTrialHide').show();                         
+                }
+            } else {
+                $('.paymentInfoFreeTrial, .paymentInfoFreeTrialHide').hide();                    
+                $('#paymentInfoFields').show();
+            }
+        });
+        $('.showCreditCard').click(function(e){
+            e.preventDefault();
+            $('.paymentInfoFreeTrial').hide();                    
+            $('.paymentInfoFreeTrialHide, #paymentInfoFields').show();
+        });
+        $('.hideCreditCard').click(function(e){
+            e.preventDefault();
+            $('.paymentInfoFreeTrial').show();                    
+            $('.paymentInfoFreeTrialHide, #paymentInfoFields').hide();
+            $('#creditCard, #securityCode, #expirationMonth, #expirationYear').val('');
+        });
+
+        #{if enums.AccountType.STANDARD.equals(accountType)}
+            $('#standardRadio').change();
+            $('.paymentInfoFreeTrial').show();
+            $('#paymentInfoFields').hide();
+        #{/if}
+
+        $("#registrationForm").validate({
+            errorClass: "alert",
+            rules: {
+                "company.contactName": {
+                    required: true,
+                    minlength: 2,
+                    messages: {
+                        required: "Required input",
+                        minlength: jQuery.format("Please, at least {0} characters are necessary")
+                    }
+                },
+                "company.name": {
+                    required: true,
+                    minlength: 2,
+                    messages: {
+                        required: "Required input",
+                        minlength: jQuery.format("Please, at least {0} characters are necessary")
+                    }
+                },
+                "company.contactEmail": {
+                    required: true,
+                    email: true
+                },
+                "password": {
+                    required: true,
+                    minlength: 6
+                },
+                "confirmPassword": {
+                    required: true,
+                    minlength: 6
+                },
+                "agreeTOS": {
+                    required: true
+                }
+            },
+            highlight: function(element) {
+                $(element).closest('.control-group').addClass("error");
+            },
+            unhighlight: function(element) {
+                $(element).closest('.control-group').removeClass("error");
+            },
+            errorPlacement: function(error, element) {
+                if (element.attr("name") == "agreeTOS"){
+                    error.insertAfter("#TOSLabel");                
+                } else {
+                    error.insertAfter(element);                
+                }
+            },
+            submitHandler: function(form) {
+                if(paymentRequired()){
+                    var cardNum = $(".card-number").val();
+                    if(cardNum.indexOf("************") == -1) {
+                        // disable the submit button to prevent repeated clicks
+                        $('.submit-button').attr("disabled", "disabled");
+
+                        $("#payment-errors").hide();
+                        Stripe.createToken({
+                            number: cardNum,
+                            cvc: $('.card-cvc').val(),
+                            exp_month: $('.card-expiry-month').val(),
+                            exp_year: $('.card-expiry-year').val()
+                        }, function(status, response) {
+                            if (response.error) {
+                                // show the errors on the form
+                                $("#payment-errors").show();
+                                $("#payment-errors").text(response.error.message);
+                                $(".submit-button").removeAttr("disabled");
+                                //return false;
+                            } else {
+                                // token contains id, last4, and card type
+                                var token = response['id'];
+                                // insert the token into the form so it gets submitted to the server
+                                $("#stripeToken").val(token);
+                                // and submit
+                                form.submit();
+                                //return true;
+                            }
+                        });
+                        // prevent the form from submitting with the default action
+                        //return false;
+                    }
+                } else {
+                    form.submit();
+                }
+            }
+        });
+
+
+        $("#accountUpgrade, #accountDowngradeFree, #accountDowngradeStandard").hide();
+
+        var initialAccountType = "${company?.accountType?.name()}"
+
+        $("input[name='company.accountType']").change(function(){
+            var existingCompany = $("#company").val();
+            if(existingCompany) {
+                var currentVal = $(this).val();
+                if(currentVal != initialAccountType){
+                    //check for upgrades
+                    if((initialAccountType == 'FREE' && (currentVal == 'STANDARD' || currentVal=='ENTERPRISE'))||(initialAccountType == 'STANDARD' && currentVal == 'ENTERPRISE')){
+                        $("#accountUpgrade").show();
+                        $("#accountDowngradeFree, #accountDowngradeStandard, #early-payment-alert").hide();
+
+                    } else if(initialAccountType == 'ENTERPRISE' || (initialAccountType == 'STANDARD' && currentVal == 'FREE')) {
+                        $("#accountUpgrade").hide();
+                        $("#early-payment-alert").hide();
+                        if(currentVal == 'FREE'){
+                            $("#accountDowngradeStandard").hide();
+                            $("#accountDowngradeFree").show();
+                        } else {
+                            $("#accountDowngradeStandard").show();
+                            $("#accountDowngradeFree, #early-payment-alert").hide();
+                        }
+                    }
+
+                } else {
+                    $("#accountUpgrade").hide();
+                    $("#accountDowngradeStandard").hide();
+                    $("#accountDowngradeFree").hide();
+                    $("#early-payment-alert").show();
+                }
+                $('#paymentInfoFields').show();
+            }
+            /*if(paymentRequired()){
+                $("#paymentInfoFields").show();
+            } else {
+                $("#paymentInfoFields").hide();
+            }*/
+        });
+    }); // end $(document).ready()
+</script>

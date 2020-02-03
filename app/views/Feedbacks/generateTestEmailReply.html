@@ -1,0 +1,60 @@
+#{extends 'standardPage.html' /}
+#{set title:'Feedback Email Test' /}
+#{set 'moreScripts'}
+    #{script 'jquery.form.js'/}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row" xmlns="http://www.w3.org/1999/html">
+    <div class="span12">
+        <h1>Generate test feedback email</h1>
+    </div>
+</div>
+
+
+#{standardError /}
+<div class="row">
+    <div class="span12">
+    #{form @fromEmailReply() , id:'fromEmailReplyForm', class:'form-horizontal', autocomplete:"off"}
+		<input type="hidden" id="to" name="to"  value="${to}">
+        <fieldset>
+            <div class="control-group" id="fromGroup">
+                <label id="fromLabel" for="name" class="required control-label">From:</label>
+                <div class="controls">
+                    <input type="text" id="from" name="from"  value="${from}">
+                </div>
+            </div>
+            <div class="control-group" id="fromGroup">
+                <label id="textLabel" for="name" class="required control-label">Text:</label>
+                <div class="controls">
+                    <input type="text" id="text" name="text"  value="This is some sample feedback...">
+                </div>
+                <button id="fromEmailReplyBtn" class="btn btn-info no-change-check"><i class="icon-plus icon-white"></i> Send Email</button>
+            </div>
+        </fieldset>
+    #{/form}
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+$('#fromEmailReplyBtn').click(function(e) {
+    $.ajax({
+        type:'POST',
+        async: false,
+        url: '@{Feedbacks.fromEmailReply}', 
+        data:$('#fromEmailReplyForm').serialize(),
+        success: function(data){
+        	document.location.href = "@{Interviews.show()}?id=${activeInterviewId}";
+        }
+	});
+
+    
+});
+
+
+
+</script>

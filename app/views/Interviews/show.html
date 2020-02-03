@@ -1,0 +1,701 @@
+#{extends 'standardPage.html' /}
+%{
+
+    def isActiveInterview = interview instanceof models.ActiveInterview;
+    def title = interview.hasBeenSaved() ? "Edit Interview Template" : "Create Interview Template";
+    if(isActiveInterview){ //overwrite the title for Active Interviews
+        title = "Interview for ${interview.interviewee.name}"
+    }
+}%
+#{set title: title /}
+#{set 'moreScripts'}    
+    #{script 'jquery.form.js'/}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'changes-alert.js' /}
+    #{script 'json2.js' /}
+    #{script 'jquery-ui-1.9.0.custom.min.js' /}
+#{/set}
+
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{if isActiveInterview}
+                #{subNav section:"Candidates" /}
+            #{/if}
+            #{else}
+                #{subNav section:"Interviews", page:"Show", interview:interview /}
+            #{/else}
+
+            <h1>${title}</h1>
+        </div>
+    </div>
+</div>
+
+<p id="ratingAndNotesNotification" class="alert alert-success hide">
+    You've added notes on this interview. <a href="#ratingAndNotes" id="ratingAndNotesLink" data-toggle="modal">See your notes</a>
+</p>
+
+
+#{standardError /}
+
+#{form @Interviews.save() , id:'interviewForm', class:'form-horizontal'}
+    <input type="hidden" id="liveInterview" name="liveInterview" value=""/>
+    <div class="row">
+        <div class="span8">
+            <div class="well">
+                <div class="control-group">
+                    <label class="control-label required">Interview Name</label>
+                    <div class="controls">
+                        <input type="text" class="span4" id="interviewName" name="interviewName" value="${interview?.name}">
+                    </div>
+                </div>
+            #{if isActiveInterview}
+                <div class="control-group">
+                    <label class="control-label required">Interviewer</label>
+                    <div class="controls">
+                        <select id="interviewerId" name="interviewerId">
+                    #{if interview.company}
+                        #{list interview.company.getUsersSortedByName(),  as: 'user'}
+                            <option value="${user.id}" ${user.equals(interview.interviewer) ? "selected" : ""}>${user.fullName}</option>
+                        #{/list}
+                    #{/if}
+                    #{else}
+                        <option value="${connectedUser.id}">${connectedUser.fullName}</option>
+                    #{/else}
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Scheduled Date</label>
+                    <div class="controls">
+                        <input id="anticipatedDate" name="anticipatedDate" type="text" class="span2" value="${interview.anticipatedDate?.format("MM/dd/yyyy")}"/>
+                    </div>
+                </div>
+            #{/if}
+            </div>
+        </div>
+        <div class="span4">
+            <div class="well">
+                <h3>Add Questions</h3><br/>
+                #{if !(connectedUser.equals(interview.user) ||
+                (interview.user.company.equals(connectedUser.company) && connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN)) ||
+                connectedUser.hasRole(enums.RoleValue.APP_ADMIN))}
+                <p>
+                    You must be the interview creator or a company admin to edit this interview.
+                </p>
+                #{/if}
+                #{else}
+                    <a href="#" data-target="#selectCategory" data-toggle="modal" id="interviewBuilderButton" class="btn btn-primary"><img src="/public/images/bubble_icon_white.png"/> Find Questions For Me</a><br/>
+                    <hr/>
+                    <a href="#" id="addNewQuestion" class="no-change-check" onclick="addQuestion();">Add a New Question</a><br/>
+                    <button id="pickQuestions" type="submit" class="buttonLikeLink no-change-check" name="addingQuestions">Pick Questions From the List</button><br/>
+                    <a href="#" id="useExistingInterview" data-target="#selectExistingInterview" data-toggle="modal">Use Questions from an Interview Template</a>
+
+                #{/else}
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="undoSpace">
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <p>Estimated Duration: <span id="globalInterviewDuration">${interview.duration}</span> minutes</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            #{questionList mode:'interview', dataSource: @Questions.interviewQuestionTableData(interview?.id) /}
+        </div>
+    </div>
+
+    <div class="form-actions" id="buttonBar">
+        <a id="cancelBtn" href="@{Interviews.cancelEdit()}"><button type="button" class="btn no-change-check">Cancel</button></a>
+        <button id="saveBtn" class="btn btn-primary no-change-check" type="submit">Save</button>
+
+        #{if interview?.id != null && (connectedUser.equals(interview.user) || 
+                    connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN) || 
+                    connectedUser.hasRole(enums.RoleValue.APP_ADMIN))}
+            <a id="delete" href="#" data-target="#deleteConfirmation" data-toggle="modal" class="no-change-check pull-right"><i class="icon-trash"></i> Delete</a>
+        #{/if}
+    </div>
+#{/form}
+
+#{if isActiveInterview}
+*{ To generate a test feedback email:
+#{testFeedbackEmailGenerator from: connectedUser.email, activeInterviewId: interview.id, candidateId: interview.interviewee.id /}
+}*
+#{/if}
+
+<div class="row">
+    <div class="span12">
+        <a id="printInterviewBtn" href="@{Interviews.printable(interview?.id, candidateInterviewCandidateName)}" target="_blank" class="btn btn-info"><i class="icon-print icon-white"></i> Print Interview</a>
+    #{if isActiveInterview && (!interview.hasBeenSaved() || enums.ActiveInterviewState.FINISHED != interview.getStatus())}
+        <a id="liveInterviewBtn" href="#" class="btn btn-info no-change-check"><i class="icon-play icon-white"></i> Live Interview</a>
+    #{/if}
+    </div>
+</div>
+
+<div id="history">
+    
+</div>
+
+#{modal "ratingAndNotes", title: "Your Rating and Notes"}
+    <div class="modal-body">
+        #{interviewRatingAndNotes /}
+    </div>
+#{/modal}
+
+#{modal "deleteConfirmation", title: "Delete Confirmation"}
+    <div class="modal-body">
+        <p>Are you sure you want to delete this interview?</p>
+    </div>
+    <div class="modal-footer">
+        <a id="cancelDeleteBtn" class="btn" data-dismiss="modal">Cancel</a>
+        <a id="confirmDeleteBtn" href="@{Interviews.delete(interview?.id)}" class="btn btn-danger no-change-check"><i class="icon-trash icon-white"></i> Delete</a>
+    </div>
+#{/modal}
+
+#{modal "selectCategory", title: "Interview Builder", style: "overflow-y:auto;max-height:90%;"}
+    #{form @Interviews.findQuestionsForInterview() , id:'categoryForm', class:'form-horizontal'}
+        <div class="modal-body">
+
+        	<div class="control-group">
+                <label for="interviewDuration" class="control-label">Length of Interview</label>
+                <div class="controls">
+                    <input type="text" class="span1" id="interviewDuration" name="interviewDuration"> minutes
+                </div>
+            </div>
+        
+            <p>Enter categories below. The interview builder will select questions based on your preferences to fill the
+               time remaining in the interview</p>
+
+            <div class="control-group">
+            	<label for="category" class="control-label">Category</label>
+            	%{helpText = "Start typing to search for a category (ex. Java, C#, Culture, Human Resources)."}%
+                <div class="controls">
+                    #{categories
+                    field:"category",
+                    placeholder:"Type a Category Name...",
+                    helpText: helpText/}
+					
+                    <div id="betaCategoryAlert"></div>
+                </div>
+            </div>
+            <input type="hidden" id="categoryList" name="categoryList">
+            <table id="list-header" class="interview-builder-table-header"><th>Difficulty</th><th>Focus on this category</th></table>
+            <!-- <div style="max-height : 400px; overflow : auto; "> -->
+            	<table class="table table-striped table-striped interview-builder-table" id="category-controls">            	
+            	</table>
+            <!-- </div> -->
+        </div>
+        <div class="modal-footer">
+        	<div id="interviewBuilderProgress">#{processingDisplay /}</div>
+            <a data-dismiss="modal"><button id="cancelFindQuestions" class="btn">Cancel</button></a>
+            <input type="submit" id="findQuestions" class="btn btn-primary no-change-check" value="Go Find My Questions"/>
+        </div>
+    #{/form}
+#{/modal}
+
+#{modal "selectExistingInterview", title: "Select an Existing Interview"}
+    #{form @Interviews.addQuestionsFromExistingInterview() , id:'existingInterviewForm', class:'form-horizontal'}
+        <div class="modal-body">
+            <p>Select an existing Interview below. Questions from this interview will be included in the current interview.</p>
+
+            <div class="control-group">
+                <label for="otherInterviewId" class="control-label">Interview</label>
+                <div class="controls">
+                    <select name="id" id="otherInterviewId" size="1" class="input-large required">
+                        <option value=""></option>
+                        #{list items:controllers.Interviews.getPossibleSourceInterviews(), as:'otherInterview'}
+                            <option value="${otherInterview.id}">${otherInterview.name}</option>
+                        #{/list}
+                    </select>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <a id="cancelAddQuestionsBtn" data-dismiss="modal"><button class="btn">Cancel</button></a>
+            <input id="addQuestionsBtn" type="submit" class="btn btn-primary" value="Add these interview questions"/>
+        </div>
+    #{/form}
+#{/modal}
+
+#{applicationApi /}
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        $("#list-header").hide();
+        $('#interviewBuilderProgress').hide();
+
+        $('#anticipatedDate').datepicker();
+
+        $('#liveInterviewBtn').click(function(){
+            $('#interviewForm #liveInterview').val('true');
+            $('#interviewForm').submit()
+        });
+
+
+        //rating and notes
+        var ratingAndNotesSuccess = function(dataPresent){
+            //only show if data present
+            if(dataPresent){
+                $('#ratingAndNotesNotification').show();
+            }
+        };
+
+        var interviewId = '${interview.id}';
+        populateInterviewRatingAndNotes(interviewId, ratingAndNotesSuccess);
+    });
+
+    var interviewsShowURLGenerator = #{jsAction @Interviews.show(':id', 
+            ':fresh', ':loadedWithUnsavedChanges') /};
+        
+    //We have a different, but very similar generator because Play! jsActions 
+    //are weird.  PASSING null later as :id (as above) functions differently 
+    //(wrongly) from passing null to the id parameter as here.
+    var cachedInterviewShowURLGenerator = #{jsAction @Interviews.show(null,
+            ':fresh', ':loadedWithUnsavedChanges') /};
+
+    var questionsShowNoIDGenerator = #{jsAction @Questions.show(null, 
+                ':addToInterview', ':loadedWithUnsavedChanges') /}
+    
+    function addQuestion(){
+            saveInProgressInterview(true);
+
+            window.location.href = questionsShowNoIDGenerator({
+                addToInterview: true,
+                addToInterviewHasUnsavedChanges: ${loadedWithUnsavedChanges}
+            });
+    };
+	
+    function saveInProgressInterview(synchronous){
+        $.ajaxSetup({
+                async: !synchronous
+        });
+    	$.post('@{Interviews.saveInProgressInterview()}',
+    		{ interviewName: $("#interviewName").val() #{if isActiveInterview}, anticipatedDate: $("#anticipatedDate").val(), interviewerId: $("#interviewerId").val()#{/if}});
+        
+        $.fn.changeAlert('setChanged', false);
+    }
+
+    $('#existingInterviewForm').submit(function (e) {
+		e.preventDefault();
+
+        $.post('@{Interviews.addQuestionsFromExistingInterview()}',{ id: $("#otherInterviewId").val() },
+                    function(data) {
+                        refreshTable("@{Questions.interviewQuestionTableData(interview?.id)}", false, updateDuration);
+                    });
+        
+        return false;
+    });
+    
+    $('#selectCategory').on("click submit", "#findQuestions", function(e){
+        var $interviewDurationInput = $("#interviewDuration");
+        var $categoryControlsCollection = $("#category-controls tr");
+
+        validateInterviewBuilder.validDuration(e);
+        validateInterviewBuilder.validCategory(e);
+        validateInterviewBuilder.validCategoryDifficulty(e);
+        saveInProgressInterview(true);
+		
+
+        
+        return true;
+    });
+    
+    // interview builder validation object
+    var validateInterviewBuilder = {
+        // method validates the duration of the interview
+        validDuration: function(event) {
+            var $interviewDurationInput = $("#interviewDuration");
+			var duration = Number($.trim($interviewDurationInput.val()));
+            if(isNaN(duration) || (duration <= 0)) {
+                event.preventDefault();
+                if ($(".errDuration").length == 0) {
+                    var errDuration = "<div class='alert alert-error errDuration' style='clear:both;'>Please Enter a valid Interview Duration.</div>";
+                    $("#interviewDuration").parent().append(errDuration);
+                }
+            } else {
+
+                $(".errDuration").remove();
+            }
+
+        },
+        // method validates if a category has been added
+        validCategory: function(event) {
+
+            var $categoryControlsCollection = $("#category-controls tr");
+
+            if($categoryControlsCollection.length == 0) {
+                event.preventDefault();
+                var errTxt = "<div class='alert alert-error' style='clear:both;'>Please Choose a Category by using the input box provided.</div>"
+                if ($("#betaCategoryAlert .alert").length == 0) {
+                    $("#betaCategoryAlert").append(errTxt);
+                }
+
+
+            } else {
+
+                $("#betaCategoryAlert .alert").remove();
+
+            }
+
+        },
+        // method validates if category has at least one difficulty checkbox checked
+        validCategoryDifficulty: function(event) {
+
+            var $difficultyGrp = $('.difficultyGrp');
+            var difficultyErrMsg = "<div class='alert alert-error'>Please select at least 1 difficulty for all categories</div>";
+
+            if($difficultyGrp.length > 1) {
+                for(var i = 0, len = $difficultyGrp.length; i < len;i++) {
+
+                    var difficultyChecked = $($difficultyGrp[i]).find("input[type=checkbox]:checked");
+                    if(difficultyChecked.length == 0) {
+                        event.preventDefault();
+                        if($("#betaCategoryAlert .alert-error").length == 0) {
+                        $("#betaCategoryAlert").append(difficultyErrMsg);
+                        }
+
+
+                    }
+
+
+                }
+            } else if ($difficultyGrp.length) {
+                var difficultyChecked = $("input[type=checkbox]:checked");
+                if(difficultyChecked.length == 0) {
+                    event.preventDefault();
+                    $("#betaCategoryAlert").append(difficultyErrMsg);
+
+                }
+
+            }
+
+        }
+    };
+
+    $('#otherInterviewId').change(function () {
+        $('#existingInterviewForm').validate().element('#otherInterviewId');
+    });
+    
+    function updateBetaCategoryAlert(){
+        var categoryValue = $("#category").val();
+        var checkAction = #{jsAction @Categories.getCategoryStatuses(':categories') /}
+        $.ajax({
+            url: checkAction({categories: "[" + categoryValue + "]"}),
+            success : function(data) {
+                if(data[categoryValue] === 'BETA') {
+                    //TODO create beta category help
+                    var message = "<strong>Heads Up!</strong>  <em>" + categoryValue + "</em> is a Beta category.";
+                    $('#betaCategoryAlert').html('<div id="betaCategoryAlert" class="alert"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+
+                } else {
+                    $("#betaCategoryAlert").html('<div id="betaCategoryAlert"></div>');
+                }
+            }
+        });
+    }
+	
+    function removeCategoryControls(categoryName){
+            if(categoryName){
+                    $("#controls_" + categoryName.replace(/\s/g, "")).remove();
+
+                    var table = document.getElementById("category-controls");
+            if(table.rows.length == 0){
+                            $("#list-header").hide();
+                    }
+            }
+    }
+
+    function categoryIncluded(categoryName){
+            var categoryList = $('#categoryList').val();
+    var categories = (categoryList.length == 0)?[]:categoryList.split(",");
+    for (var i=0; i<categories.length; i++) {
+            if (categories[i].toLowerCase() == categoryName.toLowerCase()){
+                    return true;
+            }
+            }
+            return false;
+    }
+    
+    function addCategoryToList(categoryID){
+    	var categoryList = $('#categoryList').val();
+    	var categories = (categoryList.length == 0)?[]:categoryList.split(",");
+    	categories.push(categoryID);
+    	$('#categoryList').val(categories.join(","));
+    }
+    
+    function removeCategoryFromList(categoryID){
+    	var categoryList = $('#categoryList').val();
+    	var categories = (categoryList.length == 0)?[]:categoryList.split(",");
+    	if (categories.indexOf(categoryID) != -1) {  
+       		categories.splice(categories.indexOf(categoryID), 1);
+       		var list = categories.join(",");
+    		$('#categoryList').val(list);
+   		} 		
+    }
+    
+    /*function centerModal(name){
+    	var modal = $(name);
+
+    	modal.css('margin-top', (modal.outerHeight() / 2) * -1)
+         		.css('margin-left', (modal.outerWidth() / 2) * -1);
+    }*/
+    
+    function addCategoryControls(categoryID, categoryName){
+    	var id = categoryID;
+      var categoryNameref = categoryName;
+    	var table = document.getElementById("category-controls");
+    	if(!document.getElementById(id)){
+    		var index = table.rows.length;
+        	var row = table.insertRow(index);
+    		row.id = "controls_" + id;
+    		row.className = (index % 2 == 0)?"even":"odd";
+    		
+    		
+    		
+    		var title = document.createElement("b");
+    		title.appendChild(document.createTextNode(decodeURIComponent(categoryNameref)));
+    		
+    		var cellLeft = row.insertCell(0);
+    		cellLeft.className = "span1";
+    		
+    		var closeButton = document.createElement("a");
+    		closeButton.className = "icon-button";
+    		closeButton.setAttribute('href','#');
+    		closeButton.setAttribute('onClick','removeCategoryFromList("' + id + '");removeCategoryControls("' + id + '")');
+    		var closeSpan = document.createElement("span");
+    		closeSpan.className = "ui-icon ui-icon-circle-close";
+    		closeButton.appendChild(closeSpan);
+    		cellLeft.appendChild(closeButton);
+    		
+    		
+    		cellLeft.appendChild(title);
+    		
+    		
+    		
+    		row.appendChild(cellLeft);
+    		
+    		var groupDiv = document.createElement("div");
+        groupDiv.setAttribute('class','difficultyGrp');
+    		
+    		var controlsDiv = document.createElement("div");
+    		
+    		var difficultyEasy = document.createElement("label");
+    		difficultyEasy.className = "checkbox";
+    		var easyCB = document.createElement("input");
+            easyCB.setAttribute('id',  'easyCheckbox_' + id);
+    		easyCB.setAttribute('type','checkbox');
+    		easyCB.setAttribute('name','difficulty_EASY_' + id);
+    		easyCB.setAttribute('value','EASY');
+    		difficultyEasy.appendChild(easyCB);
+    		difficultyEasy.appendChild(document.createTextNode("Easy"));
+    		controlsDiv.appendChild(difficultyEasy);
+    		
+    		var difficultyMedium = document.createElement("label");
+    		difficultyMedium.className = "checkbox";
+    		var mediumCB = document.createElement("input");
+            mediumCB.setAttribute('id',  'mediumCheckbox_' + id);
+    		mediumCB.setAttribute('type','checkbox');
+    		mediumCB.setAttribute('name','difficulty_MEDIUM_' + id);
+    		mediumCB.setAttribute('value','MEDIUM');
+    		mediumCB.setAttribute('checked','true');
+    		difficultyMedium.appendChild(mediumCB);
+    		difficultyMedium.appendChild(document.createTextNode("Medium"));
+    		controlsDiv.appendChild(difficultyMedium);
+    		
+    		var difficultyHard = document.createElement("label");
+    		difficultyHard.className = "checkbox";
+    		var hardCB = document.createElement("input");
+            hardCB.setAttribute('id',  'hardCheckbox_' + id);
+    		hardCB.setAttribute('type','checkbox');
+    		hardCB.setAttribute('name','difficulty_HARD_' + id);
+    		hardCB.setAttribute('value','HARD');
+    		difficultyHard.appendChild(hardCB);
+    		difficultyHard.appendChild(document.createTextNode("Hard"));
+    		controlsDiv.appendChild(difficultyHard);
+    		
+    		groupDiv.appendChild(controlsDiv);
+    		
+    		var cellMiddle = row.insertCell(1);
+    		cellMiddle.className = "span1";
+    		cellMiddle.appendChild(groupDiv);
+    		row.appendChild(cellMiddle);
+    		
+    		
+    		groupDiv = document.createElement("div");
+    		groupDiv.className = "ui-slider-container";
+    		
+    		controlsDiv = document.createElement("div");
+    		controlsDiv.className = "ui-slider-image";
+    		
+    		var sliderVal = 2;
+
+    		var slider = document.createElement("div");
+    		slider.setAttribute('id','slider_' + id);
+    		slider.setAttribute('name','slider_' + id);
+    		controlsDiv.appendChild(slider);
+    		
+    		var contribution = document.createElement("input");
+    		contribution.setAttribute('type','hidden');
+    		contribution.setAttribute('id','contribution_' + id);
+    		contribution.setAttribute('name','contribution_' + id);
+    		contribution.setAttribute('value',sliderVal);
+    		controlsDiv.appendChild(contribution);
+    		
+    		groupDiv.appendChild(controlsDiv);
+    		
+    		
+    		
+    		var labelTable = document.createElement("table");
+    		labelTable.className = "ui-slider-legend";
+    		var labels = labelTable.insertRow(0);
+    		var minCell = labels.insertCell(0);    		
+    		minCell.className = "notch";
+    		minCell.appendChild(document.createTextNode("A little"));
+    		var midCell = labels.insertCell(1);
+    		midCell.className = "notch";
+    		midCell.appendChild(document.createTextNode("Normal"));
+    		var maxCell = labels.insertCell(2);
+    		maxCell.className = "notch";
+    		maxCell.appendChild(document.createTextNode("A lot"));
+    		
+    		groupDiv.appendChild(labelTable);
+    		
+    		
+    		
+    		var cellRight = row.insertCell(2);
+    		cellRight.className = "span1";
+    		cellRight.appendChild(groupDiv);
+    		
+    		row.appendChild(cellRight);
+    		
+    		$( '#' + 'slider_' + id ).slider({
+				value:2,
+				min: 1,
+				max: 3,
+				step: 1,
+				slide: function( event, ui ) {
+					$( "#contribution_" + id ).val( ui.value );
+				}
+			});
+			$( "#contribution_" + id ).val( $( "#slider_" + id ).slider( "value" ) );
+			
+    		$("#list-header").show();
+            $('#categoryAddedAlert').remove();
+            $('#category').after('<div class="alert alert-info" id="categoryAddedAlert">Category Added! <a class="close" data-dismiss="alert">×</a></div>');
+    	}
+    }
+    
+    function updateDuration(){
+    	$.get("@{getInProgressInterviewDuration}",function(data){
+    		$("#globalInterviewDuration").text(data);
+    	});
+    }
+
+    #{if loadedWithUnsavedChanges}
+    $(window).load(function () {
+        $.fn.changeAlert('markChanged');
+    });
+    #{/if}
+    
+    $(function() {
+        
+        var undoLinkBuilder = #{jsAction @Interviews.addQuestionInPosition(
+                ':questionID', ':sortPosition') /};
+        
+        registerRemoveListener(function(questionID, questionOrder) {
+            var undoLink = undoLinkBuilder({questionID:questionID, 
+                    sortPosition:questionOrder});
+            
+            $("#undoSpace").html("<div class='alert offset3 span5'>Question " +
+                "removed from list.  <a class='no-change-check' href='" + 
+                undoLink + "'>Undo</a></div>");
+                
+            updateDuration();
+            
+            $.fn.changeAlert('recheckSubmitters');
+
+        });
+        
+        //prevent enter key from submitting the form on this field
+        $("#candidateInput").keypress(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+            }
+        });
+                
+        $("#existingInterviewForm").validate({
+            submitHandler: function(form) {
+                $(form).ajaxSubmit({
+                    success:function(){
+                        $('#selectExistingInterview').modal('hide')
+                        $('#questions').dataTable().fnDraw();
+                    }
+                });
+            }
+        });
+        
+        var existing = ${existingCategories ? existingCategories.raw() : '[]'};
+        for (index in existing) {
+            existing[index] = encodeURIComponent(existing[index]);
+        }
+        
+          var addCategoryToInterview = function() {
+              var category = encodeURIComponent($("#category").val());
+              var catObject = #{jsAction @Categories.findCategoriesJSONFullObject(':categoryObj') /};
+
+
+              for (var i=0; i<existing.length; i++) {
+                  if (existing[i].toLowerCase() == category.toLowerCase()){
+                      if(!categoryIncluded(category)) {
+                          $.ajax({
+                              url: catObject({categoryObj:category}),
+                              success: function(data) {
+                                  var categoryID = data[0].id;
+                                  addCategoryControls(categoryID,existing[i]);
+                                  addCategoryToList(categoryID);
+                              }
+                          });
+
+                          updateBetaCategoryAlert();
+
+                          $("#category").val("");
+                          /*centerModal('#selectCategory');*/
+                          $(window).trigger('resize.mrf');
+                      }
+                      return;
+                  }
+              }
+          };
+        // add category to interview builder when hitting enter
+        $("#category").keyup(function(event) {
+            if(event.keyCode === 13) {
+                addCategoryToInterview();
+            }
+		});
+        // add category to interview builder after autocomplete is done, using enter key
+        $("#category").keypress(function(event) {
+            if(event.keyCode === 13) {
+                addCategoryToInterview();
+            }
+        });
+        // add category to interview builder when clicking
+        $("body").delegate(".ui-menu-item", "click", function(e){
+           addCategoryToInterview();
+        });
+		
+		$('#selectCategory').on('shown', function(e) {
+			/*centerModal('#selectCategory');*/
+            $(window).trigger('resize.mrf');
+		});
+
+    });
+</script>

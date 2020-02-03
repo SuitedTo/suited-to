@@ -1,0 +1,270 @@
+<script type="text/javascript">
+
+    function _doRemoteCall(action, params, callback, error) {
+        var result = null;
+        var async = true;
+        
+        if (!error) {
+            error = function() { };
+        }
+        
+        if (!callback) {
+            callback = function(response) {result = response};
+            async = false;
+        }
+        
+        $.ajax({
+            url : action(params),
+            success : callback,
+            error : error,
+            async : async
+        });
+        
+        return result;
+    }
+    
+    /*
+     * This call is intended to superscede _doRemoteCall above and provide a
+     * standard protocol for communicating with the server.
+     */
+    function _standardCall(action, params, resultCallback, errorCallback, 
+            ajaxErrorCallback) {
+        
+        if (!errorCallback) {
+            errorCallback = function() { };
+        }
+        
+        if (!ajaxErrorCallback) {
+            ajaxErrorCallback = function() { };
+        }
+        
+        var wrapper = function(result) {
+            if (typeof result.error === "undefined") {
+                resultCallback(result.result);
+            }
+            else {
+                if (error) {
+                    errorCallback(result.error);
+                }
+            }
+        }
+        
+        return $.ajax({
+                url : action(params),
+                success : wrapper,
+                error : ajaxErrorCallback,
+                async : true
+            });
+    }
+    
+    /*
+     * Takes a feedback ID and deletes the associated feedback.  Returns an
+     * object.  If an error is encountered, the object will define a field 
+     * called "error" that contains an informative error message.  Otherwise,
+     * the object will not contain such a field and the delete was performed
+     * successfully.
+     */
+    function deleteFeedback(feedbackId, callback) {
+        
+        var deleteAction = #{jsAction @Feedbacks.delete(':feedbackId') /};
+        
+        return _doRemoteCall(deleteAction, {feedbackId: feedbackId}, callback,
+                function(error) {
+                    return {error: "" + error};
+                });
+    }
+
+    /*
+     * Takes a candidate name as a string, returns an array.  The 0th element of
+     * the array indicates if the call was a success.  If the 0th element is 
+     * false, the 1st element will be an error message.  If the 0th element is
+     * true, the 1st element will be the id associated with the existing
+     * candidate whose name matches (exactly, but case insensitively) the given
+     * name, or -1 if there is no such existing candidate.
+     */
+    function getCandidateIDForUserCompanyByName(name, callback) {
+    
+        var candidateAction = 
+                #{jsAction @Candidates.getCandidateIDForUserCompanyByName(
+                        ':name') /};
+                    
+        return _doRemoteCall(candidateAction, 
+                {name: name}, callback, 
+                function(error) {
+                    return [false, "" + error];
+                });
+    }
+    
+    /*
+     * Takes a partial name and returns an array of existing candidates for 
+     * which some part of the candidate's name matches (case insensitively) the
+     * given partial name.  If no such candidates exist, or if there is an 
+     * error, returns the empty array.
+     */
+    function getCandidatesForUserCompanyByPartialName(partialName, callback) {
+    
+        var candidateListAction = 
+                #{jsAction @Candidates.getUserCompanyCandidateList(
+                        ':partialCandidateName') /};
+
+        return _doRemoteCall(candidateListAction, 
+                {partialCandidateName: partialName}, callback, 
+                function(error) {
+                    console.log(error);
+                    return [];
+                });
+    }
+    
+    /*
+     * Takes a partial name and returns an array of existing user names for the 
+     * currently logged-in user's company whose names are similar to the 
+     * partial name.  If there is an error, returns an empty array and prints
+     * an informative message to the console.
+     * 
+     * If callback is null, rather than returning an array, it will return an
+     * object that defines either the field "users" mapping to a list of the
+     * returned usernames or "error" containing an informative error message.
+     */
+    function getUsersForUserCompanyByPartialName(partialName, callback) {
+        
+        var userListAction = 
+                #{jsAction @Users.getUsersForUserCompanyByPartialName(
+                        ':partialName') /};
+
+        if (callback) {
+            var oldCallback = callback;
+            callback = function(result) {
+                if (result.error) {
+                    if (error) {
+                        console.log(result.error);
+                        oldCallback([]);
+                    }
+                }
+                else {
+                    oldCallback(result.users);
+                }
+            }
+        }
+
+        return _doRemoteCall(userListAction, {partialName: partialName}, 
+                callback, function(error) {
+                    console.log(error);
+                    return [];
+                });
+    }
+    
+    /*
+     * Takes a partial email and returns an array of existing user emails for 
+     * the currently logged-in user's company whose emails are similar to the 
+     * partial email.  If there is an error, returns an empty array and prints
+     * an informative message to the console.
+     * 
+     * If callback is null, rather than returning an array, it will return an
+     * object that defines either the field "emails" mapping to a list of the
+     * returned emails or "error" containing an informative error message.
+     */
+    function getUsersForUserCompanyByPartialEmail(partialEmail, callback) {
+        
+        var userListAction = 
+                #{jsAction @Users.getUsersForUserCompanyByPartialEmail(
+                        ':partialEmail') /};
+
+        if (callback) {
+            var oldCallback = callback;
+            callback = function(result) {
+                if (result.error) {
+                    if (error) {
+                        console.log(result.error);
+                        oldCallback([]);
+                    }
+                }
+                else {
+                    oldCallback(result.emails);
+                }
+            }
+        }
+
+        return _doRemoteCall(userListAction, {partialEmail: partialEmail}, 
+                callback, function(error) {
+                    console.log(error);
+                    return [];
+                });
+    }
+    
+    //TODO : I'm settling in on the structure of this method as being 
+    //       "the structure" we'd probably like to use: i.e., calls are 
+    //       all asynchronous, all server-side ajax calls return an object that
+    //       either defines "result" or "error", and two separate callbacks take
+    //       the appropriate action.  This lets the client not have to muck 
+    //       about with checking to see if "error" is defined and extract the
+    //       appropriate values, etc.  We should consider this for a convention
+    //       and eventually change over the other methods in this files to work
+    //       this way.
+    /**
+     * Returns an array of all events that have ever happened to the given 
+     * active interview, in order from earliest to latest.  Each event will take
+     * the form of an object that defines the following properties:
+     * 
+     *   timestamp: a number, expressed as seconds since the Unix epoch
+     *   event: an array of length 2, element 0 will be a string indicating the
+     *         type of event, element 1 will be the event-type-specific details
+     *         of the event
+     *   id: the id of the event
+     *   user: an object representing the user that triggered the event, with
+     *         the following structure:
+     *         
+     *       name: the display name of the user
+     *       id: the id of the user
+     *       
+     * If the request succeeds, but the server returns an error, the error 
+     * callback will be called with an informative error message.  If no error 
+     * callback is provided, nothing will happen.
+     * 
+     * If the request fails, ajaxError will be called with the usual parameters
+     * as from the "error" callback of $.ajax().  If no callback is provided,
+     * nothing will happen.
+     */
+    function getActiveInterviewHistory(activeInterviewID, callback, error, 
+            ajaxError) {
+        
+        var getHistory =
+                #{jsAction @Interviews.getActiveInterviewHistory(':id') /};
+        
+        return _standardCall(getHistory, {id: activeInterviewID}, callback,
+                error, ajaxError);
+    }
+
+    
+    function parseDate(dateString) {
+        var parts = dateString.split("/");
+        
+        if (parts.length !== 3) {
+            throw "Badly formatted date.";
+        }
+        
+        var year = parts[1] - 0;
+        if (year < 100) {
+            year += 2000;
+        }
+        
+        var dateMilliseconds = 
+            new Date(year, parts[0] - 1, parts[1] - 0, 0, 0, 0)
+                .getTime();
+        
+        var dateObject = new Date();
+        dateObject.setTime(dateMilliseconds);
+        
+        console.log(dateObject.getFullYear());
+        console.log(dateObject.getMonth());
+        console.log(dateObject.getDate());
+        
+        if (dateObject.getFullYear() !== year || 
+                dateObject.getMonth() !== parts[0] - 1 || 
+                dateObject.getDate() !== parts[1] - 0) { 
+        
+            throw "Badly formatted date.";
+        }
+        
+        return dateObject;
+    }
+</script>

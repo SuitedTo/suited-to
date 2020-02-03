@@ -1,0 +1,177 @@
+
+
+%{
+	providers = securesocial.provider.ProviderRegistry.all();
+	statusList = controllers.Social.getStatus();
+}%
+
+<ul class="nav nav-tabs">
+#{list items: providers, as: 'provider'}
+#{set providerType: provider.type /}
+#{set providerString: provider.type.toString().substring(0,1).toUpperCase() + provider.type.toString().substring(1) /}
+                #{if provider.type != securesocial.provider.ProviderType.userpass && controllers.Social.getStatus(providerType).isSupported()}
+                 <li id="tab_${provider.type.toString().toLowerCase()}">
+					<a href="#" onClick='selectSocialTab("${provider.type.toString().toLowerCase()}")'>${providerString}</a>
+				</li>
+                #{/if}
+#{/list}
+</ul>
+
+            #{list items: providers, as: 'provider'}
+<div id="tabData_${provider.type.toString().toLowerCase()}" class=" social-tab-data" style="display:none">
+                #{set providerType: provider.type /}
+                #{set providerString: provider.type.toString().substring(0,1).toUpperCase() + provider.type.toString().substring(1) /}
+                #{if provider.type != securesocial.provider.ProviderType.userpass && controllers.Social.getStatus(providerType).isSupported()}
+                	
+                    #{if (provider.authMethod == securesocial.provider.AuthenticationMethod.OPENID ||
+                         provider.authMethod == securesocial.provider.AuthenticationMethod.OPENID_OAUTH_HYBRID) &&
+                       provider.needsUsername() }
+                        <a href="javascript:openid('${provider.type}')">                        
+                    #{/if}
+                    #{else}
+                    #{if controllers.Social.getStatus(providerType).isConnected()}
+                     <div>You are currently connected to ${providerString}. Certain SuitedTo events may be shared to your ${providerString} activity stream.</div>
+                     <hr>
+                     <button type="button" class="btn-medium btn-social-connected " href="#" onClick="social().disconnect('${provider.type.toString().toLowerCase()}')">
+                         <a style="padding-right: 1em;">
+                             <img id="connectedImg_${provider.type.toString().toLowerCase()}" src="@{'/public/images/providers/'}/${provider.type.toString().toLowerCase()}.png" height="32" width="32" provider="${provider.type.toString().toLowerCase()}" title="${provider.type}"/>
+                         </a>
+                         Disconnect
+                    </button>
+                    #{/if}
+                    #{else}
+                     <div>You are not currently connected to ${providerString}. No SuitedTo events will be shared to your ${providerString} activity stream.</div>
+                     <hr>
+                     <button type="button" class="btn-medium" href="#" onClick="social().connect('${provider.type.toString().toLowerCase()}')">
+                         <a style="padding-right: 1em;">
+                             <img src="@{'/public/images/providers/'}/${provider.type.toString().toLowerCase()}.png" height="32" width="32" title="${provider.type}"/>
+                         </a>
+                         Connect
+                     </button>
+                    #{/else}
+                    #{/else}
+                    
+                    *{
+                    #{if controllers.Social.getStatus(providerType).isConnected()}
+                    <a href="#" onClick="social().shareProfilePic('${provider.type.toString().toLowerCase()}')"><button type="button" class="btn no-change-check">Share profile pic</button></a>
+                    #{/if}
+                    }*
+                    
+                #{/if}
+</div>
+            #{/list}
+
+    
+<script type="text/javascript">
+
+	$(function() {
+	
+		if(!loadRecordedTabState()){
+			$(".social-tab-data").hide();
+	 		$(".active").removeClass("active");
+			$('.nav-tabs').children().first().addClass("active");
+			$('.social-tab-data').first().show();
+		}
+		
+	
+		$('button.btn-social-connected img').each(
+			function(img){
+				var providerType = $(this).attr("provider");
+				var that = $(this);
+				$.ajax({
+				    url: "@{Social.getSocialIdentity()}?providerType=" + providerType,
+				    dataType: 'json',
+				    success: function(si){
+				                 if(si && !$.isEmptyObject(si))
+				                     that.attr("src", si.avatarUrl);
+				    	     }
+				 });
+				
+			}
+		);
+	
+	});
+	
+	function selectSocialTab(tabName){
+	 	$(".social-tab-data").hide();
+	 	$(".active").removeClass("active");
+	    $("#tabData_" + tabName).show();
+	    $("#tab_" + tabName).addClass("active");
+	    recordTabState(tabName);
+	}
+
+	var social = function(){
+		var instance = {};
+		
+		instance.connect = function(provider){
+		    var connectURL = '@{Social.connect()}?providerType=' + provider + '&redirectUrl=${_redirectUrl}';
+		    window.onbeforeunload = function(){}; //to clear dirty change check state
+			window.location.href = connectURL;
+		}
+	
+		instance.disconnect = function(provider){
+			var disconnectURL = '@{Social.disconnect()}?providerType=' + provider + '&redirectUrl=${_redirectUrl}';
+			window.onbeforeunload = function(){};//to clear dirty change check state
+			window.location.href = disconnectURL;
+		}
+		
+		instance.shareProfilePic = function(provider){
+			var disconnectURL = '@{Social.shareProfilePic()}?providerType=' + provider;
+			$.ajax({
+                url:  '@{Social.shareProfilePic()}?providerType=' + provider,
+                type: 'GET'
+            }); 
+		}
+		
+		return instance;
+	}
+	
+	function deleteCookie(name) {
+    	setCookie(name,"",-1);
+    }
+
+	function setCookie(name,value,days) {
+    	if (days) {
+        	var date = new Date();
+        	date.setTime(date.getTime()+(days*24*60*60*1000));
+        	var expires = "; expires="+date.toGMTString();
+    	}
+    	else var expires = "";
+    	document.cookie = name+"="+value+expires+"; path=/";
+	}
+
+	function getCookie(name) {
+    	var nameEQ = name + "=";
+    	var ca = document.cookie.split(';');
+    	for(var i=0;i < ca.length;i++) {
+        	var c = ca[i];
+        	while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        	if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    	}
+    	return null;
+	}
+		
+	function loadRecordedTabState(){				
+		
+		var tabName = getCookie("social_connect.tab");
+		
+		if(tabName){
+			
+			selectSocialTab(tabName);
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+	function recordTabState(tabName){	
+		
+		setCookie("social_connect.tab", tabName);
+	}
+	
+	function clearRecordedTabState(){	
+		
+		deleteCookie("social_connect.tab");
+	}
+</script>

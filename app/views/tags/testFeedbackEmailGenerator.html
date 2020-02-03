@@ -1,0 +1,6 @@
+#{form @Feedbacks.generateTestEmailReply(), id:'testFeedbackEmailForm',  class:'form-inline', autocomplete:"off"}
+        <input id="from" name="from" type="hidden" value="<${_from}>">
+        <input id="activeInterviewId" name="activeInterviewId" type="hidden" value="${_activeInterviewId}">
+        <input id="candidateId" name="candidateId" type="hidden" value="${_candidateId}">
+        <button type="submit" id="testFeedbackEmailBtn" onclick="" class="btn btn-info no-change-check"><i class="icon-plus icon-white"></i> Create Test Feedback Email</button>
+#{/form}

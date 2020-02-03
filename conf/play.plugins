@@ -1,0 +1,10 @@
+399:db.JPAOverride
+401:modules.ebean.EbeanPlugin
+1001:classloading.enhancers.Enhancers
+1002:db.jpa.S3Blobs
+1003:scheduler.TaskScheduler
+1004:cache.HeapCache
+1005:db.EventCollector
+1006:session.prep.SessionManager
+1007:exceptions.InvocationExceptionLogger
+

@@ -1,0 +1,17 @@
+#{extends 'email.html' /}
+
+<tr>
+    <td>
+        Hey ${review.reviewerEmail},
+
+        <br>${userIdentifier} has taken a practice interview in Prepado and would like you to review it!
+
+        #{if message != null}
+        <br>They wanted you tell you this: ${message}
+        #{/if}
+        <br><br>Follow the link to see their responses and provide feedback: <a href="${reviewLink}">${reviewLink}</a>
+
+        <br><br>Thanks,
+        <br>The Prepado Team
+    </td>
+</tr>

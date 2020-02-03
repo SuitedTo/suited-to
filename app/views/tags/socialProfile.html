@@ -1,0 +1,17 @@
+<div class="control-group socialProfile repeatable">
+    <label class="control-label">
+        <select name="socialProfileType${_index}" id="socialProfileType${_index}" size="1" class="input-medium">
+        #{list items:enums.ExternalLinkType.values(), as: 'type'}
+            <option value="${type.name()}" ${type.equals(_socialProfile?.externalLinkType) ? "selected=selected" : ""}>${type.toString()}</option>
+        #{/list}
+        </select>
+    </label>
+    <div class="controls">
+        <div class="input-prepend">
+            <span class="add-on" id="urlPrefix${_index}"><p>${_socialProfile ? _socialProfile.externalLinkType?.urlPrefix : enums.ExternalLinkType.values()[0].urlPrefix}</p></span>
+            <input type="hidden" name="socialProfilePrefix${_index}" id="socialProfilePrefix${_index}"/>
+            <input type="text" class="input-medium inline" id="socialProfileValue${_index}" name="socialProfileValue${_index}" value="${_socialProfile?.externalLinkValue}">
+        </div>
+    </div>
+        <a id="socialProfileRemove${_index}" class="remove" href="#" onclick="$(this).parent().remove(); return false"><i class="icon-remove"></i> remove</a>
+</div>

@@ -1,0 +1,23 @@
+<div class="userBadge clearfix ${(_orientation)?"${_orientation}":""}">
+	#{if _badgeInfo.multiplier > 0}
+	<div class="userBadgeIcon" rel="popover" data-placement="top" data-content="&lt;img class='userBadgeIconPopover' src='${_badgeInfo.icon}'/&gt; ${_badgeInfo.description}" data-original-title="Badge: ${_badgeInfo.title}"><img src="${_badgeInfo.icon}" />
+		#{if _badgeInfo.multiplier > 1}
+		<span class="userBadgeMultiplier"><span>${(_badgeInfo.multiplier > 1)?"×${_badgeInfo.multiplier}":""}</span></span>
+		#{/if}
+	</div>
+	#{/if}
+	#{else}
+	<div class="userBadgeIcon"><img src="${_badgeInfo.icon}" /></div>
+	#{/else}
+	<div class="userBadgeTitle">${_badgeInfo.title}</div>
+
+	#{if _badgeInfo.multiplier == 0}
+	<div class="userBadgeProgress">
+		<div class="progress progress-striped progress-warning">
+			<div class="bar" style="width: ${_badgeInfo.progress}%;">${_badgeInfo.progress}%</div>
+		</div>
+
+		<div class="userBadgeProgressMessage">${_badgeInfo.progressMessage.raw()}</div>
+	</div>
+	#{/if}
+</div>

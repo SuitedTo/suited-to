@@ -1,0 +1,64 @@
+#{extends 'standardPage.html' /}
+#{set title:'Prep Users' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+
+#{set tableId:'prepUsers' /}
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Prepado Users</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row ">
+    <div class="span12">
+        <table id="prepUsers" class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>email</th>
+                <th>First Name</th>
+                <th>Auth Provider</th>
+                <th>Auth Provider ID</th>
+                <th></th><!--delete link-->
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<br>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+    #{ajaxTable "prepUsers", source:"prepuser.PrepUserTable", objectTableName: '_oTable'}
+        sDom: "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        aaSorting: [[0, 'desc']],
+        fnRowCallback: function (nRow, aData, iDisplayIndex) {
+            var id = aData[0];
+            var hrefValue = '<a class="btn btndanger" href="@{PrepAdmin.deletePrepUser()}/' + id + '">Delete</a>';
+            $('td:eq(5)', nRow).html(hrefValue);
+
+            return nRow;
+        }
+
+
+
+    #{/ajaxTable}
+    });
+
+    $.extend($.fn.dataTableExt.oStdClasses, {
+        "sSortAsc":"header headerSortDown",
+        "sSortDesc":"header headerSortUp",
+        "sSortable":"header sorting"
+    });
+</script>

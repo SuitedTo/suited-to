@@ -1,0 +1,16 @@
+
+
+
+<div id="${_id}" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Delete Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        #{doBody /}
+    </div>
+    <div class="modal-footer">
+        <a id="cancelDelete" data-dismiss="modal" class="btn no-change-check">Cancel</a>
+        <a id="confirmDelete" onClick="${_deleteCallback}" class="btn btn-danger no-change-check"><i class="icon-trash icon-white"></i> Delete</a>
+    </div>
+</div>

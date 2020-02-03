@@ -1,0 +1,4 @@
+# --- !Ups
+
+ALTER TABLE ActiveInterview ADD COLUMN INTERVIEWER bigint(20) DEFAULT NULL;
+ALTER TABLE ActiveInterview ADD FOREIGN KEY (INTERVIEWER) REFERENCES app_user (id);

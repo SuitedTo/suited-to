@@ -1,0 +1,59 @@
+<div class="container interviewIndexView" ng-controller="interviewerCtrl">
+
+    <div class="row">
+        <div class="span12">
+
+            <div class="interviewIndexListWrap">
+                <h1>Your Practice Interviews</h1>
+
+                <div class="recentInterviews" ng-controller="interviewListCtrl" ng-init="initList(999)">
+                    <ul ng-hide="recentInterviews.length == 0" ng-cloak>
+                        <li class="header">
+                            <span class="name">Interview</span>
+                            <span class="numQuestion">Questions</span>
+                            <span class="updated">Updated</span>
+                            <span class="action">Status</span>
+                        </li>
+                        <li ng-repeat="interview in recentInterviews | orderBy:updated">
+                            <span class="name"><a href="#" ng-click="loadInterview(interview)">{{interview.name}}</a></span>
+                            <span class="numQuestion">{{interview.questions.length}}</span>
+                            <span class="updated">{{lastDateTouched(interview)}}</span>
+                            <span class="action">
+                                <span class="finish" ng-cloak><a href="#" ng-click="loadInterview(interview)">{{ isFinishedText(interview) }}</a></span>
+                            </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="noInterviews" ng-show="recentInterviews.length == 0" ng-cloak>
+                        {{noInterviewsMSG}}
+                    </div>
+
+                    <a class="btn interviewsCreateNew" id="interviewsCreateNew" ng-click="showCreateForm()">Create New</a>
+                </div>
+
+
+                <div class="createInterviewFormWrap" ng-class="{accessError: error.ACCESS_ERROR}">
+                    <form id="createInterviewForm" class="createInterviewForm" pp-show-slide="createInterviewForm" ng-controller="createInterviewController">
+                        <h1>Create a practice interview</h1>
+                        <error name="INVALID_INTERVIEW"/>
+                        <div class="createInterviewSearch">
+                            <input type="text" id="createJobTitle" ng-model="searchTerm" typeaheadCallback="onTypeaheadSelection" typeaheadSrc="query" tw-typeahead placeholder="Enter job title or category" />
+                            <button ng-show="!creatingInterview" ng-click="submitCategoryHints(false)" class="btn" id="createSubmit">Create Interview </button>
+                            <button ng-show="creatingInterview" class="btn" id="interviewLoading" disabled ng-cloak><img src="/public/images/prep/ajax-loader-bar.gif"></button>
+                        </div>
+                        <div class="alert alert-error" ng-show="createError" style="display: none;">{{createError}}</div>
+                        <div class="btn-group createInterviewLevel" id="createInterviewLevel" ng-model="skillLevel" bs-buttons-radio>
+                            <button type="button" class="btn" id="createInterviewLevelJunior" value="ENTRY">Entry</button>
+                            <button type="button" class="btn" id="createInterviewLevelMid" value="MID">Mid</button>
+                            <button type="button" class="btn" id="createInterviewLevelSenior" value="SENIOR">Senior</button>
+                        </div>
+                        <!--<a href="#" ng-click="submitCategoryHints(true)" class="createInterviewOptionsBtn"><i class="icon-cog"></i> More Options</a>-->
+                    </form>
+                    <error name="ACCESS_ERROR"/>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

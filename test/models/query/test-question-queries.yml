@@ -1,0 +1,68 @@
+
+
+Company(ourCompany):
+  name: ourCompany
+
+Company(theirCompany):
+  name: theirCompany
+
+Category(weCanReview):
+  name: weCanReview
+
+Category(noReviewers):
+  name: noReviewers
+
+User(me):
+  name: me@me.com
+  password: secret
+  fullName: me
+  reviewCategories: [weCanReview]
+  company: ourCompany
+
+User(coworker):
+  name: cw@cw.com
+  password: secret
+  fullName: cw
+  reviewCategories: [weCanReview]
+  company: ourCompany
+
+User(nonCoworker):
+  name: ncw@ncw.com
+  password: secret
+  fullName: ncw
+  company: theirCompany
+
+Question(inactiveQuestion):
+  user: me
+  status: ACCEPTED
+  category: weCanReview
+  active: false
+
+Question(coworkerSubmittedReviewableQuestion):
+  user: coworker
+  status: OUT_FOR_REVIEW
+  category: weCanReview
+
+
+Question(privateCoworkerQuestion):
+  user: coworker
+  status: PRIVATE
+  category: weCanReview
+
+Question(privateNonCoworkerQuestion):
+  user: nonCoworker
+  status: PRIVATE
+  category: weCanReview
+
+
+Question(nonCoworkerAcceptedQuestion):
+  user: nonCoworker
+  status: ACCEPTED
+  category: weCanReview
+
+Question(nonCoworkerSubmittedReviewableQuestion):
+  user: nonCoworker
+  status: OUT_FOR_REVIEW
+  category: weCanReview
+
+

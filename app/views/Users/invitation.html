@@ -1,0 +1,144 @@
+#{extends 'standardPage.html' /}
+#{set title:'Invite New User' /}
+#{set 'moreScripts'}
+    #{script 'changes-alert.js' /}
+    #{script 'jquery.form.js'/}
+    #{script 'jquery.validate.min.js'/}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <h1>Invite a new user to your account</h1>
+        <p>An email invitation will be sent to the new user and once they create a password, they will be added to your company's account!</p>
+    </div>
+</div>
+
+#{standardError /}
+
+#{form @Users.invite(), id:'userForm', class:'form-horizontal', autocomplete:"off"}
+<input type="hidden" name="mode" value="invite"/>
+<div class="row ">
+    <div class="span12">
+        <fieldset>
+            <div class="control-group">
+                <label for="fullName" class="required control-label">Full Name</label>
+                <div class="controls">
+                    <input type="text" name="fullName" id="fullName" class="input-large" value="${user?.fullName}">
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="email" class="required control-label">Email Address</label>
+                <div class="controls">
+                    <input type="text" name="email" id="email" class="input-large" value="${user?.email}">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="required control-label">User Role</label>
+                <div class="controls">
+                    
+                    %{
+                        moreAdministrators = 
+                                enums.AccountLimitedAction.CREATE_ADMINISTRATOR
+                                        .canPerform((models.AccountHolder)connectedUser);
+                    }%
+                    
+                    #{list items: roleOptions, as:"role", }
+                        %{
+                            canSelect = 
+                                !(role.equals(enums.RoleValue.COMPANY_ADMIN) &&
+                                    !moreAdministrators);
+                                    
+                            selected = (user == null && role.equals(
+                                        enums.RoleValue.QUESTION_ENTRY)) || 
+                                    user?.hasRole(role);
+                        }%
+                        
+                        <label class="radio"><input id="${role}" class="userRole_button" #{if !canSelect}disabled="disabled"#{/if} type="radio" name="userRole" value="${role.name()}" ${selected ? "checked" : ""}/>&{role.messageKey}</label>
+                        
+                    #{/list}
+                    
+                    #{if !moreAdministrators}
+                        <div class="alert span5">&{'limits.users.admins.max', 
+                            controllers.CompanyManagement.getLink()}</div>
+                    #{/if}
+                </div>
+            </div>
+            #{if !connectedUser?.company}
+                <div class="control-group" id="companyGroup">
+                    <label id="companyNameLabel" for="companyName" class="control-label">Company</label>
+                    <div class="controls">
+                        <input type="text" data-provide="typeahead" id="companyName" name="companyName" value="${user?.company?.name}">
+                    </div>
+                </div>
+            #{/if}
+        </fieldset>
+        <fieldset>
+            <div class="control-group">
+                <label for="email" class="control-label">Message <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.inviteMessage'}" data-original-title="Message">?</a></label>
+                <div class="controls">
+                    <textarea class="span5" id="invitationMessage" name="invitationMessage" rows="4">${invitationMessage}</textarea>
+                    </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div class="row form-actions">
+    <div class="span10">
+        <a href="@{Users.cancelEdit()}"><button id="cancelBtn" type="button" class="btn no-change-check">Cancel</button></a>
+        <button id="sendInviteBtn" class="btn btn-primary no-change-check checkUserData" type="submit" data-action="invitation"><i class="icon-envelope icon-white"></i> Send the invitation email</button>
+    </div>
+</div>
+#{/form}
+
+<script type="text/javascript">
+
+    $(function(){
+    #{if !connectedUser.company}
+        toggleCompanyGroup();
+    #{/if}
+        $('.userRole_button').change(function() {
+            toggleCompanyGroup();
+        });
+
+    });
+
+    function toggleCompanyGroup(){
+        var radioValue = $('input:radio[name=userRole]:checked').val();
+        if( radioValue == 'QUESTION_ENTRY' || radioValue == 'COMPANY_ADMIN'){
+            $('#companyGroup').show();
+            if(radioValue == 'QUESTION_ENTRY'){
+                $('#companyNameLabel').removeClass('required');
+            } else {
+                $('#companyNameLabel').addClass('required');
+            }
+
+        } else{
+            $('#companyGroup').hide();
+            $('#companyName').val('');
+        }
+    }
+
+
+    $('#companyName').typeahead({
+        source: function(query, process) {
+            var listAction = #{jsAction @Companies.getCompanyList(':query') /}
+            $.ajax({
+                url:listAction({query: query}),
+                dataType: 'json',
+                success:function (data) {
+                    var names = [];
+                    $.map(data, function(val, i){
+                        names.push(val.name);
+                    });
+                    process(names);
+                }
+            })
+        }
+    });
+
+
+
+</script>

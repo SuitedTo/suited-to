@@ -1,0 +1,32 @@
+Company(company1):
+  name: Test Company
+  accountType: STANDARD
+
+User(user1):
+  email: admin@suitedto.com
+  roles: [APP_ADMIN]
+
+User(user2):
+  email: user2@test.com
+  company: company1
+  roles: [COMPANY_ADMIN]
+
+User(user3):
+  email: user3@test.com
+  company: company1
+  roles: [QUESTION_ENTRY]
+
+User(user4):
+  email: user4@test.com
+
+Event(event1):
+  temp: event one text
+
+Event(event2):
+  temp: event two text
+
+Event(event3):
+  temp: event three text
+
+
+

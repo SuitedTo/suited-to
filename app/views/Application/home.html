@@ -1,0 +1,459 @@
+%{ pageClass = 'dashboard'; }%
+#{extends 'standardPage.html' /}
+#{set title:'SuitedTo - Home' /}
+#{set 'moreScripts'}
+    #{script 'handlebars-1.0.rc.1.min.js' /}
+    #{script 'jquery.joyride-2.0.3.js' /}
+#{/set}
+#{set 'moreStyles'}
+    #{stylesheet 'joyride-2.0.3.css'/}
+#{/set}
+
+    %{ accountclass = ''}%
+    #{accountAllows enums.AccountLimitedAction.CREATE_CANDIDATE}
+        %{ accountclass += ' create_candidate' }%
+    #{/accountAllows}
+    #{accountAllows enums.AccountLimitedAction.CREATE_INTERVIEW}
+        %{ accountclass += ' create_interview' }%
+    #{/accountAllows}        
+    #{if connectedUser.hasReviewCapability()}
+        %{ accountclass += ' is_reviewer' }%
+    #{/if}
+
+<div class="appDashboard">
+
+    *{-- Left Col --}*
+    <div class="leftColWrap clearfix"><div class="leftCol ${accountclass}">
+
+
+        *{-- User Info Block --}*
+        <div class="userBlock">
+            %{
+                def pictureUrl = connectedUser.getPublicPictureUrl();
+            }%
+            <span class="userPic">
+                #{if pictureUrl}
+                    <img id="image" src="${pictureUrl}" alt="${connectedUser.getPublicDisplayName()}'s photo" />
+                #{/if}
+                #{else}
+                    <img src="/public/images/blowyProfile-150x150.png" alt="${connectedUser.getPublicDisplayName()}'s photo">
+                #{/else}
+            </span>
+            <span class="userName">
+                #{if connectedUser.displayName}
+                    <a href="@@{Community.profile()}/${connectedUser.id}">${connectedUser.getPublicDisplayName()}</a>
+                #{/if}
+                #{else}
+                   ${connectedUser.getPrivateDisplayName()}
+                #{/else}
+            </span>
+        </div>
+
+
+        *{-- User Stats Block --}*
+        <div id="userStats" class="userStats">
+            <div class="stat streetCred">
+                <span class="val">${connectedUser.streetCred}</span>
+                <span class="lbl">Street <br />Cred</span>
+            </div>
+            <div class="stat publicQs">
+                <span class="val">${connectedUser.getAcceptedPublicQuestionCount()}</span>
+                <span class="lbl">Public <br />Qs</span>
+            </div>
+            <div class="stat badgesEarned">
+                <span class="val">${badgesCount}</span>
+                <span class="lbl">Badges <br />Earned</span>
+            </div>
+        </div>
+
+
+        *{-- User Actions Block --}*
+
+
+        <div class="userActions">
+            <div class="action addQuestion">
+                <a href="@{Questions.show}" id="addQuestionBtn">
+                    <i class="actionIcon"></i>
+                    <span class="num">${connectedUser.getAcceptedPublicQuestionCount()}</span>
+                    <span class="lbl"><i>+</i> Add Question</span>
+                </a>
+            </div>
+            #{accountAllows enums.AccountLimitedAction.CREATE_CANDIDATE}
+            <div class="action addCandidate">
+                <a href="@{Candidates.show}" id="addCandidateBtn">
+                    <i class="actionIcon"></i>
+                    <span class="num">${connectedUser.getNumberOfCandidatesCreated()}</span>
+                    <span class="lbl"><i>+</i> Add Candidate</span>
+                </a>
+            </div>
+            #{/accountAllows}
+            #{accountAllows enums.AccountLimitedAction.CREATE_INTERVIEW}
+            <div class="action addInterview">
+                <a href="@{Interviews.show(null, true, false)}" id="addInterviewBtn">
+                    <i class="actionIcon"></i>
+                    <span class="num">${connectedUser.getNumberOfInterviews()}</span>
+                    <span class="lbl"><i>+</i> Add Interview</span>
+                </a>
+            </div>
+            #{/accountAllows}
+            #{deadbolt.restrictedResource resourceKeys:["Questions.AwaitingCompletion"]}
+            #{if connectedUser.hasReviewCapability()}
+            <div class="action reviewQuestions">
+                <a href="@{Questions.review}" id="reviewQuestionsBtn">
+                    <i class="actionIcon"></i>
+                    <span class="num">${connectedUser.getNumberOfQuestionsReviewed()}</span>
+                    <span class="lbl"><i>+</i> Review Questions</span>
+                </a>
+            </div>
+            #{/if}
+            #{/deadbolt.restrictedResource}
+        </div>
+
+    </div></div>*{-- END Left Col --}*
+
+<div class="mainColWrap">
+
+    *{-- Middle Col --}*
+    <div class="midColWrap clearfix"><div class="midCol">
+
+        #{if flash.error}
+        <div class="block flashError">
+            <h2></h2>
+            <div class="alert alert-error">&{flash.error}</div>
+        </div>
+        #{/if}
+
+
+        *{-- Notifications Block --}*
+        
+        <div class="block notifications">
+            <h2>Your Notifications</h2>
+            
+            <div class="row-fluid">
+                #{notifications user: connectedUser/}
+
+            </div>
+
+        </div>
+
+
+        *{-- Upcoming Interviews Block --}*
+        
+        #{deadbolt.restrictedResource resourceKeys:["nonLonerOnly"]}
+        #{if connectedUser.getAccountType().hasPositiveMax(enums.AccountResource.INTERVIEWS)}
+        <div class="block upcomingInterviews">
+            <h2>Your Company's Upcoming Interviews</h2>
+   
+            <div class="row-fluid">
+                <div class="span9">
+                    #{if upcomingInterviews}
+                    <table id="upcomingInterviewsTbl" class="table table-bordered table-striped">
+                        #{list items: upcomingInterviews, as: 'candidateInterview'}
+                        <tr>
+                            #{if candidateInterview?.anticipatedDate}
+                                <td>${candidateInterview.anticipatedDate.format("MM/dd/yyyy")}</td>
+                            #{/if}
+                            #{else}
+                                <td></td>
+                            #{/else}
+                            <td><a href="@{Candidates.show(candidateInterview.interviewee.id)}">${candidateInterview.interviewee.name}</a></td>
+                            <td><a href="@{Interviews.show(candidateInterview.id, true, false)}">${candidateInterview.name}</a></td>
+                        </tr>
+                        #{/list}
+                    </table>
+                    #{/if}
+                    #{else}
+                        <div id="noInterviewsAlert" class="">
+                            <p>Your company has no interviews scheduled in the next 7 days.</p>
+                        </div>
+                    #{/else}
+                </div>
+                <div class="span3">
+                    *{-- add links for Schedule Interview --}*
+                    <a id="viewUpcomingInterviewsBtn" href="@{Interviews.candidates}" class="btn btn-block btn-info">All Interviews</a>
+                    <a id="viewCandidatesBtn" href="@{Candidates.list}" class="btn btn-block btn-info">View Candidates</a>
+                </div>
+            </div>
+        
+        </div>
+        #{/if}
+        #{else}
+        
+            %{
+                maybeLink = "SuitedTo account";
+            }%
+
+            #{deadbolt.restrict roles:[['COMPANY_ADMIN']]}
+                %{
+                    maybeLink = "<a href='" + 
+                            controllers.CompanyManagement.getLink() + "'>" +
+                            maybeLink + "</a>";
+                }%
+            #{/deadbolt.restrict}
+        
+            <p>Upgrade your ${maybeLink.raw()} to track candidates and schedule 
+                interviews.</p>
+        #{/else}
+        #{/deadbolt.restrictedResource}
+
+
+        *{-- Get Involved Block --}*
+        <div class="block getInvolved" id="getInvolvedSection">
+            <h2>Get Involved</h2>
+
+            <div class="row-fluid">
+                #{deadbolt.restrictedResource resourceKeys:["UserBadges.display"]}
+
+                *{ make 2 cols if user is reviewer, else 1 col }*
+                #{if connectedUser.hasReviewCapability()}
+                <div class="span6">
+                #{/if}
+                #{else}
+                <div class="span12">
+                #{/else}
+                    %{
+                        nearlyEarnedBadges = connectedUser.getNearlyEarnedBadges(2);
+                    }%
+                    #{if nearlyEarnedBadges.size() != 0}
+                    <h3>You're close to achieving your next badge:</h3>
+                    <div class="progressBadges">
+                    #{list items: nearlyEarnedBadges, as:"badge"}
+                        #{userBadge badgeInfo:badge.getInfo(), orientation:'horizontal'/}
+                    #{/list}
+                    </div>
+                    #{/if}
+                    #{else}
+                    <h3>Here are a few things you can do to earn points and acheive your next badge:</h3>
+                    <div class="progressAcheiveTips well well-small">
+                        <ol>
+                            <li>Upload a profile picture</li>
+                            <li>Create a display name</li>
+                            <li>Add a question</li>
+                            <li>Log into SuitedTo a second time</li>
+                            <li>Rate a question</li>
+                            <li>Create a new category</li>
+                        </ol>
+                    </div>
+                    #{/else}
+
+
+                </div>
+                #{/deadbolt.restrictedResource}
+
+                #{deadbolt.restrictedResource resourceKeys:["Questions.AwaitingCompletion"]}
+
+                #{if connectedUser.hasReviewCapability()}
+                <div class="span6">
+                    <h3>Know the answer to this question? Earn street cred by answering!</h3>
+
+                    *{returns 5 questions in awaiting completion status}*
+                    #{if awaitingCompletionQuestions}
+                    <div id="awaitingCompletionsQuestion" class="awaitingCompletionsQuestion">
+                        <div class="innerWrap clearfix">
+                        #{list items: awaitingCompletionQuestions, as: 'awaitingCompletionQuestion'}
+                            <div class="questionItem clearfix ${awaitingCompletionQuestion_isFirst ? 'active' : 'hide'}">
+                                <blockquote class="awaitingCompletionText"><div class="quote-before">&ldquo;</div><div class="quote-after">&rdquo;</div>${awaitingCompletionQuestion.text}</blockquote>
+                                <small><a href="#awaitingCompletionsQuestion" class="awaitingCompletionNext" id="awaitingCompletionNext${awaitingCompletionQuestion_index}">See another question</a></small> <a href="@{Questions.view(((models.Question)awaitingCompletionQuestion).id)}" class="awaitingCompletionSelect btn btn-info pull-right" id="awaitingCompletionSelect${awaitingCompletionQuestion_index}">Answer this question</a>
+                            </div>
+                        #{/list}
+                        </div>
+                    </div>
+                    #{/if}
+                    #{else}
+                        <div id="noAwaitingCompletionQuestionsAlert" class="">
+                            <p>You have no questions awaiting completion.</p>
+                        </div>
+                    #{/else}
+
+                </div>
+                #{/if}
+
+                #{/deadbolt.restrictedResource}
+
+            </div>
+
+        </div>
+
+
+        *{-- Your Progress Block --}*
+        <div class="block yourProgress">
+            <h2>Your Progress</h2>
+
+            <div class="row-fluid">
+
+            <div id="leaderboard" class="span6">
+                <h3>Closest Competition:</h3>
+                <ul class="leaderboadList">
+                    <!-- Note to pkat- I only used each user's full name. Feel free to set up some logic for displayname if you want
+                    Additionally, if the user has the most or "blowiest" (PUNS!) street cred, the corresponding nextHighest or nextLowest
+                    user will be null-->
+                    #{if nextHighest == null}
+                    <li class="higher"><span class="val">--</span> <span class="name">You're in the lead!</span></li>
+                    #{/if}
+                    #{else}
+                    <li class="higher"><span class="val">${nextHighest?.streetCred}</span> <span class="name">${nextHighest?.fullName}</span></li>
+                    #{/else}
+                    <li class="user"><span class="val">${connectedUser.streetCred}</span> <span class="name">${connectedUser.displayName ? connectedUser.displayName : 'You'}</span></li>
+                    <li class="lower"><span class="val">${nextLowest?.streetCred}</span> <span class="name">${nextLowest?.fullName}</span></li>
+
+                </ul>
+
+            </div>
+
+
+                #{if badgesCount > 0 }
+                <div class="span6">
+                    <h3>Latest Badges:</h3>
+
+                    <div class="recentBadges">
+                    #{list items: connectedUser.getEarnedBadges(3), as:"badge"}
+                        #{userBadge badgeInfo:badge.getInfo(), orientation:'vertical'/}
+                    #{/list}
+                    </div>
+
+                </div>
+                #{/if}
+
+            </div>
+
+        </div>
+
+
+        *{-- Invite Friends Block --}*
+        *{ Doesn't work yet. Show only to App Admins }*
+        #{deadbolt.restrict roles:[['APP_ADMIN']]}
+        <div id="inviteUsers" class="block inviteUsers">
+            <h2>Invite Friends</h2>
+
+            <div class="row-fluid">
+                <h3>Invite users, earn Street Cred! Get your company involved!</h3>
+                <form class="form-horizontal">
+                    <div class="input-append">
+                        <input type="text" class="input" placeholder="Enter emails addresses" /><input type="submit" class="btn" value="Invite" />
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        #{/deadbolt.restrict}
+
+
+    </div></div>*{-- END Middle Col --}*
+
+
+    *{-- Right Col --}*
+    <div class="rightColWrap clearfix"><div class="rightCol">
+
+
+        *{-- Activity Feed Block --}*
+        <div id="newsfeed" class="block activityFeed">
+            <h2>Recent Activity</h2>
+
+            <div class="feedContainer">
+
+                <div id="feedItemList" class="feedItemList" data-url="@{NewsFeedHelper.getNewsFeed}"></div>
+                <div class="moreFeed">
+                    <div id="loadingMoreFeed"><img style="padding: 3px; border-radius: 5px; height: 20px; width: 20px;" src="@{'public/images/ajax-loader.gif'}"/> Loading...</div>
+                    <a href="#" id="showMoreFeed" class="hide">- Show More -</a>
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div></div>*{-- END Right Col --}*
+
+</div>
+</div>
+#{if !connectedUser.roles || connectedUser.hasRole(enums.RoleValue.CONTRIBUTOR)} *{contributor user}*
+    <ol id="tourOutline" #{if !connectedUser.hasViewedIntroduction} data-forcetour="true" #{/if} class="hide">
+        <li data-button="Let's Get Started">
+            <h2>Thanks for choosing SuitedTo</h2>
+            <p></p>
+            <div class="hide" data-showAccountDropdownNext="true"></div> *{empty element to pass data indicating that the my account dropdown should be shown after this step}*
+        </li>
+        <li data-id="accountMenu" data-button="Next: Questions" data-options="tipLocation:left">
+            <h2>Build Your Profile</h2>
+            <p>Add a display name and upload a profile picture</p>
+
+        </li>
+        <li data-id="addQuestionBtn" data-button="Next: Get Involved">
+            <h2>Add Your Questions</h2>
+            <p>Submit your best interview questions and rate others in the pool.</p>
+        </li>
+        <li data-id="getInvolvedSection" data-button="Alright, Lets Go!" data-options="tipLocation:top">
+            <h2>Get Involved</h2>
+            <p>Earn badges, build your street cred, and participate in the SuitedTo community.</p>
+        </li>
+    </ol>
+#{/if}
+#{elseif companyUpgradeComplete && connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN)}
+    <ol id="tourOutline" data-forcetour="true" class="hide">
+        <li data-button="Let's Get Started">
+            <h2>Thanks for choosing SuitedTo for your company!</h2>
+            <p>We’ll take you through the company features:</p>
+            <div class="hide" data-showAccountDropdownNext="true"></div> *{empty element to pass data indicating that the my account dropdown should be shown after this step}*
+        </li>
+        <li data-id="accountMenu" data-button="Next: Interviews" data-options="tipLocation:left">
+            <h2>Invite Your Team</h2>
+            <p>Give your team access to SuitedTo</p>
+
+        </li>
+        <li data-id="addQuestionBtn" data-button="Next: Candidates">
+            <h2>Interviews</h2>
+            <p>Select questions for your templates using our interview builder or add your own.</p>
+        </li>
+        <li data-id="headerCandidatesLink" data-button="Alright, Lets Go!">
+            <h2>Candidates</h2>
+            <p>Add and schedule candidates for upcoming interviews.</p>
+        </li>
+    </ol>
+#{/elseif}
+#{elseif connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN)}
+    <ol id="tourOutline" #{if !connectedUser.hasViewedIntroduction} data-forcetour="true" #{/if} class="hide">
+        <li data-button="Let's Get Started">
+            <h2>Thanks for choosing SuitedTo!</h2>
+            <p>Get the most out of SuitedTo with just a few easy steps:</p>
+            <div class="hide" data-showAccountDropdownNext="true"></div>
+        </li>
+        <li data-id="headerCompanyManagement" data-button="Next: Interviews" data-options="tipLocation:left">
+            <h2>Invite Your Team</h2>
+            <p>Give your team access to SuitedTo.</p>
+        </li>
+        <li data-id="headerInterviewsLink" data-button="Next: Candidates">
+            <h2>Interview Templates</h2>
+            <p>Select questions for your templates using our interview builder or add your own.</p>
+        </li>
+        <li data-id="addCandidateBtn" data-button="Alright, Lets Go!">
+            <h2>Candidates</h2>
+            <p>Add and schedule candidates for upcoming interviews.</p>
+        </li>
+
+    </ol>
+#{/elseif}
+#{elseif connectedUser.hasRole(enums.RoleValue.QUESTION_ENTRY)}
+    <ol id="tourOutline" #{if !connectedUser.hasViewedIntroduction} data-forcetour="true" #{/if} class="hide">
+        <li data-button="Let's Get Started">
+            <h2>Welcome to SuitedTo</h2>
+            <p>Get the most out of SuitedTo with just a few easy steps:</p>
+        </li>
+        <li data-id="headerCandidatesLink" data-button="Next: Questions">
+            <h2>Candidates</h2>
+            <p>View your candidate's profile and prepare for the upcoming interview.</p>
+        </li>
+        <li data-id="headerQuestionsLink" data-button="Alright, Let's Go!">
+            <h2>Questions</h2>
+            <p>Add your favorite questions into SuitedTo and customize your interviews.</p>
+        </li>
+    </ol>
+#{/elseif}
+</div>
+<script type="text/javascript">
+
+    Application.Dashboard.init({
+    "action_notifications_delete":#{jsAction @Notifications.delete(':id') /},
+    "action_update_hasViewedIntroduction":#{jsAction @Users.markIntroductionAsViewed()/}
+});
+
+</script>

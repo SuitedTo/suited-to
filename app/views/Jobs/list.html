@@ -1,0 +1,57 @@
+#{extends 'standardPage.html' /}
+#{set title:'Job List' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+
+
+#{set tableId:'jobsTable' /}
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+
+<div class="row">
+    <div class="span12">
+        <h1>Job List</h1>
+    </div>
+</div>
+<div class="row">
+    <div class="span16 form-inline">
+        #{dataTable tableId}
+            #{dataTableColumn "Name", sWidth:"85%", sClass:"dataCol_name" /}
+            #{dataTableColumn "Created", sWidth:"15%", sClass:"dataCol_datacreated" /}
+        #{/dataTable}
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <a id="addJobBtn" class="btn" href="@{Jobs.show}"><i class="icon-plus"></i> Add a New Job</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // Data table configuration
+    var options = {
+        "fnRowCallback" : function (nRow, aData, iDisplayIndex) {
+            var id = aData[2];
+            var hrefValue = '<a href="@{Jobs.show()}/' + id + '"/>';
+            $('td:eq(0)', nRow).wrapInner(hrefValue);
+        },
+        aaSorting: [
+            [1, 'desc']
+        ],
+        "sDom":"<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        oLanguage: {
+            sProcessing: #{jsString}#{processingDisplay /}#{/jsString},
+            sLoadingRecords: #{jsString}#{processingDisplay /}#{/jsString},
+            sEmptyTable: "No Jobs yet!"
+        }
+    }
+
+    var table = Application.DataTable;
+    table.init("#{get 'tableId' /}", "@{Tables.getReport()}", "job.JobTable", options);
+    table.load(null, null);
+
+</script>

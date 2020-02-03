@@ -1,0 +1,182 @@
+#{extends 'standardPageNoNav.html' /}
+#{set title:'User Registration' /}
+#{set 'moreScripts'}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'password_strength.min.js' /}
+    #{script 'jstz.min.js' /}
+#{/set}
+%{
+    def openID = user?.googleOpenIdUrl ? user.googleOpenIdUrl : null
+
+}%
+
+<div class="row">
+    <div class="span12">
+        <h1>You're Invited.</h1>
+        <h2>Let's get you setup to use SuitedTo</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+        #{standardError /}
+    </div>
+</div>
+#{form @acceptInvitationSave() , id:'userForm', class:'form-vertical', autocomplete:"off"}
+<input type="hidden" name="user.id" value="${user?.id}"/>
+<input type="hidden" name="invitationKey" value="${invitationKey}"/>
+<input type="hidden" id="email" name="user.email" value="${user?.email}"/>
+<input id="googleOpenIdEmail" name="user.googleOpenIdEmail" type="hidden" value="${user?.googleOpenIdEmail}"/>
+<input id="googleOpenIdUrl" name="user.googleOpenIdUrl" type="hidden" value="${user?.googleOpenIdUrl}"/>
+<input type="hidden" id="timeZone" name="user.timeZone">
+
+<div class="loginWrapper">
+<div class="row-fluid">
+    #{if openID != null}
+    <div class="span6 offset3"><div class="well">
+        <legend id="legendGoogleSignup">Finish signing up using Google:</legend>
+        <legend class="hide" id="legendEmailSignup">Sign up using your email!</legend>
+    #{/if}
+    #{else}
+    <div class="span6"><div class="well">
+        <legend>Sign up!</legend>
+    #{/else}
+        <div class="control-group">
+            <label for="fullName" class="control-label required visuallyhidden">Full Name</label>
+            <div class="controls">
+                <input class="input-block-level" type="text" id="fullName" name="user.fullName" value="${user?.fullName}" placeholder="Full Name *">
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="displayName" class="control-label visuallyhidden">Display Name</label>
+            <div class="controls">
+                <input class="input-block-level" type="text" id="displayName" name="displayName" value="${displayName?displayName:""}" placeholder="Display Name">
+                <p class="help-block"><span class="muted"><small>Your display name will be used to identify you if you contribute content outside of your organization</small></span></p>
+            </div>
+        </div>
+        <div id="emailDisplayLinked" class="control-group">
+            <label class="required control-label">Login Linked to</label>
+            <div class="controls" id="emailReadOnly">
+                <span class="input-block-level uneditable-input"><img src="/public/images/google-ico-32x32.png" style="height:16px;width:16px;" alt="Google"> ${user?.googleOpenIdEmail} <a id="unlinkOpenID" class="pull-right" href="#">Unlink</a></span> 
+            </div>
+        </div>
+        <div id="emailDisplay" class="control-group">
+            <label class="required control-label visuallyhidden">Email Address</label>
+            <div class="controls" id="emailReadOnly">
+                <span class="input-block-level uneditable-input">${user?.email}</span> 
+            </div>
+        </div>
+        <fieldset id="passwordFields">
+            <div class="control-group">
+                <label for="password" class="control-label required visuallyhidden">Password</label>
+                <div class="controls">
+                    <input class="input-block-level" type="password" id="password" name="password" value="${password}" placeholder="Password *">
+                    <span class="score badge pull-right"></span>
+                    <p class="help-block"><span class="muted"><small>Must be between 6 and 20 characters</small></span></p>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="confirmPassword" class="control-label required visuallyhidden">Confirm Password</label>
+                <div class="controls">
+                    <input class="input-block-level" type="password" id="confirmPassword" name="confirmPassword" value="${confirmPassword}" placeholder="Confirm Password *">
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="control-group">
+            <div class="controls">
+                By clicking Sign Up, you agree to our <a id="TOS" href="http://www.suitedto.com/legal/terms-of-service/" target="_blank">Terms of Service</a>.
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <button id="submitBtn" type="submit" class="btn btn-primary btn-large btn-block">Sign Up</button>
+            </div>
+        </div>
+
+    </div></div>
+
+    #{if openID == null}
+    <div class="span1">
+        <div class="loginOrDivider">OR</div>
+        <div class="loginHrDivider hidden-phone"></div>
+    </div>
+    <div class="span5"><div class="well">
+        <legend>Sign up using Google!</legend>
+        <p class="muted">You can sign up for SuitedTo using your Google Account!</p>
+        %{ def callback = java.net.URLEncoder.encode("?invitationKey=${invitationKey}", "utf8") }%
+        <a id="openIDButton" class="btn btn-block" href="@{Registration.useOpenIdForRegistration()}?callback=@@{Registration.acceptInvitation}${callback}"><img src="/public/images/google-ico-32x32.png" alt="Google"> Sign up with Google</a>
+    </div></div>
+    #{/if}
+
+</div>
+</div><!-- end .loginWrapper -->
+            	
+#{/form}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //toggle the necessary fields based on the presence of an OpenID in use for this registration
+        var openID = $("#googleOpenIdUrl").val();
+        if(openID){
+            //$("#passwordFields, #emailControl, #openIDButton").hide();
+            //$("#emailReadOnly").show();
+
+            $("#passwordFields, #openIDButton").hide();
+            $("#emailDisplay").hide();
+            $("#emailDisplayLinked").show();
+        } else {
+            $("#emailDisplayLinked").hide();
+            $("#openIDButton").show();
+        }
+
+        $("#unlinkOpenID").click(function(){
+            $("#googleOpenIdEmail").val("");
+            $("#googleOpenIdUrl").val("");
+            $("#openIDButton, #passwordFields, #emailDisplay, #legendEmailSignup").show();
+            $("#emailDisplayLinked, #legendGoogleSignup").hide();
+        });
+
+
+        $("#password").password({
+            score:'.score'
+        });
+        
+        $("#userForm").submit(function(){
+    		$("#timeZone").val(jstz.determine().name());
+    		return true;
+    	});
+
+
+        $("#userForm").validate({
+            errorClass: "alert",
+            rules: {
+                "user.fullName": {
+                    required: true,
+                    minlength: 2,
+                    messages: {
+                        required: "Required input",
+                        minlength: jQuery.format("Please, at least {0} characters are necessary")
+                    }
+                },
+                "password": {
+                    required: true
+                },
+                "confirmPassword": {
+                    required: true
+                }
+            },
+            highlight: function(element) {
+                $(element).closest('.control-group').addClass("error");
+            },
+            unhighlight: function(element) {
+                $(element).closest('.control-group').removeClass("error");
+            },
+            errorPlacement: function(error, element) {
+               error.insertAfter(element);
+           }
+        });
+
+    });
+
+</script>

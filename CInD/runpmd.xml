@@ -1,0 +1,33 @@
+<project name="sparcin-pmd" default="pmd" basedir=".">
+  <description>PMD Report for SPARCin</description>
+
+<!--
+  <path id="classpath">
+    <fileset dir="." includes="**/*.jar" />
+    <fileset dir="." includes="*.jar" />
+  </path>
+  -->
+
+
+  <target name="pmd">
+  <taskdef name="pmd" classname="net.sourceforge.pmd.ant.PMDTask">
+    <classpath>
+      <pathelement path="${classpath}"/>
+      <fileset dir=".">
+        <include name="*.jar"/>
+      </fileset>
+    </classpath>
+  </taskdef>
+
+  <pmd shortFilenames="true">
+    <ruleset>rulesets/java/basic.xml</ruleset>
+    <ruleset>rulesets/java/optimizations.xml</ruleset>
+    <ruleset>rulesets/java/codesize.xml</ruleset>
+    <ruleset>rulesets/java/unusedcode.xml</ruleset>
+    <formatter type="html" toFile="pmd_report.html" />
+    <fileset dir="..">
+    <include name="**/*.java"/>
+    </fileset>
+  </pmd>
+  </target>
+</project>

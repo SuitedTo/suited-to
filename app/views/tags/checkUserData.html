@@ -1,0 +1,33 @@
+<div id="checkUserDataModal" class="modal hide fade">
+    <div class="modal-header">
+        <h3 id="checkUserDataHeader">Confirmation</h3>
+    </div>
+#{form @Application.saveUserData() , id:'userDataForm', class:'form-horizontal'}
+
+    <div class="modal-body">
+        <div id="userDataErrors" class="alert alert-error hide"></div>
+        <p id="checkUserDataMessage">We just need a little bit more information before you can do that</p>
+        <div class="control-group displayName hide">
+            <label for="userDataDisplayName" class="control-label required">Display Name</label>
+            <div class="controls">
+                <input type="text" class="input-medium required" id="userDataDisplayName" name="displayName">
+            </div>
+        </div>
+        <div class="control-group fullName hide">
+            <label for="userDataFullName" class="control-label required">Your Name</label>
+            <div class="controls">
+                <input type="text" class="input-medium required" id="userDataFullName" name="fullName">
+            </div>
+        </div>
+        <div class="control-group companyName hide">
+            <label for="userDataCompanyName" class="control-label required">Company Name</label>
+            <div class="controls">
+                <input type="text" class="input-medium required" id="userDataCompanyName" name="companyName">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="submitUserDataBtn" class="btn btn-primary no-change-check" type="submit" data-original-form="">Update Data</button>
+    </div>
+#{/form}
+</div>

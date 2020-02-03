@@ -1,0 +1,9 @@
+# --- !Ups
+ALTER TABLE PREP_User ADD COLUMN tempExpire DATETIME;
+ALTER TABLE PREP_User ADD COLUMN tempPassword VARCHAR(255);
+
+
+# --- !Downs
+
+ALTER TABLE PREP_User DROP COLUMN tempExpire;
+ALTER TABLE PREP_User DROP COLUMN tempPassword;

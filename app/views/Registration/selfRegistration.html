@@ -1,0 +1,151 @@
+#{extends 'standardPageNoNav.html' /}
+#{set title:'User Registration' /}
+#{set 'moreScripts'}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'password_strength.min.js' /}
+    #{script 'jstz.min.js' /}
+    #{script 'openId-popup.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+%{
+    def openID = user?.googleOpenIdUrl ? user.googleOpenIdUrl : null
+
+}%
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Signing up for SuitedTo is fast.</h1>
+        </div>
+        <h2 class="center-text">Let's get you setup to use SuitedTo</h2>
+    </div>
+</div>
+
+#{standardError /}
+
+
+
+#{form @selfRegistrationSave() , id:'registrationForm', class:'form-vertical', autocomplete:"off"}
+    <input id="googleOpenIdEmail" name="user.googleOpenIdEmail" type="hidden" value="${user?.googleOpenIdEmail}"/>
+    <input id="googleOpenIdUrl" name="user.googleOpenIdUrl" type="hidden" value="${user?.googleOpenIdUrl}"/>
+    <input id="timeZone" name="user.timeZone" type="hidden" value="${user?.timeZone}">
+
+<div class="loginWrapper">
+<div class="row-fluid">
+    #{if openID != null}
+    <div class="span6 offset3"><div class="well">
+        <legend id="legendGoogleSignup">Finish signing up using Google:</legend>
+        <legend class="hide" id="legendEmailSignup">Sign up using your email!</legend>
+    #{/if}
+    #{else}
+    <div class="span6"><div class="well">
+        <legend>Sign up using your email!</legend>
+    #{/else}
+        <div class="control-group">
+            <label for="email" class="control-label required visuallyhidden">Email</label>
+            <div id="emailControl"class="controls">
+                <input class="input-xlarge required email" type="text" id="email" name="user.email" value="${user?.email}" placeholder="Email *">
+            </div>
+            <div class="controls" id="emailReadOnly">
+                <span class="input-block-level uneditable-input"><img src="/public/images/google-ico-32x32.png" style="height:16px;width:16px;" alt="Google"> ${user?.email} <a id="unlinkOpenID" class="pull-right" href="#">Unlink</a></span>
+            </div>
+        </div>
+        <fieldset id="passwordFields">
+            <label for="password" class="control-label required visuallyhidden">Password</label>
+            <div class="control-group">
+                <div class="controls">
+                    <input class="input-medium required" type="password" id="password" name="password" placeholder="Password *">
+                    <input class="inline input-medium required" type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password *">
+                    <span class="score badge pull-right"></span>
+                    <p class="help-block"><span class="muted"><small>Must be between ${data.validation.PasswordCheck.MIN} and ${data.validation.PasswordCheck.MAX} characters</small></span></p>
+                </div>
+            </div>
+            <label for="confirmPassword" class="control-label required visuallyhidden">Confirm Password</label>
+            <div class="control-group">
+                <div class="controls">
+
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="control-group">
+            <div class="controls">
+                By clicking Sign Up, you agree to our <a id="TOS" href="http://www.suitedto.com/legal/terms-of-service/" target="_blank">Terms of Service</a>.
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <button id="submitBtn" type="submit" class="btn btn-primary btn-large btn-block">Sign Up</button>
+            </div>
+        </div>
+
+    </div></div>
+    #{if openID == null}
+    <div class="span1">
+        <div class="loginOrDivider">OR</div>
+        <div class="loginHrDivider hidden-phone"></div>
+    </div>
+    <div class="span5"><div class="well">
+        <legend>Sign up using Google!</legend>
+        <p class="muted">You can sign up for SuitedTo using your Google Account!</p>
+        <a id="openIDButton" class="btn btn-block" href="@@{Registration.useOpenIdForRegistration()}?callback=@@{Registration.selfRegistration()}"><img src="/public/images/google-ico-32x32.png" alt="Google"> Sign up with Google</a>
+    </div></div>
+    #{/if}
+</div>
+</div><!-- end .loginWrapper -->
+
+<div class="row">
+    <div class="span6 offset3" style="text-align:center">
+    </div>
+</div>
+#{/form}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        //toggle the necessary fields based on the presence of an OpenID in use for this registration
+        var openID = $("#googleOpenIdUrl").val();
+        if(openID){
+            $("#passwordFields, #emailControl, #openIDButton").hide();
+            $("#emailReadOnly").show();
+        } else {
+            $("#emailReadOnly").hide();
+            $("#openIDButton").show();
+        }
+
+        $("#unlinkOpenID").click(function(){
+            $("#googleOpenIdEmail").val("");
+            $("#googleOpenIdUrl").val("");
+            $("#openIDButton, #passwordFields, #emailControl, #legendEmailSignup").show();
+            $("#emailReadOnly, #legendGoogleSignup").hide();
+        });
+
+        $("#password").password({
+            score:'.score'
+        })
+
+        //sets the timeZone field based on the user's current location and then continues with the form submission
+        var registrationForm = $("#registrationForm");
+        registrationForm.submit(function(){
+            $("#timeZone").val(jstz.determine().name());
+            return true;
+        });
+
+        registrationForm.validate({
+            errorClass: "alert",
+            highlight: function(element) {
+                $(element).closest('.control-group').addClass("error");
+            },
+            unhighlight: function(element) {
+                $(element).closest('.control-group').removeClass("error");
+            },
+            errorPlacement: function(error, element) {
+               error.insertAfter(element);                
+
+           }
+        });
+
+    });
+</script>

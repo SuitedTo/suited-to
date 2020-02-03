@@ -1,0 +1,87 @@
+#{extends 'standardPage.html' /}
+#{set title:'Company List' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+
+<div class="row">
+    <div class="span12">
+        <h1>Company List</h1>
+        <p>This is a list of all companies.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <table id="companies" class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Company Name</th>
+                <th>Contact Name</th>
+                <th>Account Type</th>
+                <th>Prev. Acct. Type</th>
+                <th>Acct Type Changed</th>
+                <th>Date Created</th>
+                <th>Status</th>
+                <th>Date Deactivated</th>
+                <th>Active Users</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <a id="addCompanyBtn" class="btn" href="@{CompanyManagement.manage()}"><i class="icon-plus"></i> Add a New Company</a>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+ $(document).ready(function () {
+ 
+        #{ajaxTable "companies", source: "company.CompanyTable", objectTableName: '_oTable'}
+            "sDom":"<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "aaSorting":[
+                [0, 'desc']
+            ],
+            "fnRowCallback":function (nRow, aData, iDisplayIndex) {
+                var id = aData[0];
+                var hrefValue = '<a href="@{CompanyManagement.manage()}/' + id + '"/>';
+                $('td:eq(1)', nRow).wrapInner(hrefValue);
+
+                return nRow;
+            },
+            "aoColumns":[
+                {sWidth:"3%", sClass:"dataCol_id"},
+                {sWidth:"15%", sClass:"dataCol_companyname"},
+                {sWidth:"15%", sClass:"dataCol_contactname"},
+                {sWidth:"13%", sClass:"dataCol_accounttype"},
+                {sWidth:"15%", sClass:"dataCol_prevaccttype"},
+                {sWidth:"10%", sClass:"dataCol_accttypechanged"},
+                {sWidth:"10%", sClass:"dataCol_datecreated"},
+                {sWidth:"10%", sClass:"dataCol_status"},
+                {sWidth:"5%", sClass:"dataCol_datadeactivated"},
+                {sWidth:"4%", sClass:"dataCol_activeusers"}
+            ]
+        #{/ajaxTable}
+    });
+
+    $.extend($.fn.dataTableExt.oStdClasses, {
+        "sSortAsc":"header headerSortDown",
+        "sSortDesc":"header headerSortUp",
+        "sSortable":"header sorting"
+    });
+    
+ </script>

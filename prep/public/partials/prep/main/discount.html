@@ -1,0 +1,10 @@
+<div ng-controller="discountController">
+    <div id="discountContainer" class="discountContainer">
+        <ul ng-show="discountErrors" class="unstyled alert alert-error">
+            <li ng-repeat="error in discountErrors">{{ error.message }}</li>
+        </ul>
+        <span>Have a promo code? Apply it:</span>
+        <input type="text" placeholder="Coupon" class="input-small" style="margin-bottom:0;" ng-model="user.coupon.name"/>
+        <a href="#" class="btn" id="applyCouponBtn" ng-click="createDiscount(user.coupon.name)" data-loading-text="Applying" bs-loading-text="submitting">Apply</a>
+    </div>
+</div>

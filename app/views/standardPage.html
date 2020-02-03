@@ -1,0 +1,6 @@
+#{extends 'main.html' /}
+#{standardHeader currentSection: currentSection, connectedUser: connectedUser/}
+<div class="container#{if pageClass !=null} ${pageClass}#{/if}" id="page-content">
+    #{doLayout /}
+</div>
+#{standardFooter /}

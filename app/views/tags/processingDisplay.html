@@ -1,0 +1,22 @@
+*{ A processing indicator, intended to be placed on top of a control or display
+ { to indicate that it is working.
+ { 
+ { Note that, if you're inserting the contents of this tag into the sProcessing
+ { or sLoading properties of a datatable, which expect Javascript String values,
+ { you must surround this tag with {#jsString} tags to eliminate newlines, 
+ { quotes, and other characters that are not acceptable inside a Javascript
+ { String.  For example:
+ {
+ { $('#someTable').dataTable(
+ {     {"oLanguage": {"sProcessing": 
+ {                        #{jsString}#{processingDisplay /}#{/jsString}
+ {                   }
+ {     });
+ }*
+
+<div style='position:absolute;width:100%;height:100%;background:#FFFFFF;opacity:0.6;filter:alpha(opacity=60);z-index:1000'></div>
+<div style='position:absolute;display:table;width:100%;height:100%'>
+    <div style='display:table-cell;vertical-align:middle;'>
+        <center><img style="background-color: #fff; padding: 3px; border-radius: 5px;" src='@{'public/images/ajax-loader.gif'}'/></center>
+    </div>
+</div>

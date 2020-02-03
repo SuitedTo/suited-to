@@ -1,0 +1,1648 @@
+#{extends 'standardPage.html' /}
+%{title = candidate?.hasBeenSaved() ? "Candidate: ${candidate?.name}" : "Create Candidate"}%
+#{set title:title /}
+#{set 'moreScripts'}
+    #{script 'jquery.relCopy.js' /}
+    #{script 'changes-alert.js' /}
+    #{script 'jquery.form.js'/}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'json2.js' /}
+    #{script 'textext-1.3.0.js' /}
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"Candidates", candidate:candidate /}
+
+            <h1>${title}
+            #{if candidate != null }
+                <div id="quick_link_container" class="">
+                    <img id="quick_link_icon" class="" alt="quick_link_icon" title="Click to get a direct link for this candidate" width="24" height="24" src="/public/images/link_icon.png" style="height:24px;width:24px;">
+                </div>
+
+            #{/if}
+            </h1>
+            #{if candidate != null }
+                <div id="quick_link_wrap" class="input-prepend hide">
+                    <span class="add-on">Quicklink: ${play.configuration['mail.reply']}</span><input id="quick_link_text" type="text" class="input-large" autofocus="autofocus" onclick="this.select()" readonly="readonly" value="@@{Candidates.show(candidate.id)}"/>
+                </div>
+            #{/if}
+
+        </div>
+    </div>
+</div>
+
+#{standardError /}
+
+#{if userCount}
+<div class="alert alert-success">
+    <a class="close" data-dismiss="alert" href="#">x</a>
+    <strong>Feedback requests sent.</strong> We just sent a feedback request to ${userCount} #{if userCount == 1}person#{/if}#{else}people#{/else}.
+</div>
+#{/if}
+
+#{if emailCount}
+<div class="alert alert-success">
+    <a class="close" data-dismiss="alert" href="#">x</a>
+    <strong>Feedback sent.</strong> We just emailed feedback to ${emailCount} #{if emailCount == 1}person#{/if}#{else}people#{/else}.
+</div>
+#{/if}
+
+#{if userErrors}
+    #{list userErrors, as: 'error'}
+    <div class="alert alert-error">
+        <a class="close" data-dismiss="alert" href="#">x</a>
+        Could not send invitation to ${error}.
+    </div>
+    #{/list}
+#{/if}
+
+#{if emailErrors}
+#{list emailErrors, as: 'error'}
+<div class="alert alert-error">
+    <a class="close" data-dismiss="alert" href="#">x</a>
+    Could not email ${error}.
+</div>
+#{/list}
+#{/if}
+
+#{if feedbackAdded}
+<div class="alert alert-success">
+    <a class="close" data-dismiss="alert" href="#">x</a>
+    Feedback added!
+</div>
+#{/if}
+
+<!-- Taleo Integration Section -->
+<div class="row">
+    <div class="span12">
+
+    #{form @Candidates.searchTaleoCandidates() , id:'taleoForm', class:'form-horizontal' }
+        #{if (connectedUser.hasRole(enums.RoleValue.APP_ADMIN) || company.taleoIntegration) && !loggedInToTaleo}
+        <div class="alert" id="taleoHeadsUp">
+            <a class="close" data-dismiss="alert">x</a>
+            <span><strong>Heads up!</strong> Your company is connected to Taleo but you aren't logged in. If you
+                are a Taleo administrator
+                <a href="#" data-callback="taleoLogin" id="headsUpLogin"> login now!</a>
+            </span>
+        </div>
+        #{/if}
+        #{if loggedInToTaleo}
+        <div class="controls-group" id="taleoSwitchControl">
+             <div class="controls">
+                <label class="checkbox inline pull-right" style="vertical-align:top;">
+                    <input type="checkbox" name="taleoSwitch" id="taleoSwitch" onchange="fnchecked(this.checked);"/> Match this candidate to Taleo <img src="/public/images/taleo.jpg" alt=""/>
+                </label>
+             </div>
+        </div>
+        #{/if}
+
+        <div class="control-group hide" id="taleoSearchDiv">
+            <label class="required control-label">Candidate Name</label>
+            <div class="controls">
+                <input type="text" class="input-large" id="taleoCandidateName" name="taleoCandidateName" value="${taleoInfo?.taleoCandidateName}">
+            </div>
+
+            <div class="form-actions">
+                <a id="cancelSearchBtn" class="cancelTaleo" href=""><button type="button" class="btn no-change-check">Cancel</button></a>
+                <button id="searchButton" class="btn btn-primary no-change-check" type="submit">Search Taleo</button>
+            </div>
+        </div>
+    #{/form}
+
+        <div id="taleoResults" style="position:relative;">
+            <div id="searchProgress" class="hide">#{processingDisplay /}</div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Main Section -->
+<div class="row candidateDetails" id="divcheck">
+    <div class="span6">
+        <!-- Profile Section-->
+        <section>
+        #{form @save(candidate?.id) , id:'candidateForm', class:'form-horizontal'}
+
+            <h2>Profile</h2>
+
+                <div class="control-group" id="profileView">
+                    <h3>${candidate?.name}</h3>
+                    <p>${candidate?.address}</p>
+                    #{if candidate && !candidate?.phoneNumbers?.isEmpty()}
+                        <p>
+                        #{list items:candidate.phoneNumbers, as:'phoneNumber'}
+                            <span id="phoneNumberView${phoneNumber_index}">${phoneNumber?.phoneNumberValue} (${phoneNumber?.phoneNumberType})</span><br />
+                        #{/list}
+                        </p>
+                    #{/if}
+                    #{if candidate && !candidate?.emails?.isEmpty()}
+                        <p>
+                        #{list items:candidate.emails, as:'email'}
+                            <span id="emailView${email_index}">${email?.emailAddress} (${email?.emailType})</span><br />
+                        #{/list}
+                        </p>
+                    #{/if}
+                    #{if candidate && !candidate?.externalLinks?.isEmpty()}
+                        <p>
+                        #{list items:candidate.externalLinks, as:'socialProfile'}
+                            <span id="socialView${email_index}">${socialProfile?.externalLinkType}: <a href="${socialProfile?.externalLinkType?.urlPrefix}${socialProfile?.externalLinkValue}" rel="external">${socialProfile?.externalLinkType?.urlPrefix}${socialProfile?.externalLinkValue}</a></span><br />
+                        #{/list}
+                        </p>
+                    #{/if}
+
+                    <a class="btn" id="showProfileEditBtn">Edit</a>
+                    #{if loggedInToTaleo }
+                        #{if candidate?.taleoCandId != null }
+                            <a class="btn" id="changeTaleoBtn" class="cancelTaleo" href="#">Change Taleo Match</a>
+                        #{/if}
+                        #{else}
+                            <a class="btn" id="associateToTaleoBtn" class="cancelTaleo" href="#">Associate to Taleo</a>
+                        #{/else}
+                    #{/if}
+
+                </div>
+
+
+            <fieldset id="profileEdit" class="hide">
+            #{if candidate?.taleoCandId}
+                <div class="control-group">
+                    <button id="removeTaleoAssoc" type="button" class="btn no-change-check">Remove Taleo Associate</button><br/>
+                </div>
+            #{/if}
+            <div class="control-group">
+                    <label class="required control-label">Candidate Name</label>
+                    <div class="controls">
+                        <input type="text" class="input-large" id="candidateName" name="candidateName" value="${candidate?.name}">
+                    </div>
+                </div>
+                #{if candidate?.taleoCandId != null }
+                <div class="control-group">
+                    <label class="control-label">Taleo Candidate Id</label>
+                    <div class="controls">
+                        <input type="text" class="input-large span1" id="taleoCandId" name="taleoCandId" value="${candidate?.taleoCandId}">
+                    </div>
+                </div>
+                #{/if}
+
+                <div id="phoneNumberss" class="control-group">
+                    <label class="control-label">Phone Number</label>
+                    #{if !candidate || candidate.phoneNumbers.isEmpty()}
+                        #{phoneNumber /}
+                    #{/if}
+                    #{else}
+                        #{list items:candidate.phoneNumbers, as:'phoneNumber'}
+                            #{phoneNumber number: phoneNumber, index:phoneNumber_index /}
+                        #{/list}
+                    #{/else}
+                    <div class="controls">
+                        <a id="phoneCopy" class="phoneCopy" rel=".phone" href="#"><i class="icon-plus-sign"></i> add another</a>
+                    </div>
+                </div>
+
+                <div id="emailss" class="control-group">
+                    <label class="control-label">Email</label>
+                    #{if !candidate || candidate.emails.isEmpty()}
+                        #{email /}
+                    #{/if}
+                    #{else}
+                        #{list items:candidate.emails, as:'email'}
+                            #{email email: email, index:email_index /}
+                        #{/list}
+                    #{/else}
+                    <div class="controls">
+                        <a id="emailCopy" class="emailCopy" rel=".email" href="#"><i class="icon-plus-sign"></i> add another</a>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label" for="address">Address</label>
+                    <div class="controls">
+                        <textarea class="input-large" id="address" name="address" rows="2">${candidate?.address}</textarea>
+                    </div>
+                </div>
+
+                <h3>Social Presence</h3>
+
+                    <!--<label class="control-label">Social Profile</label>-->
+                    #{if !candidate || candidate.externalLinks.isEmpty()}
+                        #{socialProfile /}
+                    #{/if}
+                    #{else}
+                        #{list items:candidate.externalLinks, as:'socialProfile'}
+                            #{socialProfile socialProfile: socialProfile, index:socialProfile_index /}
+                        #{/list}
+                    #{/else}
+                <div class="control-group">
+                    <div class="controls">
+                        <div>
+                            <a id="socialProfileCopy" class="socialProfileCopy" rel=".socialProfile" href="#"><i class="icon-plus-sign"></i> add another</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="#{if candidate}@{Candidates.cancelEdit(candidate?.id)}#{/if}#{else}@{Candidates.list()}#{/else}" id="cancelBtnLink" class="btn no-change-check">Cancel</a>
+                    <button id="saveBtn" class="btn btn-primary no-change-check" type="submit">Save</button>
+                    #{if candidate?.id != null}
+                        <a id="delete" href="#" data-target="#deleteConfirmation" data-toggle="modal" class="pull-right no-change-check"><i class="icon-trash"></i> Delete Candidate</a>
+                    #{/if}
+                </div>
+
+            </fieldset>
+            <input type="hidden" name="uploadedFiles" id="uploadedFiles" value="${newlyUploadedFiles}" class="no-change-check"/>
+        #{/form}
+
+    </section>
+        <!-- Documents Section -->
+        <section>
+            <h2>Documents</h2>
+            <div>
+
+                <div id="file-list">
+
+                    <table id="documentTable" class="table table-condensed table-striped">
+                        <tbody>
+                        #{list items:candidate?.files, as:'file'}
+                        <tr id="fileRow_${file_index}">
+						<td><a id="file-download-link-${file_index}" href="@{getCandidateFile(file.id,true,true)}" class="quick-view-trigger" type="${file.displayType}" title="View">${file.name}</a></td>
+						<td>
+                            <div id="fileDocType${file.id}">${file.docType}</div>
+							<div class="dropdown hide" id="candidateDocType${file.id}">
+                				<a id="candidateDocTypeDropdown${file.id}" class="dropdown-toggle" data-toggle="dropdown" href="#candidateDocType"><span class="text">${file.docType}</span> <span class="caret"></span></a>
+
+                				<ul class="dropdown-menu">
+                					#{list items:enums.CandidateDocType.values(), as:'docType'}
+                        				<li><a class="${docType}" href="#" onClick="updateDocType(${file.id},'${docType.name()}', '${docType}')">${docType}</a></li>
+                    				#{/list}
+                				</ul>
+                			</div>
+						</td>
+                        <td class="file-delete-td" width="65"><a id="file-delete-link-${file_index}" href="#" class="pull-right no-change-check hide" onClick="showFileDeleteConfirmation(${file.id},${file_index})"><i class="icon-trash"></i> Delete</a></td>
+                        </tr>
+                        #{/list}
+
+                        </tbody>
+                    </table>
+
+
+                    <p id="noDocumentsMessage">No documents uploaded.</p>
+
+                    <a class="btn" href="#" id="showDocsEditBtn">Edit</a>
+                </div>
+            #{form @uploadCandidateFile() , id:'uploadCandidateFile', class:'form-horizontal hide', enctype:'multipart/form-data'}
+                <input type="hidden" name="id" value="${candidate?.id}" class="no-change-check"/>
+                <input type="hidden" id="candidateFileName" name="candidateFileName" class="no-change-check">
+                <input type="file" id="candidateFile" class="input-file no-change-check" style="display:none" name="candidateFile" />
+                <div class="input-append1">
+                    <select name="docType" id="docType" class="input-small no-change-check">
+                        #{list items:enums.CandidateDocType.values(), as:'type'}
+                            <option value="${type.name()}" ${type.equals(enums.CandidateDocType.OTHER) ? "selected=selected" : ""}>${type.toString()}</option>
+                        #{/list}
+                    </select>
+                    <span id="upload" class="btn btn-info" onclick="$('input[id=candidateFile]').click();"><i class="icon-white icon-upload"></i> Upload</span>
+                </div>
+                <div class="form-actions">
+                    <a href="#" id="cancelDocsEditBtn" class="btn no-change-check btn-primary">Done</a>
+                </div>
+            #{/form}
+
+
+            </div>
+
+        </section>
+        <!-- Jobs Section -->
+        <section>
+            <h2>Jobs</h2>
+            <div id="jobs-container">
+                #{if candidate?.id != null}
+                    #{form @updateCandidateJobStatuses(), id:'jobsForm', class:'form-horizontal'}
+                        <div id="job-list">
+
+                        <table id="jobsTable" class="table table-condensed table-striped">
+                            <tbody>
+                            #{list items:candidateJobStatuses, as:'status'}
+                            <tr id="jobRow_${status_index}" data-id="${status.id}">
+                                <td class="job-name-td">
+                                    ${status.job.name}
+                                    <input name="statusId_${status_index}" value="${status.id}" type="hidden">
+                                </td>
+                                <td class="job-status-td">
+                                    #{deadbolt.restrict roles:[['APP_ADMIN'], ['COMPANY_ADMIN']]}
+                                        ${status.companyJobStatus.name}
+                                    #{/deadbolt.restrict}
+                                </td>
+                                <td class="job-delete-td" width="65">
+                                    <a id="job-delete-link-${status_index}" href="#" class="pull-right no-change-check hide" onclick="showJobDeleteConfirmation(${status.id}, ${status_index})">
+                                        <i class="icon-trash"></i> Delete
+                                    </a>
+                                </td>
+
+                            </tr>
+                            #{/list}
+
+                            </tbody>
+                        </table>
+                        <p id="noJobsMessage">There are no jobs associated with this candidate</p>
+
+                    </div>
+                        <a style="display: none;" rel=".job" id="addJob" href="#"><i class="icon-plus-sign"></i> add job</a>
+                        <input type="hidden" name="candidateId" value="${candidate?.id}" class="no-change-check"/>
+                        <div class="row" id="addJobRow" style="display: none;">
+                            <div class="span3">
+                                <h3>Job Title</h3>
+                                <select name="jobId" id="jobId" class="input-block-level no-change-check" disabled></select>
+                            </div>
+                            <div class="span3">
+                                <h3>Status</h3>
+                                <select name="companyJobStatId" id="companyJobStatId" class="input-block-level no-change-check" disabled>
+                                    #{list items:companyJobStatuses, as:'status'}
+                                        <option value="${status.id}">${status.name}</option>
+                                    #{/list}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions" id="jobsFormActions" style="display: none;">
+                            <button href="#" id="cancelJobsEditBtn" class="btn no-change-check" type="reset">Cancel</button>
+                            <button id="jobSaveBtn" class="btn btn-primary no-change-check" type="submit">Save</button>
+                        </div>
+                    #{/form}
+                    #{deadbolt.restrict roles:[['APP_ADMIN'], ['COMPANY_ADMIN']]}
+                        <a class="btn" href="#" id="showJobsEditBtn">Edit</a>
+                    #{/deadbolt.restrict}
+                #{/if}
+                #{else}
+                    <p>Please save this candidate before adding jobs.</p>
+                #{/else}
+            </div>
+
+        </section>
+    </div>
+
+    <div class="span6">
+
+
+    #{if !candidate}
+        <!-- New Candidate Message Section-->
+        <section>
+            <div class="well">
+                <h3>What does a candidate profile have to include?</h3>
+                <p>A candidate profile only requires a name, but add as much information as your company would like to include.</p>
+            </div>
+        </section>
+    #{/if}
+        <!-- Live Interviews Section -->
+        <section>
+
+        <h2>Interviews</h2>
+        <fieldset id="jobsAndInterviews">
+            #{if candidate?.hasBeenSaved()}
+                <div id="interviewListHeader">
+                    <span class="intvw-arrow"></span>
+                    <span class="intvw-date">Date</span>
+                    <span class="intvw-name">Interview</span>
+                    <span class="intvw-interviewer">Interviewer</span>
+                    <span class="intvw-state">Status</span>
+                </div>
+
+                <div class="accordion" id="interviewListAccordion">
+                #{list items:candidate?.getActiveInterviews(connectedUser), as:'interview'}
+                    %{ id = "interview_" + interview_index }%
+                    <div id="interviewSection_${interview.id}" class="accordion-group">
+                            <div class="accordion-heading">
+                                <span class="accordion-toggle" data-parent="#interviewListAccordion">
+                                    <span class="intvw-arrow" href="#${id}" data-toggle="collapse"><i class="icon-chevron-right"></i></span>
+                                    <span class="intvw-date" href="#${id}" data-toggle="collapse">${interview.anticipatedDate?.format('MM/dd/yyyy')}</span>
+                                    <a href="@{Interviews.show(interview.id, true, false)}" class="intvw-name">${interview.name}</a>
+                                    <span class="intvw-interviewer">${interview.interviewer?.fullName}</span>
+
+                                    %{
+                                        def lastStatusChange = interview.getMostRecentStatusChange();
+                                        def curState = lastStatusChange.toState;
+                                        def changeTime = lastStatusChange.created;
+                                        def isInterviewer = interview.isInterviewer(connectedUser);
+                                        def feedbackAdded = interview.hasUserProvidedFeedback(connectedUser);
+
+                                    }%
+                                    #{if interview.canEdit(connectedUser)}
+                                        <a class="liveInterviewLink" data-interviewId="${interview.id}" data-currentState="${curState.name()}" data-isInterviewer=${isInterviewer} data-feedbackAdded=${feedbackAdded} ></a>
+                                    #{/if}
+                                    #{else}
+                                        &{"activeInterview.status.label." + curState.name()}
+                                    #{/else}
+                                </span>
+                            </div>
+                            <div id="${id}" class="accordion-body collapse">
+                                <div class="accordion-inner">
+                                    <div class="row-fluid">
+                                        <div class="span6">
+                                            %{categoriesInUse = interview.getCategoriesInUse()}%
+                                            <span><i class="icon-tags"></i> ${interview.getQuestionCount()} questions for ${interview.getDuration()} minutes
+                                            #{if !categoriesInUse.isEmpty()}
+                                                in ${utils.DisplayUtil.listAsProperlyPunctuatedEnglish(categoriesInUse, "name")}
+                                            #{/if}
+                                            <br/><br/></span>
+                                            <span class="interviewer"><i
+                                                    class="icon-bullhorn"></i> Interviewer: ${interview.interviewer?.fullName}<br/><br/></span>
+                                            <span><i class="icon-info-sign"></i> Created by ${interview.user?.fullName}<br/><br/></span>
+                                        </div>
+                                        <div class="span6">
+                                            <span><i class="icon-exclamation-sign"></i>
+                                                <span class="interviewStatus">
+                                                    Interview is &{curState.getClass().getName() + "." + curState.name()}
+                                                    <span class="dropdown">
+                                                        <a class="dropdown-toggle statusDropdown" id="statusDropdown_${interview_index}" data-toggle="dropdown" href="#">change <span class="caret"></span></a>
+
+                                                        <ul class="dropdown-menu">
+                                                    #{list enums.ActiveInterviewState.values(), as: 'state'}
+                                                        #{if !state.equals(curState)}
+                                                            <li><a href="@{Candidates.updateInterviewStatus(interview.id, state)}" onclick="">&{state.getClass().getName() + "." + state.name()}</a></li>
+                                                        #{/if}
+                                                    #{/list}
+                                                        </ul>
+                                                    </span>
+                                                </span>
+                                            </span><br/><br />
+                                            #{if interview.canEdit(connectedUser)}
+                                                <a class="liveInterviewLink2" data-interviewId="${interview.id}" data-currentState="${curState.name()}" data-isInterviewer=${isInterviewer} data-feedbackAdded=${feedbackAdded} ></a>
+                                            #{/if}
+                                            #{else}
+                                                &{"activeInterview.status.label." + curState.name()}
+                                            #{/else}
+
+                                            <div class="form-actions"><!--<a href="#"><i class="icon-calendar"></i> Change Date</a> | --><a href="@{Interviews.show(interview.id, true, false)}"><i class="icon-edit"></i> Edit</a> | <a href="#" id="deleteInterview_${interview_index}" class="deleteInterviewBtn" data-interviewId="${interview.id}" data-target="deleteInterviewConfirmation" data-toggle="modal" ><i class="icon-trash"></i> Delete</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                #{/list}
+                </div>
+                <div class="form-actions">
+                    <a id="scheduleInterviewBtn" class="btn btn-info no-change-check" href="@{Interviews.createActiveInterview(candidate?.id)}"><i class="icon-white icon-calendar"></i> Create Interview</a>
+                    <a id="startNewLiveInterviewBtn" class="btn btn-info" href="@{LiveInterviews.startInterview(candidate?.id)}"><i class="icon-white icon-play-circle"></i> New Live Interview</a>
+                </div>
+            #{/if}
+            #{else}
+                <em>You must save this candidate to create an interview.</em>
+            #{/else}
+
+        </fieldset>
+
+        </section>
+        <!-- Feedback Section -->
+        <section class="control-group feedbackSection">
+            <div class="row">
+                <div class="span4"><h2>Feedback</h2></div>
+            #{if candidate?.hasBeenSaved()}
+                <div class="span2">
+                    #{deadbolt.restrict roles:[['APP_ADMIN'], ['COMPANY_ADMIN']]}
+                        #{form @toggleFeedbackDisplay(candidate?.id) , id:'toggleFeedbackDisplayForm', class:'form-horizontal'}
+                            <label class="checkbox pull-right no-pull-phone">
+                                <input id="feedbackHidden" class="no-change-check" type="checkbox"  name="feedbackHidden" #{if candidate.feedbackHidden}checked="checked"#{/if}/>Feedback Disabled
+                            </label>
+                        #{/form }
+                    #{/deadbolt.restrict}
+                </div>
+            #{/if}
+            </div>
+            %{
+            def candidateHasBeenSaved = candidate?.hasBeenSaved();
+            def showFeedbackControls = candidate?.hasBeenSaved() && !candidate?.feedbackHidden;
+            def showFeedbackViewOptions = candidate?.hasBeenSaved() && (
+                    !candidate?.feedbackHidden || connectedUser.hasRole(enums.RoleValue.APP_ADMIN) || connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN));
+            }%
+        #{if candidateHasBeenSaved}
+            <div id="feedbackControls">
+                <a href="@{Feedbacks.create(candidate?.id)}" id="provideFeedbackBtn" class="btn">Provide Feedback</a>
+                #{deadbolt.restrict roles:[['COMPANY_ADMIN']]}
+                    <a data-target="#solicitFeedback" data-toggle="modal" class="btn">Request Feedback</a>
+                #{/deadbolt.restrict}
+                #{if connectedUser.company && connectedUser.company.taleoIntegration && (candidate.taleoCandId != null)}
+                    <a id="exportFeedbackBtn" onClick="exportFeedback(${candidate.id})" class="btn no-change-check">Export Feedback</a>
+                #{/if}
+            </div>
+            <div class="alert" id="feedbackDisabledAlert">Feedback has been disabled for this candidate</div>
+                <div id="viewFeedbackSection">
+                    <hr/>
+
+                    <a id="viewFeedbackBtn" href="#" data-target="#viewFeedback" data-toggle="modal" class="btn"></a>
+
+                    #{deadbolt.restrict roles:[['APP_ADMIN'] , ['COMPANY_ADMIN']]}
+                        <a data-target="#emailFeedback" data-toggle="modal" class="btn">Email Feedback</a>
+                    #{/deadbolt.restrict}
+
+                    <span class="feedbackTable-pdf-button-container"></span>
+                    <span class="feedbackTable-pdf-dnld-button-container"></span>
+
+                    <hr />
+                </div>
+        #{/if}
+        #{else}
+            <em id="unsavedCandidateFeedbackMessage">You must save this candidate to provide feedback.</em>
+        #{/else}
+        </section>
+    </div>
+</div>
+
+<!-- Confirmation Modals -->
+#{deleteConfirmation id:"deleteFileConfirmation", deleteCallback:"deleteCandidateFile()"}
+    <input type="hidden" id="dcFileId" class="no-change-check">
+    <input type="hidden" id="dcFileRowIndex" class="no-change-check">
+    <p>Are you sure you want to delete this file?</p>
+#{/deleteConfirmation}
+
+#{deleteConfirmation id:"deleteConfirmation", deleteCallback:"deleteCandidate()"}
+    <p>Are you sure you want to delete this candidate?</p>
+#{/deleteConfirmation}
+
+#{deleteConfirmation id:"deleteInterviewConfirmation", deleteCallback:"deleteCandidateInterview()"}
+   <input type="hidden" id="dcCandidateInterview" class="no-change-check">
+   <p>Are you sure you want to delete this interview?</p>
+#{/deleteConfirmation}
+
+#{deleteConfirmation id:"deleteJobConfirmation", deleteCallback:"deleteCandidateJob()"}
+   <input type="hidden" id="dcJobStatusId" class="no-change-check">
+   <input type="hidden" id="dcJobRowIndex" class="no-change-check">
+   <p>Are you sure you want to remove this job for ${candidate?.name}?</p>
+#{/deleteConfirmation}
+
+
+#{if candidate?.hasBeenSaved() && (!candidate?.feedbackHidden ||
+connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN) ||
+connectedUser.hasRole(enums.RoleValue.APP_ADMIN))}
+    <!-- View Feedback Modal -->
+    <div id="viewFeedback" class="modal hide fade form-inline" style="display:none;">
+        <div class="modal-header">
+            <a id="closeFeedback" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+            <h3>View Feedback</h3>
+        </div>
+        <div class="modal-body">
+
+            <span class="feedbackTable-pdf-button-container" data-dismiss="modal" ></span>
+
+                   <!--  <hr /> -->
+
+            %{
+                //Protect us from capturing some variable that
+                //may have been introduced before
+                messageKey = null;
+
+                if (candidate?.feedbackHidden) {
+                    messageKey = "candidate.feedback.disabled";
+                }
+                else {
+                    if (candidate?.company?.feedbackDisplay) {
+                        if (connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN) ||
+                                connectedUser.hasRole(enums.RoleValue.APP_ADMIN)) {
+
+                            messageKey = "candidate.feedback.globally.visible.admin";
+                        }
+                        else {
+                            messageKey = "candidate.feedback.globally.visible.user";
+                        }
+                    }
+                    else {
+                        if (connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN) ||
+                                connectedUser.hasRole(enums.RoleValue.APP_ADMIN)) {
+
+                            messageKey = "candidate.feedback.globally.hidden.admin";
+                        }
+                        else {
+                            messageKey = "candidate.feedback.globally.hidden.user";
+                        }
+                    }
+                }
+
+            }%
+
+
+            #{if messageKey}
+                <div class="alert alert-info">&{messageKey, controllers.CompanyManagement.getLink(candidate?.company)}</div>
+            #{/if}
+
+            #{feedbackTable candidate: candidate, connectedUser: connectedUser /}
+        </div>
+    </div>
+#{/if}
+
+
+#{if candidate?.hasBeenSaved()}
+    <!-- Feedback Request Modal -->
+    <div id="solicitFeedback" class="modal hide fade">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Request Feedback</h3>
+        </div>
+        #{form @Candidates.solicitFeedback(candidate.id) , id:'solicitForm', class:'form-horizontal'}
+            <div class="modal-body" style="overflow: visible;">
+                <p>Enter the names or email addresses of interviewers that should provide feedback</p>
+
+                #{feedbackAutocompleteEmailName field:"solicitEmailsAndUsernames" /}
+
+                <p>You may optionally request that feedback be on one of this
+                    candidate's scheduled interviews specifically.</p>
+                #{if taleoId == null}
+                #{candidateInterviewSelect "regardingMagicID",
+                candidate: candidate, classes: "span5 no-change-check" /}
+                #{/if}
+            </div>
+            <div class="modal-footer">
+                <a id="submitFeedbackCancelBtn" class="btn" data-dismiss="modal">Cancel</a>
+                <button id="submitFeedbackSubmitBtn" class="btn btn-primary" type="submit">Get Feedback</button>
+            </div>
+        #{/form}
+    </div>
+
+    <!-- Email Feedback Info Modal -->
+    <div id="emailFeedback" class="modal hide fade">
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal">×</a>
+            <h3>Email Feedback Information</h3>
+        </div>
+        #{form @Candidates.emailFeedback(candidate.id) , id:'emailForm', class:'form-horizontal'}
+        <div class="modal-body" style="overflow: visible;">
+            <p>Enter the names or email addresses to send a summary of this candidate's feedback.</p>
+
+            #{feedbackAutocompleteEmailName field:"emailFeedbackEmailsAndUsernames" /}
+            <br />
+        </div>
+        <div class="modal-footer">
+            <a id="emailFeedbackCancelBtn" class="btn" data-dismiss="modal">Cancel</a>
+            <button id="emailFeedbackSubmitBtn" class="btn btn-primary" type="submit">Email Feedback</button>
+        </div>
+        #{/form}
+    </div>
+#{/if}
+
+
+#{taleoLogin id:'taleoLogin', cancelCallback:'onCancelTaleoLogIn' /}
+
+#{modal 'feedbackSentModal', closable:true, title:'Success!'}
+	<div id="feedbakSentBody" class="modal-body">
+		<p>All feedback for this candidate has been sent to Taleo!</p>
+	</div>
+	<div class="modal-footer">
+        <a class="btn" data-dismiss="modal">OK</a>
+    </div>
+#{/modal}
+#{modal 'switchCandToTaleo' , closable:true, title:'Convert existing SuitedTo candidate to Taleo'}
+<div id="" class="modal-body">
+    <p>"Are you sure you want to match this candidate?  All demographic data in SuitedTo will be replaced with the information from Taleo."</p>
+</div>
+
+<div class="modal-footer">
+    <button id="taleoConvertConfirmed"class="btn btn-primary" type="submit">Yes</button>
+    <a class="btn" data-dismiss="modal">No</a>
+</div>
+#{/modal}
+#{modal 'switchTaleoCandToTaleo' , closable:true, title:'Convert existing SuitedTo candidate to Taleo'}
+<div id="" class="modal-body">
+    <p>Selecting an alternate candidate will re-load the demographic information from Taleo and the Alternate ID (Taleo ID) value will be updated, but all files
+    linked to the current candidate will remain in tact.</p>
+</div>
+<div class="modal-footer">
+    <button id="taleoConvertConfirmed"class="btn btn-primary" type="submit">Yes</button>
+    <a class="btn" data-dismiss="modal">No</a>
+</div>
+#{/modal}
+#{modal 'removeFromTaleo' , closable:true, title:'Convert existing SuitedTo candidate to Taleo'}
+<div id="" class="modal-body">
+    <p>Are you sure you want to remove the association to Taleo?</p>
+</div>
+<div class="modal-footer">
+    <button id="removeTaleoButton"class="btn btn-primary" type="submit">Yes</button>
+    <a class="btn" data-dismiss="modal">No</a>
+</div>
+#{/modal}
+
+
+#{quickViewer /}
+#{applicationApi /}
+
+
+<script type="text/javascript">
+
+    var iconWrapClasses = {
+    NOT_STARTED : 'begin',
+    STARTED : 'inprogress',
+    FINISHED : 'completed'
+    };
+
+    var iconClasses = {
+    NOT_STARTED : 'icon-play',
+    STARTED : 'icon-stop',
+    FINISHED : 'icon-ok'
+    };
+
+    var iconTexts = {
+    NOT_STARTED : 'Start',
+    STARTED : 'Finish',
+    FINISHED : 'Give Feedback'
+    };
+
+
+    /**
+     * TODO: It may be a better option to serialize these
+     * objects into a string serverside and
+     * assign that value to a variable instead of using
+     * play tags.
+      */
+    var companyJobStatuses = [];
+    #{list companyJobStatuses, as:'status'}
+    companyJobStatuses.push({
+        name : "${status.name}",
+        id : "${status.id}"
+    });
+    #{/list}
+
+    var companyJobs = [];
+    #{list items:companyJobs, as:'job'}
+        companyJobs.push({
+            id : ${job.id},
+            name : "${job.name}"
+        })
+    #{/list}
+
+    var candidateJobStatuses = [];
+    #{list items:candidateJobStatuses, as:'status'}
+        candidateJobStatuses.push({
+            id : ${status.id},
+            job : {
+                id : ${status.job.id},
+                name : "${status.job.name}",
+            },
+            companyJobStatus : {
+                id : ${status.companyJobStatus.id},
+                name : "${status.companyJobStatus.id}"
+            }
+        })
+    #{/list}
+
+    /**
+     * Jobs available to the candidate; The company
+     * jobs that have not been assigned to the candidate.
+     */
+    var availableCompanyJobs = companyJobs.slice(0);
+    var companyJobIdsToRemove = [];
+    for(var i = 0; i < candidateJobStatuses.length ; i++) {
+        for(var j = 0; j < availableCompanyJobs.length; j++) {
+            if(candidateJobStatuses[i].job.id === availableCompanyJobs[j].id) {
+                companyJobIdsToRemove.push(candidateJobStatuses[i].job.id);
+            }
+        }
+    }
+
+    for(var i = 0; i <  companyJobIdsToRemove.length; i++) {
+        for(var j = 0; j < availableCompanyJobs.length; j++) {
+            if(companyJobIdsToRemove[i] == availableCompanyJobs[j].id) {
+                // Remove a job that has alraedy been assigned to this candidate
+                availableCompanyJobs.splice(j, 1);
+            }
+        }
+    }
+
+    //AJAX call for changing the status of the interview.  data returned is expected to be the new status if an update
+    //was performed server side. The callback, if provided, will be run after the AJAX call returns successfully
+    function processInterviewStatusChange(interviewId, currentState, isInterviewer, feedbackAdded, callback){
+        var action = #{jsAction @processInterviewStatusChange(':id', ':currentState')/};
+        $.get(action({id: interviewId, currentState: currentState}),
+                function(data){
+
+                    if(data) {
+                        //replace the link with a new link
+                        var newLink = buildLiveInterviewLink(interviewId, data, isInterviewer.toString(), feedbackAdded.toString());
+                        $('#liveInterviewLink_' + interviewId).replaceWith(newLink);
+                        var newLink2 = buildLiveInterviewLink(interviewId, data, isInterviewer.toString(), feedbackAdded.toString(),'2');
+                        $('#liveInterviewLink2_' + interviewId).replaceWith(newLink2);
+                    }
+
+                    if(callback){
+                        callback(interviewId, data ? data : currentState);
+                    }
+                }
+        );
+    }
+
+    //constructs the link including the icon and icon wrapper for liveInterviews. Links will be set to call
+    //processInterviewStatusChange with appropriate arguments onclick
+    function buildLiveInterviewLink(interviewId, currentState, isInterviewer, feedbackAdded, linkNumber){
+        var isInterviewer = isInterviewer == 'true';
+        var feedbackAdded = feedbackAdded == 'true';
+
+        var callback;
+        if('NOT_STARTED' == currentState){
+            callback = goToLiveInterview;
+        } else if(isInterviewer && !feedbackAdded){
+            callback = createFeedback;
+        }
+
+        var linkNum = linkNumber || '';
+        //interview is considered complete if it is in FINISHED status and either the person logged in is the
+        //interviewer and has provided feedback or the person logged in is not the interviewer
+        var complete = 'FINISHED' == currentState && (!isInterviewer || feedbackAdded);
+
+        var textValue;
+        if(complete){
+            textValue = 'Finished';
+        } else {
+            textValue = iconTexts[currentState];
+        }
+
+        var topLevelElement;
+        //the top level element should either be a link or a paragraph depending on the user's available actions
+        if(complete){
+            topLevelElement = $("<span />", {class: 'intvw-state'});
+        } else {
+            topLevelElement = $("<a />", {
+                    id: 'liveInterviewLink'+linkNum+'_' + interviewId,
+                    href: '#',
+                    onclick: 'processInterviewStatusChange(' + interviewId + ', "' + currentState + '", ' + isInterviewer + ', ' + feedbackAdded + ', ' + callback + ');',
+                    class: 'intvw-state'});
+        }
+        var iconWrapper = $("<span />", {class: 'iconWrap ' + iconWrapClasses[currentState]});
+        var icon = $("<i />", {class: 'icon-white ' + iconClasses[currentState]});
+        var iconText = $("<span />", {class: 'iconText', html: ' ' + textValue});
+        iconWrapper.append(icon);
+        topLevelElement.append(iconWrapper);
+        topLevelElement.append(iconText);
+
+        return topLevelElement;
+    }
+
+    //redirects to the live interview screen
+    function goToLiveInterview(interviewId){
+        var liveInterview = #{jsAction @LiveInterviews.live(':id')/};
+        document.location.href = liveInterview({id: interviewId});
+    }
+
+    function createFeedback(interviewId){
+        var candidateId = '${candidate?.id}';
+        var feedbackPage = #{jsAction @Feedbacks.create(':candidateId', ':liveInterviewId')/};
+        document.location.href = feedbackPage({candidateId: candidateId, liveInterviewId: interviewId})
+    }
+
+
+    function getUrlVars(){
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for(var i = 0; i < hashes.length; i++)
+        {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    }
+
+    function updateDocType(fileId, docType, docTypeStr){
+    	$.ajax({
+  			type: 'POST',
+  			url: '@{CandidateFiles.updateDocType()}?id=' + fileId + "&docType=" + docType,
+			dataType: 'json',
+  			success: function(){
+  				$('#candidateDocTypeDropdown' + fileId + ' .text').html(docTypeStr);
+                $('#fileDocType' + fileId + '').html(docTypeStr);
+  			},
+           	error: function(e){
+				$('#fileRow_' + fileId + ' .candidateDocTypeDropdown').html(docTypeStr);
+			}
+  		});
+    }
+
+
+$(document).ready(function() {
+    //replace each dummy Live Interview link with a fully built-out and "iconified" link
+    //todo: seems like this could be fixed to remove duplication
+    $('div[id^="interviewSection_"] .liveInterviewLink').each(function(){
+        $(this).replaceWith(buildLiveInterviewLink($(this).attr('data-interviewId'), $(this).attr('data-currentState'),
+                $(this).attr('data-isInterviewer'), $(this).attr('data-feedbackAdded')));
+    });
+    $('div[id^="interviewSection_"] .liveInterviewLink2').each(function(){
+        $(this).replaceWith(buildLiveInterviewLink($(this).attr('data-interviewId'), $(this).attr('data-currentState'),
+                $(this).attr('data-isInterviewer'), $(this).attr('data-feedbackAdded'), '2'));
+    });
+
+    $(window).resize(function() {
+
+        if (($(window).width() < 981) && ($(window).width() > 768)){
+            $('#candidateForm').removeClass('form-horizontal').addClass('form-vertical');
+        } else {
+            $('#candidateForm').removeClass('form-vertical').addClass('form-horizontal');
+        }
+
+    });
+
+	$('input[id=candidateFile]').change(function() {
+        var fullPath = $('#candidateFile').val();
+        if (fullPath) {
+            var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
+            var filename = fullPath.substring(startIndex);
+            if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
+                filename = filename.substring(1);
+            }
+            $('#candidateFileName').val(filename);
+        } else {
+            $('#candidateFileName').val();
+        }
+        $('#uploadCandidateFile').submit();
+    });
+
+    $('#searchButton').click(function() {
+
+        $('#taleoResults').append('<div id="tAlert" class="alert alert-success">Loading...</div>');
+        $('#searchProgress').show();
+        $('#searchButton').attr('disabled','disabled');
+
+        // submit the form
+        $('#taleoForm').ajaxSubmit({
+            dataType:  'json',
+            success: processJson,
+            error: taleoException,
+            failure: taleoLoginFailure,
+            cache: false,
+            type: "POST"
+        });
+        // return false to prevent normal browser submit and page navigation
+        return false;
+    });
+
+    $('#headsUpLogin').click(function(e){
+        e.preventDefault();
+        new TaleoLogin().go($(this).attr('data-callback'));
+
+    });
+
+});
+
+function reloadPage(){
+    window.location.reload();
+}
+
+function taleoLogin(){
+	new TaleoLogin().go(reloadPage);
+}
+
+function taleoLoginException(){
+    $('#tsr,#ttable, #tAlert').remove();
+    $('#searchProgress').hide();
+    $('#searchButton').removeAttr('disabled');
+
+    var taleoLoginAlert = "<div id=tAlert class='alert alert-error'>Your credentials seem to be invalid. Please try to login again!" +"</div>";
+    $('#taleoLogin .modal-body').prepend(taleoLoginAlert);
+}
+
+function taleoLoginFailure() {
+    $('#tsr,#ttable, #tAlert').remove();
+    $('#searchProgress').hide();
+    $('#searchButton').removeAttr('disabled');
+
+    var taleoSysFailure = "<div id=tAlert class='alert alert-error'>Taleo is inaccessible at this time. Please try again later.</div>";
+
+    $('#taleoForm').before(taleoSysFailure);
+}
+
+function taleoException() {
+    $('#tsr,#ttable, #tAlert').remove();
+    $('#searchProgress').hide();
+    $('#searchButton').removeAttr('disabled');
+
+    var taleoAlert = "<div id=tAlert class='alert alert-error'>You have entered a candidate not found in Taleo.  You can either update the candidate " +
+            "name or create a <a href='' class='cancelTaleo'>new SuitedTo candidate</a> that is not linked to Taleo.</div>";
+    $('#taleoForm').before(taleoAlert);
+
+}
+
+function processJson(data) {
+    $('#tsr,#ttable, #tAlert').remove();
+    $('#searchProgress').hide();
+    $('#searchButton').removeAttr('disabled');
+
+    var header = '<h3 id="tsr">Taleo Search Results</h3>';
+
+    var taleoTable ='<table id="ttable" class="table table-striped table-condensed"><tr><th>ID</th><th>Name</th><th>Email</th><th class="hide">Address</th><th></th></tr>';
+
+    for(var i=0; i<data.length; i++) {
+//                var tId= $('td:first-child', $(this).parents('tr')).text().toString();
+        taleoTable += "<tr><td>"+data[i].id+"</td>" +
+                "<td>"+data[i].firstName+" "+data[i].lastName+"  </td>"+
+                "<td>"+data[i].email+"</td>"+
+                "<td class='hide'>"+data[i].address+"</td>" +
+                "<td id='taleoCandSelector'><a class=btn href='@{Candidates.showTaleoCandidate()}?taleoId="+data[i].id+"'>Select</a></td></tr>";
+    }
+    taleoTable +="</table>";
+    taleoTable +="</table>";
+    /*console.log(taleoTable);*/
+    /*$('#taleoForm').after(header);
+    $('#tsr').after(taleoTable);*/
+    $('#taleoResults').append(header);
+    $('#taleoResults').append(taleoTable);
+}
+
+
+function fnchecked(blnchecked)
+{
+    if (blnchecked) {
+        $("#divcheck, #saveCandButtons, #uploadResumeBlock, #taleoHeadsUp").hide();
+        $("#searchButton").removeAttr('disabled');
+        $("#searchButton, #taleoSearchDiv, #taleoResults").show();
+    }
+    else {
+        $("#searchButton, #taleoSearchDiv, #taleoResults").hide();
+        $("#divcheck, #saveCandButtons, #uploadResumeBlock, #taleoHeadsUp").show();
+        $("#searchButton").attr('disabled','disabled');
+        $("#tAlert").remove();
+    }
+}
+function exportFeedback(candidateId){
+	$('#exportFeedbackBtn').toggleClass('disabled');
+
+	new TaleoLogin().go('onTaleoLoggedIn');
+}
+
+function onTaleoLoggedIn(alreadyLoggedIn){
+	$.post('@{Candidates.exportFeedback(candidate?.id)}');
+	$('#exportFeedbackBtn').toggleClass('disabled');
+
+	if(!alreadyLoggedIn){
+		reloadPage();
+	}else{
+		$('#feedbackSentModal').modal("show");
+	}
+}
+
+function onCancelTaleoLogIn(){
+	$('#exportFeedbackBtn').toggleClass('disabled');
+}
+
+function solicitFeedback(){
+	$('#solicitFeedback').modal("show");
+}
+
+function emailFeedback(){
+    $('#emailFeedback').modal("show");
+}
+
+var originalContent;
+ $(document).ready(function(){
+     originalContent = jQuery('#candidateForm input[type=text]').serialize()
+
+     if($('#taleoCandId').val()){
+        $('#candidateName, #taleoCandId, #address, #phoneNumberss input, #phoneNumberss select, #emailss input, #emailss select').attr('readonly','readonly');
+        //$('#phoneNumberss select, #emailss select').attr('disabled','disabled')
+//        $('#candidateForm input, #candidateForm textarea, #candidateForm select').attr('readonly','readonly');
+        $('#emailCopy, #phoneCopy, #taleoSwitchControl').hide();
+    }
+})
+
+$('#scheduleInterviewBtn').click(function(){
+    if (content != originalContent){
+        $('.ui-tabs-selected a').css('background-color','#ff9999').attr('title','unsaved changes');
+        recheckSubmitters();
+    }
+
+});
+
+function showTaleoBox() {
+    document.getElementById('taleoBox').style.display = "";
+    document.getElementById("divcheck").style.display = "none";
+}
+
+function showFileDeleteConfirmation(fileId, rowIndex){
+    $('#dcFileId').val(fileId);
+    $('#dcFileRowIndex').val(rowIndex);
+    $('#deleteFileConfirmation').modal({show: true});
+}
+
+function showJobDeleteConfirmation(jobStatusId, rowIndex){
+    $('#dcJobStatusId').val(jobStatusId);
+    $('#dcJobRowIndex').val(rowIndex);
+    $('#deleteJobConfirmation').modal({show: true});
+}
+
+function deleteCandidateFile(){
+    var deleteAction = #{jsAction @deleteCandidateFile(':id')/};
+    var rowId = '#' + "fileRow_" + $('#dcFileRowIndex').val();
+    $.get(deleteAction({id: $('#dcFileId').val()}),
+            function(data){
+                $('#deleteFileConfirmation').modal('hide');
+                $(rowId).fadeOut('normal', function() { $(this).remove(); });
+            }
+    );
+
+    toggleDocumentView();
+}
+
+function toggleDocumentView(){
+    var rowCount = $('#documentTable tbody tr').length;
+
+    var table = $('#documentTable');
+    var message = $('#noDocumentsMessage');
+    if(rowCount > 0){
+        table.show();
+        message.hide();
+    } else {
+        table.hide();
+        message.show();
+    }
+}
+
+function toggleJobsView(){
+    var rowCount = $('#jobsTable tbody tr').length;
+
+    var table = $('#jobsTable');
+    var message = $('#noJobsMessage');
+    if(rowCount > 0){
+        table.show();
+        message.hide();
+    } else {
+        table.hide();
+        message.show();
+    }
+}
+
+function toggleNewJob() {
+        var newJobSelectBox = $('#jobsForm #jobId');
+
+        for(var i = 0; i < availableCompanyJobs.length; i++) {
+            var job = availableCompanyJobs[i];
+            var optionString = '<option value="' +  job.id + '">' + job.name + '</option>';
+            newJobSelectBox.append(optionString);
+        }
+
+        var assignedJobsCount = $('#jobsTable tbody tr').length;
+        var availableJobsCount = newJobSelectBox.find('option').size();
+
+        if(availableJobsCount <= 0 && assignedJobsCount >  0) {
+            $('#jobsForm > .row').hide();
+        }
+}
+
+function deleteCandidate(){
+    window.location.href = "@{Candidates.delete(candidate?.id)}";
+}
+
+function deleteCandidateInterview(){
+    var deleteAction = #{jsAction @Interviews.delete(':id')/};
+    var interviewId = $('#dcCandidateInterview').val();
+    var interviewSectionId = 'interviewSection_' + interviewId;
+
+    $.get(deleteAction({id: interviewId}),
+            function(data){
+                $('#deleteInterviewConfirmation').modal('hide');
+                $('#' + interviewSectionId).remove();
+            }
+    );
+}
+
+function deleteCandidateJob(){
+    var deleteAction = #{jsAction @Candidates.deleteCandidateJobStatus(':id')/};
+    var candidateJobStatusId = $('#dcJobStatusId').val();
+    var jobRowId = 'jobRow_' + $('#dcJobRowIndex').val();
+
+    $.get(deleteAction({id: candidateJobStatusId}),
+            function(data) {
+                $('#' + jobRowId).fadeOut('normal', function() {
+                    /**
+                     * Not optimal, but good enough for this prod push.
+                     * The logic for re-adding a job to the list of job
+                     * is too hariy for me to feel comfortable to deal with
+                     * right now. I will re-implement this when the Candidates
+                     * page gets refactored.
+                     */
+                    location.reload();
+//                    $(this).remove();
+//                    toggleJobsView();
+                });
+            })
+
+//    $('#deleteJobConfirmation').modal('hide');
+//    toggleNewJob();
+}
+
+$(function(){
+    var feedbackControls = $('#feedbackControls');
+    var feedbackDisabledAlert = $('#feedbackDisabledAlert');
+    var viewFeedbackSection = $('#viewFeedbackSection')
+#{if showFeedbackControls}
+    feedbackDisabledAlert.hide();
+#{/if}
+#{else}
+    feedbackControls.hide();
+#{/else}
+#{if !showFeedbackViewOptions}
+    viewFeedbackSection.hide();
+#{/if}
+    $('#feedbackHidden').change(function(){
+        $('#toggleFeedbackDisplayForm').ajaxSubmit({
+                success: function(data){
+                            if("hide" == data){ //expected response of "hide" or "show" from server
+                                feedbackControls.slideUp();
+                                feedbackDisabledAlert.show();
+                            } else {
+                                feedbackDisabledAlert.hide();
+                                feedbackControls.slideDown();
+
+                            }
+                        }
+        });
+        return false; //prevent default submit
+    });
+
+    $('#viewFeedback').after($('#deleteFeedbackConfirmation'));
+
+
+    $('#quick_link_icon').click(function(){
+        $('#quick_link_wrap').toggleClass('active');
+    });
+
+    $('#uploadCandidateFile').ajaxForm({
+        complete: function(xhr){
+
+            var fileData = $.parseJSON(xhr.responseText);
+            var candidateId = '${candidate?.id}';
+            var rowIndex = $('#documentTable tbody tr').length + 1;
+            $('#candidateFile').val('');
+            var uploadedFileIds = $('#uploadedFiles').val() + fileData.id + ",";
+            $("#uploadedFiles").val(uploadedFileIds);
+
+            var newtr = $("<tr />", {id: "fileRow_" + rowIndex});
+            var newtd = $("<td />");
+            var docLink = $("<a />", {text: fileData.name, href: '@{Candidates.getCandidateFile()}' + '?id=' + fileData.id + '&convert=true',
+                class: "quick-view-trigger", id: "file-download-link" + rowIndex, type: fileData.displayType, title: "View"});
+            newtd.append(docLink);
+
+            var docTypeTd = $("<td />");
+            var fileDocType = $("<div />", {id: "fileDocType" + fileData.id, style: "display:none;", html: fileData.docTypeString});
+            var docTypeDropDownDiv = $("<div />", {id: "candidateDocType" + fileData.id, class: "dropdown"});
+            var docTypeDropDownToggle = $("<a />", {id: "candidateDocTypeDropdown" + fileData.id, class: "dropdown-toggle",
+                href: "#candidateDocType", 'data-toggle': "dropdown"});
+            var docTypeDropDownText = $("<span />", {class: "text", html: fileData.docTypeString});
+            var docTypeDropDownCaret = $("<span />", {class: "caret"});
+            var docTypeList = $("<ul />", {class: "dropdown-menu"});
+        #{list items:enums.CandidateDocType.values(), as:'docType'}
+            var docType = $("<li />");
+            var docTypeHref = $("<a />", {onclick: "updateDocType(" + fileData.id + ",'${docType.name()}','${docType}');",
+                href: "#", id: fileData.docTypeString,
+                html: '${docType}'});
+            docType.append(docTypeHref);
+            docTypeList.append(docType);
+        #{/list}
+            docTypeDropDownDiv.append(docTypeDropDownToggle);
+            docTypeDropDownToggle.append(docTypeDropDownText);
+            docTypeDropDownToggle.append(docTypeDropDownCaret);
+            docTypeDropDownDiv.append(docTypeList);
+            docTypeTd.append(fileDocType);
+            docTypeTd.append(docTypeDropDownDiv);
+
+            var deleteTd = $("<td />",{class:"file-delete-td", width:"65"});
+            var deleteLink = $("<a />", {href: "#", class: "pull-right no-change-check", id: "file-delete-link-" + rowIndex,
+                onclick: "showFileDeleteConfirmation(" + fileData.id + "," + rowIndex + ");",
+                html: '<i class="icon-trash"></i> Delete'});
+            deleteTd.append(deleteLink);
+
+            newtr.append(newtd);
+            newtr.append(docTypeTd);
+            newtr.append(deleteTd);
+
+            $('#documentTable > tbody:last').append(newtr);
+            toggleDocumentView();
+        }
+    });
+
+    $('div[id^="candidateDocType"] ul a').live('click',function(e){e.preventDefault()});
+
+
+    $('#solicit').click(function () {
+        $("#emails").val("");
+        $("#regadingInterviewID").val("-1");
+    });
+
+
+    var removeLink = ' <a class="remove" href="#" onclick="$(this).parent().remove(); return false"><i class="icon-remove"></i> remove</a>';
+
+    var checkRemove = function(selector){
+        $(selector).show();
+        if ($(selector).length <= 1){
+            $(selector).first().hide();
+        }
+    }
+    $('a.phoneCopy').relCopy().click(function(){
+        $.fn.changeAlert('markChanged');
+        checkRemove($('a[id^="phoneNumberRemove"]'));
+    });
+    $('a[id^="phoneNumberRemove"]').click(function(e){
+        e.preventDefault();
+        $(this).parent().remove();
+        checkRemove($('a[id^="phoneNumberRemove"]'));
+    });
+    $('a.emailCopy').relCopy().click(function(){
+        $.fn.changeAlert('markChanged');
+        checkRemove($('a[id^="emailRemove"]'));
+    });
+    $('a[id^="emailRemove"]').click(function(e){
+        e.preventDefault();
+        $(this).parent().remove();
+        checkRemove($('a[id^="emailRemove"]'));
+    });
+    $('a.socialProfileCopy').relCopy({excludeSelector: "p"}).click(function(){
+        $($(this).attr('rel') + ":last span").text("${enums.ExternalLinkType.values()[0].urlPrefix}");
+        $.fn.changeAlert('markChanged');
+        checkRemove($('a[id^="socialProfileRemove"]'));
+    });
+    $('a[id^="socialProfileRemove"]').click(function(e){
+        e.preventDefault();
+        $(this).parent().remove();
+        checkRemove($('a[id^="socialProfileRemove"]'));
+    });
+    checkRemove($('a[id^="phoneNumberRemove"]'));
+    checkRemove($('a[id^="emailRemove"]'));
+    checkRemove($('a[id^="socialProfileRemove"]'));
+
+
+    $('a.candidateInterviewCopy').relCopy({append: removeLink, excludeSelector: "a.linkValue"})
+            .click(function () {$.fn.changeAlert('markChanged');});
+
+    $('#deleteConfirmation').modal({show: false});
+
+    $('[id^=interviewId]').change(function(){
+        var name = $(this).find('option:selected').text();
+        var id = $(this).val();
+        var url = '@{Interviews.show()}?id=' + id;
+
+        $(this).siblings('span').html("<a class='linkValue' href='" + url + "'>" + name +"</a>");
+    });
+
+    $('[id^=socialProfileType]').change(function(){
+        var prefixArray = [];
+    #{list items:enums.ExternalLinkType.values(), as: 'type'}
+        prefixArray.push('${type.urlPrefix}');
+    #{/list}
+        var i = $(this).prop("selectedIndex");
+        var prepend = prefixArray[i];
+        $(this).parent().siblings().find("span").text(prepend);
+    });
+
+
+    $('#saveBtn').click(function(){
+        $("#candidateForm").submit();
+    });
+
+    $('#interviewListAccordion .accordion-body').on('show', function () {
+        $(this).parent().find('.intvw-arrow i').removeClass('icon-chevron-right').addClass('icon-chevron-down');
+    });
+    $('#interviewListAccordion .accordion-body').on('hide', function () {
+        $(this).parent().find('.intvw-arrow i').removeClass('icon-chevron-down').addClass('icon-chevron-right');
+    });
+
+    $('#viewFeedback').on('shown', function () {
+        $('#feedbackItems').css('width','');
+        $('#feedbackItems').dataTable().fnAdjustColumnSizing();
+        $('#viewFeedback .modal-body').scrollTop(0);
+    });
+
+    $('.deleteInterviewBtn').click(function(e){
+        e.preventDefault();
+        $('#dcCandidateInterview').val($(this).attr('data-interviewId'));
+        $('#deleteInterviewConfirmation').modal({show: true});
+    });
+
+
+    $('.cancelTaleo, #associateToTaleoBtn, #changeTaleoBtn').live('click', function(e){
+        e.preventDefault();
+        $('#taleoSwitch').click();
+        $('#tAlert').remove();
+    });
+
+    $('#associateToTaleoBtn').live('click', function(e){
+        var localId = '${candidate?.id}';
+        var localName = $('#candidateName').val();
+        $('#taleoCandidateName').val(localName);
+
+        $('#searchButton').click();
+
+        $('#taleoCandSelector').live('click', function(e){
+            var taleoId = $(this).closest('tr').find('td:first').text();
+            e.preventDefault();
+            $('#switchCandToTaleo').modal("show");
+            $('#taleoConvertConfirmed').unbind('click');
+            $('#taleoConvertConfirmed').live('click', function(e){
+                window.location.href = '@{Candidates.showTaleoCandidate()}?taleoId='+taleoId + '&id='+localId;
+            });
+        });
+    });
+
+    $('#changeTaleoBtn').live('click', function(e){
+        var localId = '${candidate?.id}';
+        var localName = $('#candidateName').val();
+        $('#taleoCandidateName').val(localName);
+
+        $('#taleoCandSelector').live('click', function(e){
+            var taleoId = $(this).closest('tr').find('td:first').text();
+            e.preventDefault();
+            $('#switchTaleoCandToTaleo').modal("show");
+            $('#taleoConvertConfirmed').unbind('click');
+            $('#taleoConvertConfirmed').live('click', function(e){
+                window.location.href = '@{Candidates.showTaleoCandidate()}?taleoId='+taleoId + '&id='+localId;
+            });
+        });
+    });
+    $('#removeTaleoAssoc').click(function(e){
+        var taleoId = null;
+        $('#taleoCandId').val(taleoId);
+        $('#removeFromTaleo').modal("show");
+        $('#removeTaleoButton').live('click', function(e){
+            $('#saveBtn').click();
+        });
+    });
+
+    $(document).ready(function(){
+        toggleDocumentView();
+        toggleJobsView();
+        var candidateId = '${candidate?.id}';
+        if( !$('#candidateName').val() ){
+            $('#profileView').hide();
+            $('#profileEdit').show();
+        } else if($('#taleoCandId').val() && !candidateId){
+            $('#profileEdit').show();
+            $('#profileView').hide();
+        } else {
+            $('#profileView').show();
+            $('#profileEdit').hide();
+        }
+        if($('#candidateName').val()) {
+            $('#taleoSwitchControl').hide();
+        }
+
+        $('#showProfileEditBtn').click(function(e){
+            e.preventDefault();
+            $('#profileView').slideUp();
+            $('#profileEdit').slideDown();
+        });
+
+        $('#showDocsEditBtn').click(function(e){
+            e.preventDefault();
+            $('#uploadCandidateFile').slideDown();
+            $('.file-delete-td a, div[id^="candidateDocType"]').show();
+            $('#showDocsEditBtn, div[id^="fileDocType"]').hide();
+        });
+        $('#cancelDocsEditBtn').click(function(e){
+            e.preventDefault();
+            $('#uploadCandidateFile').slideUp();
+            $('.file-delete-td a, div[id^="candidateDocType"]').hide();
+            $('#showDocsEditBtn, div[id^="fileDocType"]').show();
+        });
+
+        $('#showJobsEditBtn').click(function(e){
+            e.preventDefault();
+            $('.job-delete-td a').show();
+            $('#showJobsEditBtn').hide();
+            $('#addJob').show();
+            $('#jobsFormActions').show();
+
+            if(availableCompanyJobs.length <= 0) {
+                $('#addJob').hide();
+            }
+
+
+            /**
+             * Turn the static status string into a select box with the
+             * appropriate status selected
+             */
+
+            $("#jobsTable .job-status-td").each(function(index, value) {
+                var thisTd = $(value);
+                var selectedStatus = thisTd.text().trim();
+                thisTd.text('');
+                // Add 1 so that this index matches the one generated by play
+                var companyStatusId = "companyStatusId_" + (index+1);
+                var select = $('<select name="' + companyStatusId + '"></select>');
+                for(var i = 0; i < companyJobStatuses.length ; i++) {
+
+                    var status = companyJobStatuses[i];
+                    var optionString = '<option value="' + status.id + '" ';
+                    if(status.name === selectedStatus) {
+                        optionString += "selected=selected";
+                    }
+
+                    optionString += '>' + status.name + '</option>';
+
+                    select.append($(optionString));
+                }
+
+                thisTd.append(select);
+
+            })
+        });
+
+        $('#cancelJobsEditBtn').click(function(e){
+            e.preventDefault();
+
+
+            $('#addJob').hide();
+
+            var addJobRow = $('#addJobRow');
+            addJobRow.find('select').prop('disabled', true);
+            addJobRow.hide();
+
+            $('#jobsForm').resetForm();
+            $('.job-delete-td a').hide()
+            $('#showJobsEditBtn').show();
+
+            $('#jobsFormActions').hide();
+
+            //Replace dropdowns with text of selected option
+            $('.job-status-td').each(function() {
+                var thisTd = $(this);
+                var selectedStatus = thisTd.find(":selected").text();
+                thisTd.empty();
+                thisTd.html(selectedStatus);
+            })
+        });
+
+        $('#addJob').click(function(e) {
+            $('#addJob').hide();
+            var addJobRow = $('#addJobRow');
+            addJobRow.show();
+            addJobRow.find('select').prop('disabled', false);
+        })
+
+        toggleNewJob();
+
+        if(getUrlVars()["taleoId"]){
+            $('#profileEdit').show();
+            $('#profileView').hide();
+            $('#cancelBtnLink').unbind('click');
+            $('#taleoSwitchControl').hide();
+        }
+    });
+
+    $('#solicitFeedback').on('shown', function () {
+
+        $('#solicitEmailsAndUsernames').css('width','');
+        var input = $('#solicitEmailsAndUsernames'),
+            wrap = $('#solicitEmailsAndUsernames').parent(),
+            container = $('#solicitEmailsAndUsernames').parent().parent(),
+            width = input.outerWidth(),
+            height = input.outerHeight()
+            ;
+
+        input.width(width);
+        wrap.width(width).height(height);
+        container.height(height);
+
+        $('.text-core .text-dropdown').css('top',container.outerHeight());
+    });
+
+    $('#emailFeedback').on('shown', function () {
+
+        $('#emailFeedbackEmailsAndUsernames').css('width','');
+        var input = $('#emailFeedbackEmailsAndUsernames'),
+            wrap = $('#emailFeedbackEmailsAndUsernames').parent(),
+            container = $('#emailFeedbackEmailsAndUsernames').parent().parent(),
+            width = input.outerWidth(),
+            height = input.outerHeight()
+            ;
+
+        input.width(width);
+        wrap.width(width).height(height);
+        container.height(height);
+
+        $('.text-core .text-dropdown').css('top',container.outerHeight());
+        });
+
+
+});
+    /** Appends the value from a text autocomplete textfield to the hidden input
+        so that any untagged text gets submitted **/
+    function extractUntaggedText (hiddenInput, textArea) {
+        var newHiddenInputText = hiddenInput
+            .val()
+            .slice(0, - 1) + ',{"label":"' + textArea
+            .val() + '"}]';
+        hiddenInput
+            .val(newHiddenInputText);
+    };
+
+    $('#emailFeedbackSubmitBtn').click( function() {
+        extractUntaggedText(
+        $("input[type='hidden'][name='emailFeedbackEmailsAndUsernames']") ,$("#emailFeedbackEmailsAndUsernames"));
+    });
+
+    $('#submitFeedbackSubmitBtn').click( function() {
+        extractUntaggedText(
+        $("input[type='hidden'][name='solicitEmailsAndUsernames']") ,$("#solicitEmailsAndUsernames"));
+    });
+
+    numFeedback = ${numFeedback?numFeedback:0};
+
+    #{if numFeedback > 0}
+        $("#viewFeedbackBtn").text("View Feedback (" + numFeedback + ")");
+    #{/if}
+    #{else}
+        $("#viewFeedbackSection").hide();
+    #{/else}
+</script>
+

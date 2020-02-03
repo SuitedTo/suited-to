@@ -1,0 +1,69 @@
+#{extends 'email.html' /}
+<tr>
+    <td>
+        <img src="http://content.suitedto.com/logo-standard.png" alt="SuitedTo Logo">
+    </td>
+</tr>
+<tr><td></td></tr>
+<tr>
+    <td>
+
+        Hello #{if destinationUser}${destinationUser.fullName}#{/if}#{else}${email}#{/else},<br><br>
+
+        ${sendingUser.privateDisplayName} has sent you the candidate feedback for <a href="@@{Candidates.show(candidate.id)}">${candidate.name}</a>.<br><br>
+
+        Feedback has been received from ${numSubmitted} interviewers.<br>
+        Awaiting feedback from ${numWaiting} interviewers.<br>
+        ${candidate.name} has ${numFutureInterviews} interview scheduled.<br><br>
+
+        #{if numSubmitted > 0}
+            Feedback:<br>
+            -----------------------------------------------<br>
+        #{list items:candidate.feedbackList, as:'feedback'}
+            Date: ${feedback.created}
+            <br>
+
+            Interviewer:
+            #{if feedback.feedbackSource == null}
+                ${feedback.feedbackEmail}
+            #{/if}
+            #{else}
+                ${feedback.feedbackSource.fullName} (${feedback.feedbackSource.email})
+            #{/else}
+            <br><br>
+
+            Interview:
+            #{if feedback.activeInterview != null}
+                ${feedback.activeInterview.name}
+            #{/if}
+            #{else}
+                <em>-None-</em>
+            #{/else}
+            <br>
+
+            Interview Rating:
+            #{if feedback.activeInterview != null && feedback.activeInterview.averageQuestionRating != null}
+                ${feedback.activeInterview.averageQuestionRating} (on a scale of -2 to 2)
+            #{/if}
+            #{else}
+                <em>-None-</em>
+            #{/else}
+            <br>
+
+            Recommendation:
+            #{if feedback.summaryChoice != null}
+                ${feedback.summaryChoice.toString()}
+                #{/if}
+                #{else}
+                    <em>-Not Selected-</em>;
+                #{/else}
+                <br/><br/>
+
+                ${feedback.comments.nl2br()};
+                <br>
+                -----------------------------------------------
+                <br>
+            #{/list}
+        #{/if}
+    </td>
+</tr>

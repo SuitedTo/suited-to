@@ -1,0 +1,150 @@
+<div class="container questionView" id="viewInterviewId">
+
+    <div class="row">
+        <p>{{ errorMessage }}</p>
+    </div>
+    <div class="row interviewInfoRow">
+        <div class="span8 offset2">
+            <div class="interviewName">
+                <h1>{{interview.name}}</h1>
+            </div>
+            <div class="interviewControls">
+                <span><a class="dropdown-toggle" data-toggle="dropdown">Question {{currentQuestionIndex+1}} of {{interview.questions.length}} <i class="icon-caret-down"></i></a>
+                    <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu">
+                        <li><a tabindex="-1" ng-click="finishQuestion()">Jump to Review</a></li>
+                        <li><a tabindex="-1" ng-click="saveEnd()">Save and End</a></li>
+                    </ul>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row questionAskRow">
+
+        <div class="span2 convoCircleContainer">
+            <div class="convoCircleQuestion">
+                <img src="/public/images/prep/questionMarkA.png" alt="" />
+            </div>
+        </div>
+
+        <div class="span8">
+            <div class="questionContainer">
+
+                <div class="question">
+                    <div class="innerWrap">
+                        <p class="questionText">{{interview.questions[currentQuestionIndex].text}}</p>
+                    </div>
+                </div>
+
+                <div class="questionOptions">
+                    <!--<a id="questionFlagBtn" href=""><i class="iconprep-flag"></i><span class="lbl">Flag</span></a>-->
+                    <a id="questionViewAnswerBtn" href="" ng-click="answersEnabled=!answersEnabled" ng-class="{active: answersEnabled}"><i class="iconprep-view" ng-class="{active: answersEnabled}"></i><span class="lbl">Answer</span></a>
+                </div>
+
+                <div class="suggestedAnswers" pp-show-slide="answersEnabled">
+                    <div class="innerWrap">
+                        <h4 ng-show="interview.questions[currentQuestionIndex].staticAnswers">Suggested Answers</h4>
+                        <p ng-show="interview.questions[currentQuestionIndex].staticAnswers">{{interview.questions[currentQuestionIndex].staticAnswers}}</p>
+                        <h4 ng-show="interview.questions[currentQuestionIndex].tips">Tips</h4>
+                        <p ng-show="interview.questions[currentQuestionIndex].tips">{{interview.questions[currentQuestionIndex].tips}}</p>
+                    </div>
+                </div>
+
+                <div class="arrow"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row questionRespondRow" ng-class="activeResponse">
+        <div class="span8 offset2">
+
+            <div class="responseChoice choose" ng-class="activeResponse">
+                <a class="btn" id="questionResponseWriteBtn" ng-class="{inactive: textResponseBlock == false, active: textResponseBlock == true}" ng-click="showTextResponse()"><span class="img"><img src="/public/images/prep/iconPencilPaper.png" alt=""/> </span><span class="lbl"> Write Answer</span></a>
+                <a ng-show="$window.Conf.dev_mode" id="questionResponseRecordBtn" class="btn" ng-class="{inactive: videoResponseBlock == false, active: textResponseBlock == true}" ng-click="showVideoResponse()"><span class="img"><img src="/public/images/prep/iconVideo.png" alt=""/></span><span class="lbl"> Record Answer</span></a>
+            </div>
+
+            <div class="responseContainer choose" ng-class="activeResponse">
+                <div class="innerWrap clearfix">
+                    <div class="textResponseBlock" pp-show-slide="textResponseBlock">
+                        <textarea id="prepInterviewWrittenResponse" ng-model="interview.questions[currentQuestionIndex].answers" placeholder="Type your answer..."></textarea>
+                    </div>
+                    <div ng-show="window.Conf.dev_mode && videoResponseBlock" class="videoResponseBlock clearfix" pp-show-slide="videoResponseBlock">
+                        <div class="videoResponseContainer">
+                            <div ng-show="supportsRTC" id="videoResponseForm" class="videoResponseForm">
+                                <div id="videoContainer" ng-show="!video_metadata[currentQuestionIndex].startingVideo && (video_metadata[currentQuestionIndex].recordingVideo && !video_metadata[currentQuestionIndex].savingVideo) || (!video_metadata[currentQuestionIndex].startingVideo && !video_metadata[currentQuestionIndex].hasVideo && !video_metadata[currentQuestionIndex].videoPending && !video_metadata[currentQuestionIndex].savingVideo)">
+                                    <div id="video"
+                                        style="width:320px;height:240px;margin:0
+                                        auto" class="videoResponse"><img
+                                        src="/prep/public/images/prep/prepVideoLogo.jpg"
+                                        /></div>
+                                    <!-- <video id="video" class="videoResponse" autoplay></video> -->
+                                </div>
+                                <video id="playBack" class="videoResponse" ng-show="!video_metadata[currentQuestionIndex].startingVideo && !video_metadata[currentQuestionIndex].recordingVideo && !video_metadata[currentQuestionIndex].videoPending && video_metadata[currentQuestionIndex].hasVideo && !video_metadata[currentQuestionIndex].savingVideo" preload="metadata" controls src="{{video_metadata[currentQuestionIndex].videoUrl}}"></video>
+
+                                <!--temporary saving and processing indicators-->
+                                <div class="videoPending videoStatus" ng-show="video_metadata[currentQuestionIndex].videoPending"  height="480" width="240">
+                                    <div class="videoMessage">
+                                        <h3>Your video is currently processing. You can review it shortly or go on to the next question.</h3>
+                                    </div>
+                                </div>
+                                <div class="savingVideo videoStatus" ng-show="video_metadata[currentQuestionIndex].savingVideo"  height="480" width="240">
+                                    <div class="videoMessage">
+                                        <h3>Saving video, please wait...</h3>
+                                        <img style="background-color: #fff;" src="/public/images/prep/ajax-loader-bar.gif">
+                                    </div>
+                                </div>
+                                <div class="pendingPermission videoStatus" ng-show="video_metadata[currentQuestionIndex].pendingPermission"  height="480" width="240">
+                                    <div class="videoMessage">
+                                        <h3>Click Accept beside the video icon above to start recording</h3>
+                                    </div>
+                                </div>
+                                <div class="videoCountdown videoStatus" ng-show="video_metadata[currentQuestionIndex].videoCountdown"  height="480" width="240">
+                                    <div class="videoMessage">
+                                        <h3>Recording starts in {{ countdownTimer }}</h3>
+                                    </div>
+                                </div>
+
+                                <div class="videoControls" ng-hide="video_metadata[currentQuestionIndex].savingVideo || video_metadata[currentQuestionIndex].startingVideo">
+                                    <button id="startRecording" class="startRecording" ng-click="startRecording()" ng-hide="video_metadata[currentQuestionIndex].recordingVideo">Record New Video</button>
+                                    <button id="deleteVideo" class="stopRecording" ng-click="deleteVideo()" ng-show="!video_metadata[currentQuestionIndex].videoPending && video_metadata[currentQuestionIndex].hasVideo && !video_metadata[currentQuestionIndex].recordingVideo">Delete Video</button>
+                                    <!-- The record more button is just for testing -->
+                                    <button id="continueRecording" class="startRecording" ng-click="startRecording()" ng-show="canRecordMore && video_metadata[currentQuestionIndex].pausedVideo">Record More</button>
+                                    <button id="stopRecording" class="stopRecording" ng-click="stopRecording()" ng-show="video_metadata[currentQuestionIndex].recordingVideo && !video_metadata[currentQuestionIndex].pausedVideo">Stop Recording</button>
+                                    <button id="uploadVid" class="uploadVid" ng-click="finishRecording()" ng-show="video_metadata[currentQuestionIndex].pausedVideo">Save Video</button>
+                                    <button id="cancelRecording" class="stopRecording" ng-click="cancelRecording()" ng-show="video_metadata[currentQuestionIndex].pausedVideo">Cancel Recording</button>
+                                </div>
+                                <div id="timer" ng-show="!video_metadata[currentQuestionIndex].startingVideo && video_metadata[currentQuestionIndex].recordingVideo" class="videoTimer">
+                                    <span> {{ videoTimer }} </span>
+                                </div>
+                            </div>
+                            <div ng-hide="supportsRTC" class="notSupported">
+                                <p><br>Video responses can be recorded on <a target="_blank" href="http://www.chrome.com">Google Chrome</a> and support for other browsers is coming soon</a>. You can also record video responses on the mobile app which is available in the <a target="_blank" href="https://itunes.apple.com/us/app/prepado/id718996385?mt=8">App Store</a>.  Please use one of these options to record your answers.</p>
+                            </div>
+                        </div>
+                        <!--<div class="recordControlWrap"><a class="videoicon-record" id="questionVideoRecordBtn"></a></div>-->
+                        <!--<div class="videoControls">-->
+                            <!--<a class="videoicon-play" id="questionVideoPlayBtn"></a>-->
+                            <!--<span class="videoTimelineWrap"><a class="videoicon-position" id="questionVideoPosition"></a></span>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </div>
+            <div class="arrow"></div>
+
+            <div class="interviewNav">
+                <button class="previousQuestion" id="questionNavPrevious" ng-show="currentQuestionIndex > 0" ng-click="previousQuestion()">Previous</button>
+                <button class="nextQuestion" id="questionNavNext" ng-show="currentQuestionIndex+1 < interview.questions.length" ng-click="nextQuestion()">Next</button>
+                <button class="nextQuestion" id="questionNavFinish" ng-show="currentQuestionIndex+1 == interview.questions.length" ng-click="finishQuestion()">Finish</button>
+                <span class="nextArrow"></span>
+            </div>
+
+        </div>
+
+        <div class="span2 convoCircleContainer">
+            <div class="convoCircleQuestion">
+                <img src="/public/images/prep/questionMarkB.png" alt="" />
+            </div>
+        </div>
+    </div>
+
+</div>

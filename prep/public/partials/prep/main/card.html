@@ -1,0 +1,37 @@
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <div class="myAccountWrap">
+
+                <h1 class="text-uppercase">Payment Method</h1>
+
+                <h2>Credit Card Information:</h2>
+
+                <div ng-show="creditCardErrorMsg" id="creditCardErrorMsg" class="unstyled alert alert-error"> {{creditCardErrorMsg}} </div>
+                <form id="cardUpdateForm" name="cardUpdateForm" autocomplete="off">
+                    <div>
+                        <div class="alert alert-success" ng-show="user.lastFourCardDigits"><small>Card on file: {{creditCard.type}} {{creditCard.number}}</small></div>
+                        <input placeholder="Card Number" type="text" autocomplete="off" class="input-block-level" id="creditCardNumber" size="20" data-stripe="number"/>
+                        <input type="text" placeholder="MM" autocomplete="off" class="input-mini" maxlength="2" data-stripe="exp-month"/>
+                        <input type="text" placeholder="YYYY" autocomplete="off" class="input-mini" maxlength="4" data-stripe="exp-year"/>
+                        <input type="text" placeholder="CVC" autocomplete="off" class="input-mini pull-right" maxlength="4" data-stripe="cvc"/>
+                        <br />
+                    </div>
+
+                    <ul ng-show="errors" class="unstyled alert alert-error">
+                        <li ng-repeat="error in errors">{{ error.message }}</li>
+                    </ul>
+
+                    <div class="alert alert-success updateSuccess" ng-show="updated">
+                        Your card information has been successfully updated
+                    </div>
+
+                    <div class="saveCancelWrap">
+                        <div class="cancel"><a href="/myAccount" class="btn btn-block" id="updateCardCancelBtn" data-loading-text="Submitting..." bs-loading-text="submitting">Cancel</a></div>
+                        <div class="save"><button ng-click="updateCard()" type="submit" class="btn btn-primary input-block-level" id="updateCard" data-loading-text="Submitting..." bs-loading-text="submitting">Update Card Info</button></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

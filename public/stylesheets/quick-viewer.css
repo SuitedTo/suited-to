@@ -1,0 +1,14 @@
+.quick-view-pdf-loader {background: transparent; background-image:url('/public/images/ajax-loader-gray.gif'); background-repeat:no-repeat; background-position:center;}
+.quick-view-image-loader {background: transparent; background-image:url('/public/images/ajax-loader.gif'); background-repeat:no-repeat; background-position:center;}
+.quick-view-header {height: 250; border-bottom: 1px solid LightGray; font-size: 25px; letter-spacing: -1px; line-height: 1; font-family: Helvetica,"Helvetica Neue",HelveticaNeue,Arial,sans-serif; text-rendering: optimizelegibility; font-weight: normal; margin: 0px 0px 20px;}
+.quick-view-pdf-body {overflow:scroll; width:870; padding: 10px; border: 2px solid gray; -webkit-border-radius: 10px; -moz-border-radius: 10px; border-radius: 10px; -moz-box-shadow: inset 0 0 9px #555; -webkit-box-shadow: inset 0 0 9px #555; box-shadow: inset 0 0 9px #555; }
+.quick-view-pdf-js-body { padding: 0; background-color:LightGray; }
+.quick-view-pdf-js-body > div { padding: 15px; }
+.quick-view-html-body, .quick-view-img-body { overflow: scroll; }
+.quick-view-img-body { text-align: center; }
+.pdfpage { background-color:White; position:relative; top: 0; left: 0; border: solid 1px gray; margin: 10px auto; }
+  .pdfpage > canvas { position: absolute; top: 0; left: 0; }
+  .pdfpage > div { position: absolute; top: 0; left: 0; }
+  .inputControl { background: transparent; border: 0px none; position: absolute; margin: auto; }
+  .inputControl[type='checkbox'] { margin: 0px; }
+  .inputHint { opacity: 0.2; background: #ccc; position: absolute; }

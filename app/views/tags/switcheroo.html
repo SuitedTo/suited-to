@@ -1,0 +1,5 @@
+#{if session.originalUser}
+<div id="switcheroo" class="row-fluid">
+    <div class="span12"><div class="innerWrap">You originally logged in as <strong><em>${session.originalUser}</em></strong> but are using the application as <strong><em>${session.prettyusername}</em></strong>. To switch back <a href="@{Admin.switchBackToOriginalUser()}">click here</a>.</div></div>
+</div>
+#{/if}

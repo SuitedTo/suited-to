@@ -1,0 +1,535 @@
+#{extends 'standardPage.html' /}
+%{
+ editMode = question?.hasBeenSaved()
+ title = editMode ? "Edit Question" : "Create Question"
+ }%
+#{set title:title /}
+#{set 'moreScripts'}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'jquery-ui-1.9.0.custom.min.js' /}
+    #{script 'jquery.form.js'/}
+    #{script 'changes-alert.js'/}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+
+%{  }%
+#{if editMode && question.canReview(connectedUser)}
+<div class="row">
+<div class="span8 alert alert-info fade in">
+    Hey ${connectedUser.fullName}, this is your question.  It looks like you've earned the right to approve it yourself.
+    To approve this question just view it in <strong><a href="@{view(question.id)}">review mode</a></strong>
+    and click the Accept Question button.
+</div>
+</div>
+#{/if}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"Questions", isReviewer:isReviewer /}
+
+            <h1>${title}</h1>
+        </div>
+    </div>
+</div>
+
+#{ifErrors}
+<div id="errorMessage" class="row">
+    <div class="span12">
+        <div class="alert alert-error">
+            #{if !editMode && question?.status?.isPubliclyVisible()}
+                When Entering a new <strong>public</strong> question you must provide: Question Text, Timing, Difficulty, and either some Possible Answers or some Tips.  You must also select at least one category.
+            #{/if}
+            #{elseif question?.status?.isPubliclyVisible()}
+                <strong>Public</strong> questions must contain: Question Text, Timing, Difficulty, and either some Possible Answers or some Tips.  You must also select at least one category.
+            #{/elseif}
+            #{else}
+                <strong>Private</strong> questions must contain: Question Text
+            #{/else}
+        </div>
+    </div>
+</div>
+#{/ifErrors}
+
+#{form @Questions.save() , id:'createQuestionForm', class:'form-horizontal', autocomplete:"off"}
+#{if editMode}<input type="hidden" name="question.id" value="${question.id}"/>#{/if}
+<div class="row">
+
+    <div class="span8">
+        <fieldset>
+
+            <div class="control-group #{ifError 'question.text'}error#{/ifError}">
+                <label for="question.text" class="required control-label">Question Text</label>
+                <div class="controls">
+                    <textarea class="input-xxlarge" id="question.text" name="question.text" rows="2">${question?.text}</textarea>
+                </div>
+            </div>
+
+            #{deadbolt.restrictedResource resourceKeys:["nonLonerOnly"]}
+                <div class="control-group">
+                    <label class="control-label" for="private">Private?</label>
+                    <div class="controls">
+
+                        %{
+                            privateAllowed =  question?.status?.equals(enums.QuestionStatus.PRIVATE) ||
+                                    enums.AccountLimitedAction.CREATE_PRIVATE_QUESTION.canPerform((models.AccountHolder)connectedUser);
+
+                            if (privateAllowed) {
+                                privateDisabled = "";
+                            }
+                            else {
+                                privateDisabled = "disabled='disabled'";
+                            }
+                        }%
+
+                        <label class="checkbox"><input type="checkbox" ${privateDisabled} id="private" name="privateQuestion" #{if question?.status?.equals(enums.QuestionStatus.PRIVATE)}checked="checked"#{/if}/>This question is only visible to my company.</label>
+                        <input type="hidden" name="privateQuestion" value="false"/>*{to recognize unchecked checkbox}*
+
+                        #{if !privateAllowed}
+                            <div class="alert">
+                                %{
+                                    company = connectedUser.company;
+                                }%
+
+                                #{if connectedUser.getAccountType().getMax(enums.AccountResource.PRIVATE_QUESTIONS) == 0}
+                                    &{'limits.questions.private.none'}
+                                #{/if}
+                                #{else}
+                                    &{'limits.questions.private.max'}
+                                #{/else}
+
+                            #{deadbolt.restrict roles:[['COMPANY_ADMIN']]}
+                                %{
+                                    link = controllers.CompanyManagement.getLink();
+                                }%
+
+                                #{if company.accountType.equals(enums.AccountType.FREE)}
+                                    &{'limits.questions.private.get', link}
+                                #{/if}
+                                #{else}
+                                    &{'limits.questions.private.more', link}
+                                #{/else}
+                            #{/deadbolt.restrict}</div>
+                        #{/if}
+                    </div>
+                </div>
+            #{/deadbolt.restrictedResource}
+
+            #{deadbolt.restrict roles:[['APP_ADMIN']]}
+                <div class="control-group">
+                    <label class="control-label" for="question.excludeFromPrep">Exclude from Prepado?</label>
+                    <div class="controls">
+                        <label class="checkbox"><input type="checkbox" id="question.excludeFromPrep" name="question.excludeFromPrep" value="true" ${question?.excludeFromPrep ? 'checked="true"' : ''}/>This question will be excluded from use in Prepado, regardless if the category is allowed in Prepado.</label>
+                        <input type="hidden" name="question.excludeFromPrep" value="false"/>*{to recognize unchecked checkbox}*
+                    </div>
+                </div>
+            #{/deadbolt.restrict}
+
+            <div id="categoryGroup" class="control-group #{ifError 'questionCategory'}error#{/ifError}">
+                <label for="category" class="control-label">Category</label>
+                %{helpText = "Start typing to search for an existing category (ex. Java, C#, Culture, Human Resources).  Don't see one that suits your needs? You can create a new category by typing in the name here as well."}%
+                <div class="controls">
+                    #{categories
+                    field:"category",
+                    value:question?.category?.name,
+                    placeholder:"Type a Category Name...",
+                    helpText: helpText/}
+
+                    <div id="newCategoryAlert"></div>
+                    <div id="betaCategoryAlert"></div>
+                </div>
+
+
+            </div>
+            <div id="timingGroup" class="control-group #{ifError 'time'}error#{/ifError}">
+                <label class="control-label">Timing</label>
+                <div class="controls">
+                    <label class="radio">
+                        <input id="questionTimeShort" type="radio" name="question.time" value="SHORT" #{if "SHORT".equals(question?.time?.name())}checked="checked"#{/if}/>
+                        Quick (<1 minute)
+                    </label>
+
+                    <label class="radio">
+                        <input id="questionTimeMedium" type="radio" name="question.time" value="MEDIUM" #{if "MEDIUM".equals(question?.time?.name())}checked="checked"#{/if}/>
+                        Medium (1-5 minutes)
+                    </label>
+
+                    <label class="radio">
+                        <input id="questionTimeLong" type="radio" name="question.time" value="LONG" #{if "LONG".equals(question?.time?.name())}checked="checked"#{/if}/>
+                        Long (>5 minutes)
+                    </label>
+
+                </div>
+            </div>
+            <div id="difficultyGroup" class="control-group #{ifError 'difficulty'}error#{/ifError}">
+                <label class="control-label">Difficulty</label>
+                <div class="controls">
+                    <label class="radio">
+                        <input id="questionDifficultyEasy" type="radio" name="question.difficulty" value="EASY" #{if "EASY".equals(question?.difficulty?.name())}checked="checked"#{/if}/>
+                        Easy
+                    </label>
+
+                    <label class="radio">
+                        <input id="questionDifficultyMedium" type="radio" name="question.difficulty" value="MEDIUM" #{if "MEDIUM".equals(question?.difficulty?.name())}checked="checked"#{/if}/>
+                        Medium
+                    </label>
+
+                    <label class="radio">
+                        <input id="questionDifficultyHard" type="radio" name="question.difficulty" value="HARD" #{if "HARD".equals(question?.difficulty?.name())}checked="checked"#{/if}/>
+                        Hard
+                    </label>
+
+                </div>
+            </div>
+            <div id="answersGroup" class="control-group #{ifError 'possibleAnswers'}error#{/ifError}">
+                <label class="control-label" for="question.answers">Possible Answers <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.possibleAnswers'}" data-original-title="Possible Answers">?</a></label>
+                <div class="controls">
+                    <textarea class="input-xxlarge" id="question.answers" name="question.answers" rows="4">${question?.answers}</textarea>
+                </div>
+            </div>
+            #{deadbolt.restrict roles:[['APP_ADMIN']]}
+                <div id="prepAnswersGroup" class="control-group">
+                    <label class="control-label" for="question.prepAnswers">Possible Prepado Answers <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.possiblePrepAnswers'}" data-original-title="Possible Prepado Answers">?</a></label>
+                    <div class="controls">
+                        <textarea class="input-xxlarge" id="question.prepAnswers" name="question.prepAnswers" rows="4">${question?.prepAnswers}</textarea>
+                    </div>
+                </div>
+            #{/deadbolt.restrict}
+            <div class="control-group">
+                <label class="control-label" for="question.tips">Tips <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.tips'}" data-original-title="Tips">?</a></label>
+                <div class="controls">
+                    <textarea class="input-xxlarge" id="question.tips" name="question.tips" rows="4">${question?.tips}</textarea>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">&nbsp;</label>
+                <div class="controls">
+                    <hr/>
+                    <p id="answerTip">Fill in either <strong>possible answers</strong> or <strong>tips</strong>, only 1 is needed!</p>
+                </div>
+            </div>
+            #{if connectedUser.company}
+            <div class="control-group">
+                <label class="control-label" for="companyNotes">${connectedUser.company.name} Notes <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.companyNotes'}" data-original-title="Company Notes">?</a></label>
+                <div class="controls">
+                    <textarea class="input-xxlarge" id="companyNotes" name="companyNotes" rows="4">${companyNotes?.text}</textarea>
+                </div>
+            </div>
+            #{/if}
+            
+            #{if resubmit}
+                <div class="control-group">
+                    <label class="control-label">&nbsp;</label>
+                    <div class="controls">
+                        <hr/>
+                        <p>You are editing a question that was returned to you for revisions.  If you'd like, you may leave a comment for reviewers explaining your changes:</p>
+                        <textarea class="input-xxlarge" id="submitComment" name="submitComment" rows="4"></textarea>
+                    </div>
+                </div>
+            #{/if}
+
+            <input type="hidden" id="addToInterview" name="addToInterview" value="${addToInterview}" />
+            <div class="form-actions btn-toolbar">
+                <!--Cancel Button-->
+                <a href="@{Questions.cancelEdit(addToInterview, addToInterviewHasUnsavedChanges)}" id="cancelBtn" class="btn no-change-check">
+                   Cancel
+                </a>
+
+                <!--Submit Button (variations)-->
+                %{
+                    buttonText = ""
+                    if (resubmit){
+                    buttonText = 'Re-Submit Question'
+                    } else if (question?.hasBeenSaved()) {
+                    buttonText = 'Save Changes'
+                    } else {
+                    buttonText = 'Submit Question'
+                    }
+                }%
+                <div class="btn-group">
+                    <button id="submitButton"
+                            class="btn btn-primary checkUserData ${resubmit ? 'resubmit' : ''} ${question?.hasBeenSaved() && question.status.isPubliclyVisible() ? 'savedPublic' : ''} no-change-check"
+                            type="submit"
+                            data-action="${!question?.hasBeenSaved() || question.status.isPubliclyVisible() ? 'question' : 'privateQuestion'}">${buttonText}</button>
+                #{deadbolt.restrict roles:[['APP_ADMIN']]}
+                    #{if editMode}
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a id="saveOtr" class="no-change-check" href="#">Save (Off the Record)</a></li>
+                            <input type="hidden" id="saveOtrInput" name="saveOtr" value="false"/>
+                        </ul>
+                    #{/if}
+                #{/deadbolt.restrict}
+                </div>
+
+
+                <!--Delete Buttons-->
+                #{deadbolt.restrict roles:[['APP_ADMIN']]}
+
+                    #{if question?.id != null}
+                        <a id="deletePermanentlyBtn" data-target="#deleteForeverConfirmation" data-toggle="modal"
+                           class="btn btn-danger no-change-check inline"><i class="icon-trash icon-white"></i> Permanently
+                            delete this question</a>
+                    #{/if}
+
+                #{/deadbolt.restrict}
+                #{if question?.canEdit(connectedUser) && question?.active}
+
+                    #{if question?.id != null}
+                        <a id="deleteLink" href="#" data-target="#deleteConfirmation" data-toggle="modal"
+                           class="no-change-check pull-right visibleText"><i class="icon-trash"></i> Delete</a>
+                    #{/if}
+                #{/if}
+
+            </div>
+        </fieldset>
+    </div>
+    <div class="span3 createQuestionCallouts">
+
+        <div class="well applicationWell teal callout1">
+            <h2>What does the question have to include?</h2>
+            <ul>
+                <li>Question</li>
+                <li>Category</li>
+                <li>Timing</li>
+                <li>Difficulty</li>
+                <li>Possible answers or tips</li>
+            </ul>
+        </div>
+        <div class="well applicationWell darkteal callout2">
+            <h2>What shouldn’t I ask about?</h2>
+            <ol>
+                <li>Age / date of birth</li>
+                <li>High school graduation date</li>
+                <li>Religious affiliation</li>
+                <li>Marital status / spouse’s occupation</li>
+                <li>Children</li>
+                <li>Health-care coverage</li>
+                <li>Native language</li>
+                <li>Ethnicity</li>
+                <li>Birthplace</li>
+                <li>Medical conditions</li>
+            </ol>
+        </div>
+        <div class="well applicationWell lightteal callout3">
+            <p>Unsure about what you're adding? Check out our <a id="disclaimer" href="@{Questions.showStaticPage()}?page=LEGAL_DISCLAIMER" rel="external">disclaimer</a>!</p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="span7 offset1">
+
+    </div>
+    
+
+
+</div>
+
+<div id="submitConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>You have made changes to this question that has previously been returned to you for revisions.  You may add a
+            comment below to explain any updates to reviewers.</p>
+        <textarea class="input-xxlarge" id="submitComment" name="submitComment" rows="3" placeholder="Add a comment (optional)"></textarea>
+    </div>
+    <div class="modal-footer">
+        <a id="cancelResubmitBtn" data-dismiss="modal" class="btn no-change-check">Cancel</a>
+        <button id="resubmitBtn" class="btn btn-primary no-change-check" type="submit">Re-Submit Question</button>
+    </div>
+</div>
+
+<div id="privateConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>You are making this question that was previously shared with all users into a private question for your
+            company.  Are you sure you want to continue?
+    </div>
+    <div class="modal-footer">
+        <a data-dismiss="modal" class="btn no-change-check">Cancel</a>
+        <button class="btn btn-primary no-change-check" type="submit">Save Changes</button>
+    </div>
+</div>
+
+#{/form}
+
+#{if question?.canSeeHistory(connectedUser)}
+<div class="row" style="margin-top: 36px">
+    <div class="span9">
+        #{questionWorkflow question: question/}
+    </div>
+</div>
+#{/if}
+
+#{if question?.canEdit(connectedUser)}
+
+<div id="deleteConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Delete Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to delete this question?</p>
+    </div>
+    <div class="modal-footer">
+        <a id="cancelDelete" data-dismiss="modal" class="btn no-change-check">Cancel</a>
+        #{deadbolt.restrict roles:[['APP_ADMIN'] , ['COMPANY_ADMIN']]}
+        <a id="deepDeleteQuestion" onClick="deepDeleteQuestion()" class="btn btn-danger no-change-check"><i class="icon-trash icon-white"></i> Delete and remove from all interviews</a>
+        #{/deadbolt.restrict}
+        <a id="deleteQuestion" onClick="deleteQuestion()" class="btn btn-danger no-change-check"><i class="icon-trash icon-white"></i> Delete</a>
+    </div>
+</div>
+
+<div id="deleteForeverConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Delete Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to permanently delete this question?</p>
+    </div>
+    <div class="modal-footer">
+        <a id="cancelDeletePermanently" data-dismiss="modal" class="btn no-change-check">Cancel</a>
+        <a id="confirmDeletePermanently" href="@{Questions.deleteForever(question?.id)}" class="btn btn-danger no-change-check"><i class="icon-trash icon-white"></i> Delete Permanently</a>
+    </div>
+</div>
+#{/if}
+
+
+<script type="text/javascript">
+    #{if editMode}
+        function deleteQuestion(){        
+    		window.location.href = "@{Questions.delete(question?.id)}";  	    
+        }
+        
+        function deepDeleteQuestion(){
+        	window.location.href = "@{Questions.deepDelete(question?.id)}";  	    
+        }
+
+    #{/if}
+
+    function updateNewCategoryAlert(ui){
+        var categoryValue = encodeURIComponent($("#category").val());
+
+        var checkAction = #{jsAction @Categories.isExistingCategory(':value') /}
+        var privateChecked =  $("#private").is(":checked");
+        $.ajax({
+            url: checkAction({value: categoryValue}),
+            success : function(data) {
+                if(data == 'false' && !privateChecked && categoryValue != ""){
+                    var message = "<strong>Heads Up!</strong> You are creating a new category for this question. " +
+                            "Questions cannot be accepted as public until the category is public. You can Edit the question " +
+                            "to change the category or make it private. Submit the question as-is if you feel the category " +
+                            "should be made public.";
+                    $('#newCategoryAlert').html('<div id="newCategoryAlert" class="alert"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+
+                } else {
+                    $("#newCategoryAlert").html('<div id="newCategoryAlert"></div>');
+                }
+            }
+        });
+    }
+
+    function updateBetaCategoryAlert(){
+        var categoryValue = $("#category").val();
+        var checkAction = #{jsAction @Categories.getCategoryStatuses(':categories') /}
+        $.ajax({
+            url: checkAction({categories: "[" + categoryValue + "]"}),
+            success : function(data) {
+                if(data[categoryValue] === 'BETA') {
+                    //TODO create beta category help
+                    var message = "<strong>Heads Up!</strong>  <em>" + categoryValue + "</em> is a Beta category.";  //<a href='http://community.sparcin.com/sparcin/topics/what_is_a_beta_category' target='_blank'>Learn about Beta categories</a>.";
+                    $('#betaCategoryAlert').html('<div id="betaCategoryAlert" class="alert"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+
+                } else {
+                    $("#betaCategoryAlert").html('<div id="betaCategoryAlert"></div>');
+                }
+            }
+        });
+    }
+
+    $(document).ready(function(){
+
+        var domSubmitButton = document.getElementById('submitButton');
+        var submitButton = $('#submitButton');
+        var savedPublic = submitButton.hasClass('savedPublic');
+        var resubmit = submitButton.hasClass('resubmit');
+        
+        #{if !connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+            $("#categoryGroup").children('label').addClass("required");
+            $("#timingGroup").children('label').addClass("required");
+            $("#difficultyGroup").children('label').addClass("required");
+		#{/if}
+
+        $("#private").change(function () {
+            var privateChecked = $(this).is(":checked");
+            $("#answerTip").toggle(!privateChecked);
+
+        #{if !connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+            $("#categoryGroup").children('label').toggleClass("required");
+            $("#timingGroup").children('label').toggleClass("required");
+            $("#difficultyGroup").children('label').toggleClass("required");
+		#{/if}
+            if (privateChecked) {
+                domSubmitButton.data('action', 'privateQuestion');
+                submitButton.removeClass('checkUserData');
+                if (resubmit) {
+                    domSubmitButton.setAttribute('data-target', '');
+                    domSubmitButton.setAttribute('data-toggle', '');
+                    submitButton.html('Save Changes');
+                }
+
+                if (savedPublic) {
+                    domSubmitButton.setAttribute('data-target', '#privateConfirmation');
+                    domSubmitButton.setAttribute('data-toggle', 'modal');
+                    submitButton.html('Save Private Question');
+                }
+
+                if (!resubmit) {
+                    submitButton.html('Save Private Question');
+                }
+                $("#categoryGroup").removeClass("error");
+                $("#timingGroup").removeClass("error");
+                $("#difficultyGroup").removeClass("error");
+                $("#answersGroup").removeClass("error");
+
+            } else {
+                submitButton.data('action', 'question');
+                submitButton.addClass('checkUserData');
+                if (savedPublic) {
+                    domSubmitButton.setAttribute('data-target', '');
+                    domSubmitButton.setAttribute('data-toggle', '');
+                }
+
+                if (resubmit) {
+                    domSubmitButton.setAttribute('data-target', '');
+                    domSubmitButton.setAttribute('data-toggle', '');
+                    submitButton.html('Re-Submit Question');
+                } else {
+                    submitButton.html('Submit Question');
+                }
+            }
+
+            updateNewCategoryAlert();
+
+        });
+
+        $("#category").bind("autocompletechange", function(event, ui){
+            updateNewCategoryAlert(ui);
+            updateBetaCategoryAlert();
+        });
+
+    });
+
+</script>
+

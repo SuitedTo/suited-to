@@ -1,0 +1,176 @@
+*{ Display a single User's property to another User in one of three modes
+ { based on the relationship between the Users and the privileges of the viewing 
+ { User.  The three modes are: "hide", in which case nothing is displayed, 
+ { "view", in which case the information is presented in a static, uneditable
+ { form, and "edit", in which case the information is presented in an editable 
+ { way.  
+ {
+ { In "hide" mode, this tag will render nothing, and the body of this tag will
+ { not be executed.
+ {
+ { In "view" mode, by default, the field of the display User corresponding to
+ { the property-name will be retrieved, its toString() called, and the result
+ { rendered as plain HTML text.  If no such field exists, an Exception will be
+ { thrown.  The body of this tag will then be executed and rendered.
+ {
+ { In "edit" mode, by default, the field of the display User will be retrieved,
+ { as in "view" mode, and a text box will be rendered, pre-populated with the
+ { toString() of the retrieved value.  The body of this tag will then be 
+ { executed and rendered.
+ {
+ { If _noDefault is true and the mode is "view" or "edit", nothing will be 
+ { rendered by default (the corresponding field will still be retrieved), and 
+ { this tag will simply execute and render the body of the tag.
+ {
+ { This tag exposes two variables to the body of the tag:
+ {   fieldValue: the Java object corresponding to the current value of the field
+ {   fieldMode: The enums.FieldDisplayMode corresponding to the display mode.
+ {         Must necessarily not be HIDE, since the body is not executed in this
+ {         case.
+ {
+ { If "edit" mode is decided upon and this tag is used inside an HTML form, this
+ { tag looks for a field called "includedFields" inside that form and appends 
+ { the property name (_arg) to the value of that input preceded by a space.  If 
+ { the form doesn't contain such a field, a hidden one is created and the 
+ { property name is included as it's value.  This is used server-side to 
+ { determine which fields we're trying to set (since things like checkboxes and 
+ { radio buttons don't post when they are not set.)
+ {
+ { Additionally, if displaying in anything but "hide" mode, this tag will define
+ { the global variable "__propertyDisplayed", which can be used to determine if
+ { any property has been displayed.  If displaying in "edit" mode, this tag will
+ { define the global variable "__editDisplayed".
+ {
+ { Finally (deep breaths), the hide/view/edit behavior of this tag can be 
+ { overridden by the optionally-defined global variable __userPropertyTagMode.
+ { If set to the string "securityTest", the selected mode will ALWAYS be "edit",
+ { which permits you to easily try to set values on things that shouldn't be
+ { accessible, thus letting you test the server's error checking.  If set to the
+ { string "view", any time the mode "edit" would ordinarily be selected, the
+ { mode "view" will instead be selected, which permits you to offer a pretty
+ { view mode until a user has indicated her desire to edit.  If set to anything
+ { else or not set at all, mode is chosen normally.
+ {
+ { Arguments:
+ {   _arg: The name of a field as a String, corresponding to a field of the User
+ {         class.  The field must have a @Management tag.  If it does not, an 
+ {         Exception will be thrown.
+ {   _displayUser: The User whose information should be displayed.  This may be
+ {         omitted or null, in which case the "edit" mode will always be chosen 
+ {         (thus allowing you to easily set up a new user.)
+ {   _connectedUser: The User who is attempting to view/edit the information.
+ {   _noDefault: Optional.  If set to true, does not generate a default edit or
+ {         view render when displaying those modes, but rather simply executes 
+ {         and displays the body of this tag.  If omitted or set to false, 
+ {         displays the toString() of the current value in "view" mode, and
+ {         generates a default edit field in "edit" mode, then executes and 
+ {         appends the body of this tag afterward.
+ {   _inputName: Optional.  Overrides the name and id of the default generated
+ {         HTML input in edit mode.  If not provided, this defaults to match
+ {         _arg.
+ {   _displayIfNone: Optional.  If false, when the field would otherwise be
+ {         included in "view" mode, if the value of the field is null or the
+ {         empty string, displays in "hide" mode, instead.  Defaults to true.
+ {   _noView: Optional.  If true, when the field would otherwise be displayed
+ {         in "view" mode, it will instead display in "hide" mode.  Defaults to
+ {         false.
+ }*
+
+ %{
+    if (!_arg) {
+        throw new RuntimeException("arg is required.");
+    }
+    
+    if (!_connectedUser) {
+        throw new RuntimeException("connectedUser is required.");
+    }
+    
+    if (_displayIfNone == null) {
+        _displayIfNone = true;
+    }
+    
+    if (!_inputName) {
+        _inputName = _arg;
+    }
+    
+    if (_noDefault == null) {
+        _noDefault = false;
+    }
+    
+    if (_noView == null) {
+        _noView = false;
+    }
+    
+    if (_displayUser) {
+        value = _displayUser.getFieldValue(_arg);
+    }
+    else {
+        value = "";
+    }
+    
+    if (!_displayUser || __userPropertyTagMode == "securityTest") {
+        mode = enums.FieldDisplayMode.EDIT;
+    }
+    else {    
+        mode = models.User.getFieldDisplayMode(
+                _arg, _displayUser, _connectedUser);
+
+        if (__userPropertyTagMode == "view" && 
+                mode.equals(enums.FieldDisplayMode.EDIT)) {
+        
+            mode = enums.FieldDisplayMode.VIEW;
+        }
+                
+        if (mode.equals(enums.FieldDisplayMode.VIEW) &&
+                (_noView ||
+                 (!_displayIfNone && (!value || value == "")))) {
+
+            mode = enums.FieldDisplayMode.HIDE;
+        }
+    }
+    
+    markerName = _arg + _inputName + "PropertyMarker";
+}%
+
+#{if !mode.equals(enums.FieldDisplayMode.HIDE)}
+
+    #{set __propertyDisplayed: true /}
+
+    #{if !_noDefault}
+        #{if mode.equals(enums.FieldDisplayMode.VIEW)}
+            <p>${value}</p>
+        #{/if}
+        #{else}                
+            <input type="text" data-provide="typeahead" id="${_inputName}" name="${_inputName}" value="${value}" />
+        #{/else}
+    #{/if}
+
+    #{set fieldValue: value /}
+    #{set fieldMode: mode /}
+    #{doBody/}
+    
+    *{ Note that we do this after the body so that any defined inputs will be
+     { before the "includedFields" input, which makes this work correctly with
+     { userPropertyHeading, which sets the "for" attribute of the label to the 
+     { first input to appear in its body. }*
+    #{if mode.equals(enums.FieldDisplayMode.EDIT)}
+    
+        #{set __editDisplayed: true /}
+
+        <div id="${markerName}" style="display:none;"></div>
+        
+        <script type="text/javascript">
+            $(function () {
+                var form = $("#${markerName}").closest("form");
+                var includedFields = $("#includedFields", form);
+
+                if (includedFields.size() == 0) {
+                    includedFields = $("<input type='hidden' id='includedFields' name='includedFields' value=''/>");
+                    form.append(includedFields);
+                }
+
+                includedFields.val(includedFields.val() + " " + "${_arg}");
+            });
+        </script>
+    #{/if}
+#{/if}

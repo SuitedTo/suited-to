@@ -1,0 +1,34 @@
+#{extends 'blowyEmail.html' /}
+<!-- // Begin Module: Standard Content \\ -->
+<table border="0" cellpadding="20" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div mc:edit="std_content01">
+                <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                    <tr>
+                        <td valign="top"></td>
+                        <td><h4 class="h4">Hey #{if user.displayName}${user.displayName}#{/if}#{else}${user.fullName}#{/else},</h4>
+
+                                You're almost a reviewer!  Once you hit ${questionThreshold} questions, have a street cred score of ${streetCredThreshold} and pass the HR Compliance training, you're a reviewer!  Keep up the great work!
+
+                            <br><br>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td valign="top"></td>
+                        <td>
+                            Sincerely, <br>
+                            The SuitedTo TEAM
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
+<!-- // End Module: Standard Content \\ -->

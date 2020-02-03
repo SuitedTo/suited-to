@@ -1,0 +1,143 @@
+<div id="handlebarsTemplates" class="hide">
+
+<!-- 
+#
+# SuitedTo Handlebars Templates
+#
+-->
+
+
+    <!-- 
+    # TEMPLATE: userCard
+    # used on: /Community/community
+    -->
+    
+    <script type="text/x-handlebars-template" id="tmpl_userCard">
+    {{#each data}}
+        <div class="span4">
+            <div class="userCard{{help_userCardReviewerClass [3]}}">
+                <div class="userPicture">{{help_userCardPicture [0]}}</div>
+                <div class="userStreetCred">{{[2]}}</div>
+                <div class="userName"><a href="/community/profile/{{[6]}}">{{[1]}}</a></div>
+                <div class="userReviewer">{{#compare [3] 'true' operator="==="}}Reviewer{{/compare}}</div>
+                {{#compare [4] 'true' operator="==="}}<div class="userProinterviewer">ProInterviewer</div>{{/compare}}
+                <div class="userCategories">{{[5]}}</div>
+            </div>
+        </div>
+    {{/each}}
+    </script>
+    <!-- HELPERS for userCard -->
+    <script type="text/html" id="help_userCardReviewer" class="helper" data-args="reviewer">        
+        if (reviewer !== null) {
+            if (reviewer === 'true') { // is true  
+                return 'Reviewer';
+            }
+            else { // is false
+                return '';
+            }
+        } else { // reviewer status is hidden // don't show anything
+            //result = new Handlebars.SafeString( '<em>reviewer status hidden</em>' );
+            return '';
+        }
+    </script>
+    <script type="text/html" id="help_userCardPicture" class="helper" data-args="picture">
+        if (picture !== null){
+            return new Handlebars.SafeString( '<img src="'+picture+'" alt="user picture" />' );
+        } else {
+            return new Handlebars.SafeString( '<img src="/public/images/blowyProfile-150x150.png" alt="user picture" />' );
+            //return '';
+        }
+    </script>
+    <script type="text/html" id="help_userCardReviewerClass" class="helper" data-args="reviewer">
+        if (reviewer === 'true'){
+            return ' reviewer';
+        } else {
+            return '';
+        }
+    </script>
+
+
+
+    <!-- 
+    # TEMPLATE: feedItem
+    # used on: /application/home
+    -->
+
+    <script type="text/html" id="tmpl_FeedItem">
+        {{#data}}
+        <div class="feedItem clearfix {{relationship}} {{type}}" id="feedItem_{{storyId}}">
+            {{help_FeedItemImage relationship badgeImageUrl badgeTitle relatedUserPictureUrl}}
+            <div class="feedText">{{help_FeedItemMessage message}}</div>
+            <!--<div class="feedShare"><a href="#" data-standardShareMessage="{{standardShareMessage}}" data-twitterShareMessage="{{twitterShareMessage}}">Share this</a></div>-->
+            <div class="feedFooter">
+                {{help_FeedItemRelationship shouldShowShareMessages share standardShareMessage twitterShareMessage}}
+                <span class="feedDate">{{help_FeedItemTimestamp timestamp}}</span>
+            </div>
+        </div>
+        {{/data}}
+    </script>
+
+    <script type="text/html" id="help_FeedItemMessage" class="helper" data-args="message">
+        if (message !== null){
+            return new Handlebars.SafeString( message );
+        } else {
+            return '';
+        }
+    </script>
+    <script type="text/html" id="help_FeedItemTimestamp" class="helper" data-args="timestamp">
+        if (timestamp !== null){
+            var date = new Date(timestamp);
+            //console.log(date.toString());
+            return Application.Helper.prettyDate(date);
+        } else {
+            return '';
+        }
+    </script>
+    <script type="text/html" id="help_FeedItemRelationship" class="helper" data-args="shouldShowShareMessages,share,standardShareMessage,twitterShareMessage">
+        var txt = '';
+        if(shouldShowShareMessages === true){
+            txt = new Handlebars.SafeString( '<span class="shareOptions hide">' +
+                '<a class="facebook-share-button" onclick="window.open(\'http://www.facebook.com/sharer.php?s=100&amp;p[title]=SuitedTo&amp;p[summary]='+encodeURIComponent(standardShareMessage.message)+'&amp;p[url]='+encodeURIComponent(standardShareMessage.link)+'&amp;\', \'sharer\', \'toolbar=0,status=0,width=620,height=280\');" href="javascript: void(0)">Facebook</a> ' +
+                '<a href="javascript: void(0)"  onclick="window.open(\'https://twitter.com/share?via=SuitedTo&amp;related=SuitedTo&amp;text='+encodeURIComponent(twitterShareMessage.message)+' '+encodeURIComponent(twitterShareMessage.link)+'\', \'sharer\', \'toolbar=0,status=0,width=620,height=280\');" class="twitter-share-button" data-lang="en" data-related="SuitedTo,SPARCedge">Tweet</a>' +
+                '</span> <a href="#" class="feedShare">Share this</a> &nbsp;|&nbsp; ' );
+        }
+        return txt;
+    </script>
+    <script type="text/html" id="help_FeedItemImage" class="helper" data-args="relationship,badgeImageUrl,badgeTitle,relatedUserPictureUrl">
+        var txt = '';
+        if(badgeImageUrl && relationship != undefined && relationship === 'user'){
+            txt = new Handlebars.SafeString( '<div class="feedImage"><img src="'+badgeImageUrl+'" alt="'+escape(badgeTitle)+'" /></div>' +
+                '<div class="feedTitle">'+badgeTitle+'</div>' );
+        } else if (relatedUserPictureUrl != undefined && relationship != undefined && (relationship === 'company' || relationship === 'all')) {
+            txt = new Handlebars.SafeString( '<div class="feedUserImage border"><img src="'+relatedUserPictureUrl+'" alt="User Photo" /></div>' );            
+        } else {
+            txt = new Handlebars.SafeString( '<div class="feedUserImage"><img src="/public/images/icon-blowybox-22x19-green.png" alt="User Photo" /></div>' );
+        }
+        return txt;
+    </script>
+
+
+
+
+    <!-- 
+    # TEMPLATE: questionItem
+    # used on: /Community/profile
+    -->
+    <script type="text/html" id="tmpl_QuestionItem">
+        {{!#data}}
+        <li>
+            <span class="score">{{standardScore}}</span> 
+            <span class="question">
+                {{#if url}}
+                <a href="{{url}}">{{text}}</a>
+                {{else}}
+                {{text}}
+                {{/if}}
+            </span>
+        </li>
+        {{!/data}}
+    </script>
+
+
+
+</div><!-- end #handlebarsTemplates -->

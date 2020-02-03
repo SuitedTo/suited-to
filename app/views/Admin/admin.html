@@ -1,0 +1,72 @@
+#{extends 'standardPage.html' /}
+#{set title:'Admin' /}
+#{set 'moreScripts'}
+#{/set}
+<div class="row">
+    <div class="span12">
+        <h1>Admin Utilities</h1>
+    </div>
+</div>
+#{if result}
+    <div class="row">
+        <div class="span12">
+            <div class="alert alert-success">
+                <a id="successNotification" class="close" data-dismiss="alert" href="#">×</a>
+                #{if result == "category"}<strong>Congrats buddy!</strong> You've successfully scheduled recalculate category stats job. We're not really sure how long it'll take but if you've read to the end of this message we're guessing it's done already.#{/if}
+                #{if result == "questionMetrics"}<strong>All question metrics have been updated!</strong> #{/if}
+                #{if result == "userMetrics"}<strong>All user metrics have been updated!</strong> #{/if}
+                #{if result == "userBadges"}<strong>All user badges have been updated!</strong> #{/if}
+                #{if result == "clean"}<strong>All Clean!</strong> #{/if}
+                #{if result == "jasper"}<strong>Jasper Reports Recompiled!</strong> #{/if}
+                #{if result == "streetCred"}<strong>Giving credit where credit is due!</strong>  Recalculating Steet Cred for every user in the system, it might take a few minutes for everyone to get updated. <br/>
+                    Also, this is a picture of a magnet. <i class="icon-magnet"></i>#{/if}
+                #{if result == "switcheroo"}<strong>Dude!</strong> You're now using the application as if you were ${connectedUser.getPublicDisplayName()}. Be careful making any updates they will be attributed to ${connectedUser.getPublicDisplayName()}.#{/if}
+                #{if result == "obliterate"}<strong>Well wasn't that easy</strong> We just reset all the Automated test data.#{/if}
+            </div>
+        </div>
+    </div>
+#{/if}
+
+#{standardError /}
+
+<div class="row">
+    <div class="span4">
+        <ul class="nav nav-tabs nav-stacked">
+            <li><a id="swicheroo" href="#" data-target="#switcherooModal" data-toggle="modal"><h2>User Switcheroo</h2></a></li>
+            <li><a id="recalcCatStats" href="@{Admin.recalculateCategoryStats()}">Recalculate Category Stats</a></li>
+            <li><a id="recalcQsMetrics" href="@{Admin.updateQuestionMetrics()}">Recalculate Question Metrics</a></li>
+            <li><a id="recalcUserMetrics" href="@{Admin.updateUserMetrics()}">Recalculate User Metrics</a></li>
+            <li><a id="recalcUserBadges" href="@{Admin.updateUserBadges()}">Update User Badges</a></li>
+            <li><a id="recalcStreetCred" href="@{Admin.recalculateStreetCred()}">Recalculate Street Cred for all Users</a></li>
+            <li><a id="fileCleanup" href="@{Admin.cleanAttachments()}">Clean up unused files</a></li>
+            <li><a id="reportCompilation" href="@{Admin.recompileReports()}">Recompile the Jasper Reports</a></li>
+            <li><a id="testCleanup" href="@{Admin.cleanupAutomatedTestData()}">Cleanup Automated Test Data</a></li>
+            <li><a id="viewProInterviewerRequests" href="@{Admin.viewProInterviewerRequests()}">View Pro Interviewer Requests</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="switcherooModal" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Switcheroo!!!</h3>
+    </div>
+#{form @Admin.userSwitcheroo() , id:'switcherooForm', class:'form-horizontal'}
+    <div class="modal-body">
+        <p>Enter the email address of the user you want to use the application as. You'll be able to switch back later</p>
+
+        <div class="control-group">
+            <label for="userName" class="control-label">Email</label>
+            <div class="controls">
+               <input id="userName" name="userName" type="text" class="span3"/>
+            </div>
+        </div>
+
+    </div>
+    <div class="modal-footer">
+        <a data-dismiss="modal"><button id="cancelBtn" class="btn">Cancel</button></a>
+        <a><button id="doSwitchBtn" type="submit" class="btn btn-primary"><i class="icon-random icon-white"></i> Do the Switcheroo</button></a>
+    </div>
+#{/form}
+
+</div>

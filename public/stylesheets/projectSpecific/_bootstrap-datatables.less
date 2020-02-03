@@ -1,0 +1,284 @@
+div.dataTables_length label {
+  float: left;
+  text-align: left;
+}
+
+div.dataTables_length select {
+  width: 75px;
+}
+
+div.dataTables_filter label {
+  float: right;
+}
+
+div.dataTables_info {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+div.dataTables_paginate {
+  float: right;
+  margin: 0;
+}
+
+table {
+  margin: 1em 0;
+  clear: both;
+} 
+table.table thead th.sorting,
+table.table thead th.sorting_asc,
+table.table thead th.sorting_desc,
+table.table thead th.headerSortDown,
+table.table thead th.headerSortUp {
+  padding-left: 20px;
+}
+
+table.table thead .sorting,
+table.table thead .sorting_asc,
+table.table thead .sorting_desc {
+  cursor: pointer;
+  *cursor: hand;
+}
+table.table thead .sorting_asc_disabled,
+table.table thead .sorting_desc_disabled {
+  cursor: pointer;
+  *cursor: hand;
+}
+
+table.table thead .sorting { 
+  background: url('../images/sort_both.png') no-repeat center left; 
+}
+table.table thead .sorting_asc { 
+  background: url('../images/sort_asc.png') no-repeat center left; 
+}
+table.table thead .sorting_desc { 
+  background: url('../images/sort_desc.png') no-repeat center left; 
+}
+table.table thead .sorting_asc_disabled { 
+  background: url('../images/sort_asc_disabled.png') no-repeat center left; 
+}
+table.table thead .sorting_desc_disabled { 
+  background: url('../images/sort_desc_disabled.png') no-repeat center left; 
+}
+.sorting {
+  background: url("../images/sort_both.png") no-repeat scroll left center transparent;
+}
+.headerSortUp {
+  background: url("../images/sort_asc.png") no-repeat scroll left center transparent;
+}
+.headerSortDown {
+  background: url("../images/sort_desc.png") no-repeat scroll left center transparent;
+}
+
+
+.tableWorkingSpace {
+  position:relative;
+}
+
+.dataTables_processing {
+    position:absolute;
+    width:100%;
+    height:100%;
+}
+
+
+
+/* DataTables
+-------------------------------------------------- */
+.dataTables_wrapper, 
+.dataTable { 
+  position: relative; 
+}
+
+.dataTable {
+  border-bottom: 1px solid #DDD;
+}
+/* Zebra striping */
+/*.dataTable tbody tr:nth-of-type(odd) { 
+  background-color: #f7f7f7; 
+}*/
+
+.selectableRow {
+  cursor: pointer;
+}
+.rowSelected, .dataTable tbody tr.rowSelected, .table-striped tbody tr.rowSelected td {
+  background-color: #CCCCCC;
+}
+
+.search-match{
+  background-color: #FFFF99;
+}
+.tableFooter {
+    margin-top: 50px;
+}
+.grip {
+    background-image:url('../images/updown.png');
+    background-repeat:no-repeat;
+    background-position:center center; 
+    cursor: move;
+}
+.highlighted-row, .dataTable tbody tr.highlighted-row, .table-striped tbody tr.highlighted-row td {
+    background-color:#f3f3f3;
+}
+
+.dataTables_filter input.search-match {
+  border-color: #C09853;
+  background-color : #FCF2DA;
+}
+
+
+
+//
+// Responsive: Phone
+// --------------------------------------------------
+@media (max-width: 479px) {
+
+  div.dataTables_paginate li a { 
+    padding: 0 12px;
+  }
+
+}
+
+
+
+//
+// Responsive: Phone to desktop/tablet
+// --------------------------------------------------
+@media (max-width: 767px) {
+
+  #addQuestionBtn { margin-bottom: 10px; }
+
+  .questionListTabs {
+
+    li { float: none; }
+    li a { 
+      display: block; 
+      .border-radius(4px)
+    }
+    li a:hover { border-color: #eee; }
+    .active > a, .active > a:hover { 
+      border-bottom-color: #ddd; 
+      background-color: #eee;
+    }
+
+  }
+
+  table.dataTable {
+
+  /* Force table to not be like tables anymore */
+    table, thead, tbody, th, td, tr { 
+      display: block; 
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    /*thead tr { 
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }*/
+    thead tr th {
+      border: none;
+      border-bottom: 1px solid #eee; 
+      position: relative;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      padding-left: 40% !important;
+      min-height: 1em; 
+      width: 58% !important;
+      background-position: 35% 5px !important;
+    }
+    thead tr th:before {
+      /* Now like a table header */
+      position: absolute;
+      /* Top/left values mimic padding */
+      top: 6px;
+      left: 8px;
+      width: 45%; 
+      padding-right: 10px; 
+      white-space: nowrap;
+    }
+    thead tr th:first-child:before {
+      content: "Sort by";
+    }
+    thead tr th:last-child {
+      border-bottom: 2px solid #ddd;
+    }
+    tr {
+      border-top: 1px solid #DDD;
+      border-bottom: 10px solid #fff;
+    }
+    tr td:last-child {
+      border-bottom: 1px solid #ddd;
+    }
+    td { 
+    /* Behave  like a "row" */
+      border: none;
+      border-bottom: 1px solid #eee; 
+      position: relative;
+      padding-top: 6px;
+      padding-bottom: 6px;
+      padding-left: 40%;
+      min-height: 1em; 
+    }
+
+    td:before { 
+      /* Now like a table header */
+      position: absolute;
+      /* Top/left values mimic padding */
+      top: 6px;
+      left: 4px;
+      width: 45%; 
+      padding-right: 10px; 
+      white-space: nowrap;
+    }
+    /*
+    Label the data
+    */
+    td.dataCol_id:before { content: "ID"; }
+    td.dataCol_status:before { content: "Status"; }
+    td.dataCol_question:before { content: "Question"; }
+    td.dataCol_timing:before { content: "Timing"; }
+    td.dataCol_difficulty:before { content: "Difficulty"; }
+    td.dataCol_points:before { content: "Points"; }
+    td.dataCol_category:before { content: "Category"; }
+    td.dataCol_interviewname:before { content: "Interview Name"; }
+    td.dataCol_time:before { content: "Time"; }
+    td.dataCol_avgrating:before { content: "Avg. Rating"; }
+    td.dataCol_categories:before { content: "Categories"; }
+    td.dataCol_datecreated:before { content: "Date Created"; }
+    td.dataCol_name:before { content: "Name"; }
+    td.dataCol_displayName:before { content: "Display Name"}
+    td.dataCol_taggedwith:before { content: "Tagged With"; }
+    td.dataCol_emailaddress:before { content: "Email Address"; }
+    td.dataCol_role:before { content: "Role"; }
+    td.dataCol_company:before { content: "Company"; }
+    td.dataCol_companyname:before { content: "Company Name"; }
+    td.dataCol_contactname:before { content: "Contact Name"; }
+    td.dataCol_accounttype:before { content: "Account Type"; }
+    td.dataCol_prevaccttype:before { content: "Prev Acct Type"; }
+    td.dataCol_accttypechanged:before { content: "Acct Changed"; }
+    td.dataCol_datadeactivated:before { content: "Date Deactivated"; }
+    td.dataCol_activeusers:before { content: "Active Users"; }
+    td.dataCol_numquestions:before { content: "# Questions"; }
+    td.dataCol_interviewername:before { content: "Interviewer"; }
+    td.dataCol_candidatename:before { content: "Candidate"; }
+    td.dataCol_date:before { content: "Date"; }
+    td.dataCol_creator:before { content: "Creator"; }
+
+    td:after { content:" "; }
+
+    td select { max-width: 100%; }
+
+  }
+
+  div.dataTables_filter input { max-width: 200px; }
+
+  div.dataTables_paginate { 
+    font-size: 12px; 
+
+    li.prev span, li.next span { display: none; }
+
+  }
+
+}
+

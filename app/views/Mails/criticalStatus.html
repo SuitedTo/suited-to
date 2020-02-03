@@ -1,0 +1,15 @@
+#{extends 'email.html' /}
+#{set title:'SuitedTo Critical Status' /}
+<tr>
+  <td>
+      <img src="http://content.suitedto.com/logo-standard.png" alt="SuitedTo Logo">
+    </td>
+</tr>
+<tr>
+    <td valign="top">
+    	<p>
+     	${status.raw()}
+    	</p>
+
+    </td>
+</tr>

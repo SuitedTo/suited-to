@@ -1,0 +1,292 @@
+# Use org.apache.commons.lang.StringEscapeUtils.escapeHtml() on
+# each badge.description and badge.progressMessage in order to
+# escape characters to html entities while still rendering the
+# html of the description or progress message
+
+badge.twoLogins:
+  title: Deja Vu
+  description: Second time logging in
+  icon: /public/images/badges/badge-dejaVu.png
+  progressMessages: [loggedInOnce]
+
+badge.firstQuestionAccepted:
+  title: Newbie
+  description: First Question Accepted
+  icon: /public/images/badges/badge-newbie.png
+  progressMessages: [noQuestionsAccepted]
+
+badge.tenQuestionsAccepted:
+  title: Questioneer
+  description: Ten Questions Accepted
+  icon: /public/images/badges/badge-questioneer.png
+  progressMessages: [halfQuestionsAccepted,someQuestionsAccepted]
+
+badge.firstQuestionReviewed:
+  title: Critic
+  description: First Question Reviewed
+  icon: /public/images/badges/badge-critic.png
+
+badge.tenQuestionsReviewed:
+  title: Active Reviewer
+  description: Ten Questions Reviewed
+  icon: /public/images/badges/badge-activeReviewer.png
+  progressMessages: [sixOrSoReviewed]
+
+badge.firstQuestionRated:
+  title: Plugged In
+  description: First Question Rated
+  icon: /public/images/badges/badge-pluggedIn.png
+  progressMessages: [noQuestionsRated]
+
+badge.twentyQuestionsRated:
+  title: Rater
+  description: You have rated Twenty Questions
+  icon: /public/images/badges/badge-rater.png
+  progressMessages: [twelveOrSoRated,overTwelveOrSoRated]
+
+badge.displayNameCreated:
+  title: Hello, my name is...
+  description: Display Name Created
+  icon: /public/images/badges/badge-helloMyNameIs.png
+  progressMessages: [noDisplayName]
+
+badge.profilePictureCreated:
+  title: Photogenic
+  description: Profile Picture Added
+  icon: /public/images/badges/badge-photogenic.png
+  progressMessages: [noProfilePicture]
+
+badge.hrCompliant:
+  title: HR Certified
+  description: HR Compliance Certified
+  icon: /public/images/badges/badge-hrCertified.png
+
+badge.questionRatedFive:
+  title: Good Question
+  description: Your question <em>${utils.DisplayUtil.getShortenedString(question?.text, 50)}</em> has a rating of 5
+  icon: /public/images/badges/badge-goodQuestion.png
+  progressMessages: [goodRating,almostRating]
+  generalizedDescription: Your question has a rating of 5
+
+badge.questionRatedFifty:
+  title: Popular Question
+  description: Your question <em>${utils.DisplayUtil.getShortenedString(question?.text, 50)}</em> has a rating of 50
+  icon: /public/images/badges/badge-popularQuestion.png
+  progressMessages: [popularRating]
+  generalizedDescription: Your question has a rating of 50
+
+badge.categoryHasFiveQuestions:
+  title: Nice category
+  description: Your category <em>${category.name}</em> has 5 questions in it
+  icon: /public/images/badges/badge-niceCategory.png
+  progressMessages: [aFewQuestionsInCategory]
+  generalizedDescription: Your category has 5 questions in it
+
+badge.categoryHasTwentyFiveQuestions:
+  title: Hot category
+  description: Your category <em>${category.name}</em> has 25 questions in it
+  icon: /public/images/badges/badge-hotCategory.png
+  progressMessages: [severalQuestionsInCategory,severalMoreQuestionsInCategory]
+  generalizedDescription: Your category has 25 questions in it
+
+badge.reviewer:
+  title: Reviewer of ${category.name}
+  description: Certified SuitedTo reviewer in <em>${category.name}</em>
+  icon: /public/images/badges/badge-reviewer.png
+  generalizedTitle: Reviewer
+  generalizedDescription: Certified SuitedTo reviewer in a category
+
+badge.firstUserInvited:
+  title: '+1'
+  description: Invited 1 User
+  icon: /public/images/badges/badge-plusOne.png
+
+badge.tenUsersInvited:
+  title: Socialite
+  description: Invited 10 Users
+  icon: /public/images/badges/badge-socialite.png
+  progressMessages: [severalInvites]
+
+badge.publicCategory:
+  title: Categorizer
+  description: Created the public category <em>${category?.name}</em>
+  icon: /public/images/badges/badge-categorizer.png
+  generalizedDescription: Created a public category
+
+progressMsg.loggedInOnce:
+  range: [0,99]
+  text: You’re halfway there! Come back and you’ll earn your Two Logins badge!
+
+progressMsg.noQuestionsAccepted:
+  range: [0,99]
+  text: Add your first interview question to the pool and earn a badge - it’s that easy!
+
+progressMsg.someQuestionsAccepted:
+  range: [0,49]
+  text: Keep up the good work! Add 10 questions and earn a badge!
+
+progressMsg.halfQuestionsAccepted:
+  range: [50,99]
+  text: Getting closer.. Once you add 10 questions, you earn yourself the Questioneer badge!
+
+progressMsg.noDisplayName:
+  range: [0,99]
+  text: Create a unique display name that other users will see and earn another badge!
+
+progressMsg.noProfilePicture:
+  range: [0,99]
+  text: Finish updating your profile! Upload a picture and you’ll get the Photogenic badge.
+
+progressMsg.goodRating:
+  range: [0,49]
+  text: Your question <a href="@{Questions.view(question?.id)}">${utils.DisplayUtil.getShortenedString(question?.text, 50)}</a> is already earning you points! <em>${5-badge.progress/20}</em> more will earn you the Good Question badge.
+
+progressMsg.almostRating:
+  range: [50,99]
+  text: Your question <a href="@{Questions.view(question?.id)}">${utils.DisplayUtil.getShortenedString(question?.text, 50)}</a> is already earning you points! You’re close to earning the Good Question badge.
+
+progressMsg.popularRating:
+  range: [0,99]
+  text: Your question <a href="@{Questions.view(question?.id)}">${utils.DisplayUtil.getShortenedString(question?.text, 50)}</a> is becoming quite popular! Only <em>${50-badge.progress/2}</em> more points until a new badge!
+
+progressMsg.noQuestionsRated:
+  range: [0,99]
+  text: Your opinion matters! Rate a question to earn your Involved badge.
+
+progressMsg.twelveOrSoRated:
+  range: [0,49]
+  text: Keep rating questions and earn another badge!
+
+progressMsg.overTwelveOrSoRated:
+  range: [50,99]
+  text: You are on a roll, don’t stop now! You are more than halfway to your next badge.
+
+progressMsg.sixOrSoReviewed:
+  range: [0,99]
+  text: Questions are just waiting for your fresh set of eyes, just <em>${10-badge.progress/10}</em> more until your next badge!
+
+progressMsg.aFewQuestionsInCategory:
+  range: [0,99]
+  text: Your category <em>${category.name}</em> is starting to have questions in it!  Why not add <em>${5-badge.progress/20}</em> more questions and earn the Nice Category badge?
+
+progressMsg.severalQuestionsInCategory:
+  range: [0,49]
+  text: You know a great category! When <em>${category.name}</em> has 25 questions in it, you earn the Hot Category badge!
+
+progressMsg.severalMoreQuestionsInCategory:
+  range: [50,99]
+  text: Your category <em>${category.name}</em> is popular!  Only <em>${25-badge.progress/4}</em> more until you earn the Hot Category badge.
+
+progressMsg.severalInvites:
+  range: [0,99]
+  text: Sharing is caring! Invite <em>${10-badge.progress/10}</em> more friends to join the SuitedTo community!
+
+trigger.twoLogins:
+  entity: models.UserMetrics
+  propertyName: numberOfLogins
+  type: STANDARD
+  targetValue: 2
+
+trigger.twentyQuestionsRated:
+  entity: models.UserMetrics
+  propertyName: numberOfQuestionsRated
+  type: MODULO
+  targetValue: 20
+  
+trigger.tenUsersInvited:
+  entity: models.UserMetrics
+  propertyName: numberOfUsersInvited
+  type: MODULO
+  targetValue: 10
+  
+trigger.tenQuestionsReviewed:
+  entity: models.UserMetrics
+  propertyName: numberOfQuestionsReviewed
+  type: MODULO
+  targetValue: 10
+  
+trigger.tenQuestionsAccepted:
+  entity: models.UserMetrics
+  propertyName: numberOfAcceptedQuestions
+  type: MODULO
+  targetValue: 10
+
+trigger.reviewer:
+  entity: models.User
+  propertyName: reviewCategories
+  type: STANDARD
+  targetValue: true
+  
+trigger.questionRatedFive:
+  entity: models.Question
+  propertyName: standardScore
+  type: STANDARD
+  targetValue: 5
+  
+trigger.questionRatedFifty:
+  entity: models.Question
+  propertyName: standardScore
+  type: MODULO
+  targetValue: 50
+  
+trigger.publicCategory:
+  entity: models.Category
+  propertyName: status
+  type: STANDARD
+  targetValue: PUBLIC
+  
+trigger.profilePictureCreated:
+  entity: models.UserMetrics
+  propertyName: hasProfilePicture
+  type: STANDARD
+  targetValue: true
+  
+trigger.hrCompliant:
+  entity: models.User
+  propertyName: hrCompliant
+  type: STANDARD
+  targetValue: true
+  
+trigger.firstUserInvited:
+  entity: models.UserMetrics
+  propertyName: numberOfUsersInvited
+  type: STANDARD
+  targetValue: 1
+  
+trigger.firstQuestionReviewed:
+  entity: models.UserMetrics
+  propertyName: numberOfQuestionsReviewed
+  type: STANDARD
+  targetValue: 1
+  
+trigger.firstQuestionRated:
+  entity: models.UserMetrics
+  propertyName: numberOfQuestionsRated
+  type: STANDARD
+  targetValue: 1
+  
+trigger.firstQuestionAccepted:
+  entity: models.UserMetrics
+  propertyName: numberOfAcceptedQuestions
+  type: STANDARD
+  targetValue: 1
+  
+trigger.displayNameCreated:
+  entity: models.UserMetrics
+  propertyName: hasDisplayName
+  type: STANDARD
+  targetValue: true
+  
+trigger.categoryHasTwentyFiveQuestions:
+  entity: models.Category
+  propertyName: questionCount
+  type: MODULO
+  targetValue: 25
+  
+trigger.categoryHasFiveQuestions:
+  entity: models.Category
+  propertyName: questionCount
+  type: STANDARD
+  targetValue: 5
+  
+

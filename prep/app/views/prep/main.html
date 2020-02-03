@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="lt-ie10 lt-ie9 lt-ie8 lt-ie7" lang="en" ng-app="Prepado"> <![endif]-->
+<!--[if IE 7]>         <html class="lt-ie10 lt-ie9 lt-ie8" lang="en" ng-app="Prepado"> <![endif]-->
+<!--[if IE 8]>         <html class="lt-ie10 lt-ie9" lang="en" ng-app="Prepado"> <![endif]-->
+<!--[if IE 9]><!-->    <html class="lt-ie10" lang="en" ng-app="Prepado"> <!--<![endif]-->
+<!--[if gt IE 9]><!--> <html lang="en" ng-app="Prepado"> <!--<![endif]-->
+<head>
+    <title ng-bind="global.pageTitle">#{get 'title' /}</title>
+    <meta charset="${_response_encoding}">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" type="image/png" href="/public/images/prep/favicon.png">
+    <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
+    <link rel="apple-touch-icon" href="/public/images/prep/apple-touch-icon-57x57.png">
+    <!-- For first- and second-generation iPad: -->
+    <link rel="apple-touch-icon" sizes="72x72" href="/public/images/prep/apple-touch-icon-72x72.png">
+    <!-- For iPhone with high-resolution Retina display: -->
+    <link rel="apple-touch-icon" sizes="114x114" href="/public/images/prep/apple-touch-icon-114x114.png">
+    <!-- For third-generation iPad with high-resolution Retina display: -->
+    <link rel="apple-touch-icon" sizes="144x144" href="/public/images/prep/apple-touch-icon-144x144.png">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    #{stylesheet 'prep/bootstrap.css' /}
+    #{stylesheet 'prep/font-awesome.min.css' /}
+    #{stylesheet 'prep/prepado.css' /}
+
+    %{
+    def trackingCode = play.Play.configuration.get('prep.google.trackingCode');
+    def hasGoogleAnalyticsTrackingCode = trackingCode != '${PREP_GOOGLE_ANALYTICS_TRACKING_CODE}';
+    }%
+
+    <script type="text/javascript">
+        var Conf = window.Conf || {
+            authenticated_userid: ${authenticated_userid},
+            roles: ${roles.raw()},
+            csrf_token: '${csrf_token}',
+            stripeApiKey: '${play.configuration['prep.stripe.public.api-key']}',
+            dev_mode: ${play.configuration['dev_mode']}
+        };
+#{if hasGoogleAnalyticsTrackingCode}
+        Conf.gaID = '${trackingCode}';
+#{/if}
+    </script>
+
+
+    #{script 'prep/jquery.min.js' /}
+
+    #{press.script 'prep/angular.min.js', compress:false /}
+    #{press.script 'prep/angular-resource.min.js', compress:false /}
+    #{press.script 'prep/bootstrap.min.js', compress:false /}
+    #{press.script 'prep/angular-strap.min.js', compress:false /}
+    #{press.script 'prep/moment.min.js', compress:false /}
+    #{press.script 'prep/modernizr.custom.min.js', compress:false /}
+    *{#{press.script 'prep/angular-sanitize.min.js', compress:false /} this could be added back in, just didn't need it at the moment}*
+
+    #{press.script 'prep/modules/common/utils.js' /}
+    #{press.script 'prep/modules/common/common.js' /}
+    #{press.script 'prep/modules/common/prepServer.js' /}
+    #{press.script 'prep/modules/common/prepAPI.js' /}
+    #{press.script 'prep/modules/common/analytics.js' /}
+    #{press.script 'prep/modules/app.js' /}
+    #{press.script 'prep/modules/modules.js' /}
+    #{press.script 'prep/modules/controllers.js' /}
+    #{press.script 'prep/modules/services.js' /}
+    #{press.script 'prep/modules/directives.js' /}
+    #{press.script 'prep/modules/filters.js' /}
+    #{press.script 'prep/libs/typeahead-0.8.2-modified.js' /}
+    #{press.script 'prep/libs/async.js' /}
+    #{press.script 'prep/libs/Storage.js' /}
+    #{press.script 'prep/libs/Cross-Browser-Declarations.js' /}
+    #{press.script 'prep/libs/StereoAudioRecorder.js' /}
+    #{press.script 'prep/libs/StereoRecorder.js' /}
+    #{press.script 'prep/libs/Whammy.js' /}
+    #{press.script 'prep/libs/WhammyRecorder.js' /}
+    #{press.script 'prep/libs/RecordRTC.js' /}
+    #{press.script 'prep/libs/MRecordRTC.js' /}
+    #{press.script 'jquery.placeholder.min.js', compress:false /}
+
+    #{press.compressed-script /}
+
+    <script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+
+    <script type="text/javascript">
+        var apiConfig = {
+            facebook: {
+                appId: "${play.configuration['prep.facebook.app-id']}",
+                status: true, // check login status
+                cookie: true, // enable cookies to allow the server to access the session
+                xfbml: true,  // parse XFBML
+                oauth: true
+            },
+            google: {
+                client_id: "${play.configuration['prep.google.client-id']}",
+                scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+                response_type: 'token'
+            }
+        }
+
+        //callback to run when Facebook API is loaded
+        window.fbAsyncInit = function () {
+            FB.init(apiConfig.facebook);
+            $(document).trigger('facebook:ready');
+            FB.getLoginStatus(function (response) {
+                if ('connected' === response.status) {
+                    window.fbAuth = response.authResponse;
+                }
+            }, true);
+        };
+
+        // Load the SDK Asynchronously
+        (function(d){
+            var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement('script'); js.id = id; js.async = true;
+            js.src = "//connect.facebook.net/en_US/all.js";
+            ref.parentNode.insertBefore(js, ref);
+        }(document));
+
+        //callback to run when LinkedIn API is loaded
+        window.liAsyncInit = function(){
+            IN.init(apiConfig.linkedIn);
+            IN.Event.on(IN, 'auth', onLinkedInAuth);
+            $(document).trigger('linkedin:ready');
+        };
+
+        function onLinkedInAuth() {
+            $.get('/linkedintoken',function(response){
+                //console.log(response);
+                if(response.data.oauth_token){
+                    window.liAuth = response.data;
+                }
+            });
+        }
+
+        //asynchronously load LinkedIn API
+        (function(d){
+            var e = d.createElement('script');
+            e.type = 'text/javascript';
+            e.async = false;
+            e.src = '//platform.linkedin.com/in.js?async=true';
+            e.onload = window.liAsyncInit;
+            var s = d.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(e, s);
+        })(document);
+
+
+         //initialize the google auth api to prevent popup blocking
+         //https://code.google.com/p/google-api-javascript-client/wiki/ReferenceDocs
+        function handleGoogleClientLoad(){
+            gapi.auth.init();
+        }
+
+    </script>
+
+    <script async type="text/javascript" src="https://apis.google.com/js/client.js?onload=handleGoogleClientLoad"></script>
+
+    <script type="text/javascript">
+        (function() {
+            var config = {
+                kitId: 'sfi1jmt',
+                scriptTimeout: 3000
+            };
+            var h=document.getElementsByTagName("html")[0];h.className+=" wf-loading";var t=setTimeout(function(){h.className=h.className.replace(/(\s|^)wf-loading(\s|$)/g," ");h.className+=" wf-inactive"},config.scriptTimeout);var tk=document.createElement("script"),d=false;tk.src='//use.typekit.net/'+config.kitId+'.js';tk.type="text/javascript";tk.async="true";tk.onload=tk.onreadystatechange=function(){var a=this.readyState;if(d||a&&a!="complete"&&a!="loaded")return;d=true;clearTimeout(t);try{Typekit.load(config)}catch(b){}};var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(tk,s)
+        })();
+    </script>
+
+    <!--[if lt IE 10]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+</head>
+<body ng-controller="main">
+<!--[if lt IE 9]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+
+<div class="pageWrapper">
+
+<header role="banner">
+
+<div class="navbar navbar-static-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <nav role="navigation" ng-show="global.connectedUser">
+
+            <a class="brand" ng-hide="global.isReviewer" ng-class="{active: checkRoute('/')}" id="mainNavHome" href="/">Prepado</a>
+            <a class="brand" ng-show="global.isReviewer" ng-class="{active: checkRoute('/')}" id="mainNavHome">Prepado</a>
+            <div ng-show="global.connectedUser.authenticated" ng-cloak class="btn-group userNav pull-right">
+                <p class="accountTypeLabel">Account Type: {{global.connectedUser.subscriptionType}}</p>
+                <a id="accountDropdown" class="btn1 nameBtn dropdown-toggle" data-toggle="dropdown">
+                    <span id="accountName" class="name" ng-bind="global.connectedUser.firstName"></span>
+                    <i class="icon-cog"></i>
+                    <i class="icon-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu">
+                    <li ng-class="{active: checkRoute('/myAccount')}"><a id="userNavMyAccount" href="/myAccount">My Account</a></li>
+                    <li><a ng-click="logout()" id="userNavLogout" href="#">Logout</a></li>
+                </ul>
+            </div>
+            <ul class="mainNav nav pull-right" ng-cloak ng-show="global.connectedUser.authenticated && !global.connectedUser.paymentRequired">
+                <li ng-class="{active: checkRoute('/dashboard')}"><a id="mainNavDashboard" href="/dashboard">Dashboard</a></li>
+                <li ng-class="{active: checkRoute('/interviewer')}"><a id="mainNavInterviewer" href="/interviewer">Practice Interviews</a></li>
+                <!--<li ng-show="global.connectedUser.authenticated" ng-class="{active: checkRoute('/scheduler')}"><a id="mainNavScheduler" href="/scheduler">My Schedule</a></li>
+                <li ng-show="global.connectedUser.authenticated"><a href="#">Research & Tips</a></li>-->
+            </ul>
+            <ul class="mainNav nav pull-right" ng-cloak ng-hide="global.connectedUser.authenticated || global.isReviewer">
+                <li ng-class="{active: checkRoute('/login')}"><a id="mainNavLogin" href="/login">Login</a></li>
+                <li ng-class="{active: checkRoute('/register')}"><a id="mainNavRegister" href="/register">Register</a></li>
+            </ul>
+            <ul class="mainNav nav pull-right" ng-cloak ng-show="global.connectedUser.authenticated && global.connectedUser.paymentRequired">
+                <li ng-class="{active: checkRoute('/dashboard')}"><a id="mainNavDashboard" href="/dashboard">Dashboard</a></li>
+                <li><a id="mainNavInterviewer" bs-modal="'paymentRequestModal'" href="#">Practice Interviews</a></li>
+            </ul>
+		    </nav>
+
+            <nav role="navigation" ng-hide="global.connectedUser">
+                <a class="brand" id="mainNavHome">Prepado</a>
+            </nav>
+        </div>
+    </div>
+</div>
+</header> <!-- end header -->
+
+<div class="pageContentWrapper clearfix">
+    <div class="container" ng-show="httpStatus">
+        <div class="unstyled alert alert-error">
+            <p>{{ httpStatus }}</p>
+        </div>
+    </div>
+
+    #{doLayout /}
+    <div ng-view>
+    </div>
+</div>
+
+<div class="push"></div>
+</div>
+
+
+<footer class="pageFooter">
+    <div class="container">
+        <div class="row">
+            <div class="span5 copyright">
+                <p>Copyright &copy; 2014 SPARC, LLC. All Rights Reserved.</p>
+            </div>
+            <div class="span7 footerlinks">
+                <p><a id="footerPrivacy" href="http://prepado.com/privacy-policy/" rel="external" target="_blank">Privacy Policy</a> • <a id="footerTerms" href="http://prepado.com/terms-of-service/" rel="external" target="_blank">Terms of Service</a>
+                <span class="social">
+                    <a id="footerFacebook" href="https://www.facebook.com/Prepado" rel="external" target="_blank" class="social-facebook"><span class="icon-stack"><i class="icon-circle icon-stack-base"></i><i class="icon-facebook icon-dark"></i></span></a>
+                    <a id="footerTwitter" href="https://twitter.com/prepado" rel="external" target="_blank" class="social-twitter"><span class="icon-stack"><i class="icon-circle icon-stack-base"></i><i class="icon-twitter icon-dark"></i></span></a>
+                </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+<script type="text/ng-template" id="paymentRequestModal">
+    <div ng-controller="paymentRequestModalCtrl">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3>Practice Makes Perfect</h3>
+        </div>
+        <div class="modal-body">
+            <p>Lucky for you, it’s only $25 per month for unlimited practice interviews and full access to Prepado tools and resources.</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn" ng-click="dismiss()">Cancel</button>
+            <button class="btn btn-primary" ng-click="dismiss(); myAccount();">Learn More</button>
+        </div>
+    </div>
+</script>
+
+%{ displayFeedback = java.lang.System.getenv("DISPLAY_FEEDBACK_WIDGET")}%
+#{if displayFeedback == 'true'}
+<script type="text/javascript" src="//assets.zendesk.com/external/zenbox/v2.5/zenbox.js"></script>
+<style type="text/css" media="screen, projection">
+    @import url(//assets.zendesk.com/external/zenbox/v2.5/zenbox.css);
+    #zenbox_tab { min-width: 90px !important; padding-bottom: 29px !important; z-index: 900 !important; }
+    @media (max-width: 768px) {
+        #zenbox_tab { display: none !important; }
+        #zenbox_tab #feedback_tab_text { }
+    }
+</style>
+<script type="text/javascript">
+    if (typeof(Zenbox) !== "undefined") {
+        Zenbox.init({
+            dropboxID:   "20149423",
+            url:         "https://prepado.zendesk.com",
+            tabID:       "Ask Us",
+            tabColor:    "#58463b",
+            tabPosition: "Right"
+        });
+    }
+</script>
+#{/if}
+
+</body>
+</html>

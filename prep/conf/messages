@@ -1,0 +1,31 @@
+# Default prep messages
+# You can specialize this file for each language.
+# For exemple, for french create a messages.fr file
+
+#prep.name=prep
+
+prep.error.login.email=We didn't recognize the email or password you entered. Please try again.
+prep.error.login.external=Sorry, we couldn't log you in with that &{%2$s} account.
+prep.error.login.externalEmailConflict=Whoa. Looks like you used &{%2$s} to register. Why not try that account to log in?
+prep.error.login.externalEmailConflictNoProvider=Whoa, you may have used your email to register. Why not try that information to log in?
+prep.error.login.tempPassword=You are trying to login with your temp password.
+
+prep.error.registration.accountAlreadyActive=That &{%2$s} account is already assigned to a Prepado user. You can log in with that account now.
+prep.error.registration.emailUsedByAnotherProvider=The email address for that &{%2$s} account is already assigned to a Prepado user that uses &{%3$s} to log in. You can log in with that &{%3$s} account now.
+prep.error.registration.externalEmailConflictNoProvider=The email address for that &{%2$s} account is already assigned to a Prepado user. You can log in with that email address now.
+prep.email.registration=Sorry, we couldn't create an account for that email address. If you believe you have already created a Prepado account you can log in now.
+
+prep.error.authorization=Sorry, you must first login before viewing that page.
+prep.error.ssl=Requests must be made with SSL
+
+prep.error.stripe.processingError=There was an error processing your payment
+
+prep.error.user.notFound=Whoops! We couldn't find a user with id &{%2$s}.
+prep.error.user.passwordLength=Please enter a password with six or more characters.
+prep.error.user.validEmail= &{%2$s} is not a valid email. Please enter a valid email.
+prep.error.user.extantEmail=Sorry! It looks like the email &{%2$s} is already in use.
+prep.error.interview.invalid=Interview has no questions
+
+FACEBOOK=Facebook
+GOOGLE=Google
+LINKEDIN=LinkedIn

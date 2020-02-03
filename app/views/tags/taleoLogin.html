@@ -1,0 +1,166 @@
+
+<div id="${_id}" class="modal hide fade" style="overflow-y:auto;max-height:90%;">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Taleo Login</h3>
+        <div id='taleoLoginFailed' class="alert alert-error"></div>
+    </div>
+    <div class="modal-body">
+		#{form @Taleo.login(), id:'taleoLoginForm', class:'form-horizontal', autocomplete:"off"}
+			<fieldset>
+				<div class="control-group" id="userNameGroup">
+					<label class="control-label" for="userName">User Name</label>
+					<div class="controls">
+						<input type="text" name="userName" id="userName" class="no-change-check"/>
+					</div>
+				</div>
+				<div class="control-group" id="passwordGroup">
+					<label class="control-label" for="password">Password</label>
+					<div class="controls">
+						<input type="password" name="password" id="password" class="no-change-check"/>
+					</div>
+				</div>
+                <div class="control-group" id="companyCodeGroup">
+                    <label class="control-label" for="company">Company Code</label>
+                    <div class="controls">
+                        <input type="text" name="companyCode" id="companyCode" class="no-change-check" />
+                    </div>
+                </div>
+				<input type="hidden" id="taleoSuccessCallback" value="">
+        		<input type="hidden" id="taleoCancelCallback" value="">
+			</fieldset>			
+		#{/form}
+    </div>
+    <div class="modal-footer">
+        <div id="taleoLoginProgress">#{processingDisplay /}</div>
+        <a id="cancelLoginButton" href="#" onClick='cancelTaleoLogin()' class="btn no-change-check">Cancel</a>
+        <a id="loginButton" class="btn btn-primary no-change-check" href="#" >Log in</a>
+    </div>
+</div>
+<script type="text/javascript">
+
+		function cancelTaleoLogin(){
+			$('#${_id}').modal("hide");
+			var jsCancelCalback = $('#taleoCancelCallback').val();
+	        if(jsCancelCalback){
+	            eval(jsCancelCalback)();
+	        }
+		}
+		
+		function TaleoLogin() {
+			
+			this.go = function(successCallback, cancelCallback){
+				$('#taleoSuccessCallback').val(successCallback);
+				$('#taleoCancelCallback').val(cancelCallback);
+			
+				$('#${_id}').modal("hide");
+				$.ajax({
+    		    async: false,
+  					type: 'POST',
+  					url: '@{Taleo.checkAccess()}',
+  					success: function(){
+  						$('#${_id}').modal("hide"); 
+	              		var jsSuccessCalback = $('#taleoSuccessCallback').val();
+	        			if(jsSuccessCalback){
+	            			eval(jsSuccessCalback)(true);
+	        			}
+  					},
+      			error: function(e){
+      				$('#${_id}').modal("show");
+  					}	
+  				});
+  			}
+		}
+
+// interview builder validation object
+var validateTaleoInfo = {
+    // method validates the duration of the interview
+    validLogin: function(event) {
+        var $taleoEmailInput = $("#${_id} #userName");
+        if($.trim($taleoEmailInput.val()).length == 0) {
+            if ($("#${_id} .errDuration").length == 0) {
+                var errDuration = "<div class='alert alert-error errDuration' style='clear:both;'>Please Enter a valid Taleo Login Name</div>";
+                $("#${_id} #userName").parent().append(errDuration);
+                return false;
+                console.log('yeah')
+            }
+        } else {
+            $("#${_id} .errDuration").remove();
+            return true;
+        }
+    },
+
+    validPwd:function(event) {
+        var $taleoPwdInput = $("#${_id} #password");
+        if($.trim($taleoPwdInput.val()).length == 0) {
+            if ($("#${_id} .errDuration").length == 0) {
+                var errDuration = "<div class='alert alert-error errDuration' style='clear:both;'>Please Enter a valid Taleo Password</div>";
+                $("#${_id} #password").parent().append(errDuration);
+                return false;
+            }
+        } else {
+            $("#${_id} .errDuration").remove();
+            return true;
+        }
+    },
+
+    validCompCode:function(event) {
+        var $taleoCompCodeInput = $("#${_id} #companyCode");
+        if($.trim($taleoCompCodeInput.val()).length == 0) {
+            if ($("#${_id} .errDuration").length == 0) {
+                var errDuration = "<div class='alert alert-error errDuration' style='clear:both;'>Please Enter a valid Taleo Company Code</div>";
+                $("#${_id} #companyCode").parent().append(errDuration);
+                return false;
+            }
+        } else {
+            $("#${_id} .errDuration").remove();
+            return true;
+        }
+    }
+};
+
+
+
+$('#${_id} #loginButton').on("click", function(e){
+
+    e.preventDefault();
+
+    if(validateTaleoInfo.validCompCode(e) && validateTaleoInfo.validLogin(e) && validateTaleoInfo.validPwd(e)){
+       var loginAction = #{jsAction @Taleo.login(':companyCode',':userName',':password') /};
+          $('#${_id} #loginButton').hide();
+          $('#${_id} #taleoLoginProgress').show();
+
+        $.ajax({
+          async: false,
+          type: 'POST',
+          url: loginAction({companyCode: $('#${_id} #companyCode').val(),
+            userName: $('#${_id} #userName').val(),
+            password: $('#${_id} #password').val()}),
+          success: function(){
+            $('#taleoLogin').modal("hide");
+            var jsSuccessCalback = $('#taleoSuccessCallback').val();
+	        if(jsSuccessCalback){
+	            eval(jsSuccessCalback)(false);
+	        }
+          },
+          error: function(e){
+            $('#${_id} #loginButton').show();
+            $('#${_id} #taleoLoginProgress').hide();
+            $('#${_id} #taleoLoginFailed').html(e.responseText);
+            $('#${_id} #taleoLoginFailed').show();
+          } 
+        });
+    }
+
+    
+
+    return true;
+});
+
+    $(function(){
+    	$('#${_id} #taleoLoginProgress').hide();
+    	$('#${_id} #taleoLoginFailed').hide();
+
+
+    });
+</script>

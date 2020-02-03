@@ -1,0 +1,352 @@
+#{extends 'standardPage.html' /}
+#{set title:'View Question' /}
+#{set 'moreScripts'}
+    #{script 'jquery.form.js'/}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'jquery-ui-1.9.0.custom.min.js'/}
+    #{script 'app-json-request.js'/}
+    #{script 'changes-alert.js'/}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+%{ user = question.user }%
+#{if question.canEdit(connectedUser)}
+<div class="row">
+    <div class="span12">
+        <div class="alert alert-info fade in">
+            Hey <strong>${connectedUser.fullName}</strong>, did you know that you can edit this question?
+            To make changes to this question just view it in <strong><a id="editMode" href="@{show(question.id)}">edit mode</a></strong>
+            and save your changes. If this is a public question, the changes may need to be approved by a qualified question
+            reviewer.
+        </div>
+    </div>
+</div>
+#{/if}
+<div class="row">
+    <div class="span9">
+        <h1 class="questionText">${question.text}</h1>
+        <hr class="questionHr" />
+
+        <div class="row">
+        <div class="span2">
+            <div class="rate-block">
+                <h2 class="score">
+                #{if question.standardScore > 0}+#{/if}${question.standardScore}
+                </h2>
+                <div class="rateBtn">
+                    <a id="rateUp" class="rate rate-up ${userRating != null && userRating > 0 ? 'rate-on' : 'rate-off'}" title="&{"rate.up.title"}"></a>
+                    <a id="rateDown" class="rate rate-down ${userRating != null && userRating < 0 ? 'rate-on' : 'rate-off'}" title="&{"rate.down.title"}">down</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="span7 questionContent">
+
+        <h4>Basic Question Data</h4>
+    #{if question.time}<p>Timing: &{question.time}</p>#{/if}
+    #{if question.difficulty}<p>Difficulty: &{question.difficulty}</p>#{/if}
+        <p>Category: ${question.category}</p>
+    #{if question.status.isPubliclyVisible()}
+        <p>Submitted: ${question.getTimeOfSubmission().since()}</p>
+    #{/if}
+
+    #{if connectedUser.company && connectedUser.company.equals(question.user.company)}
+        <p>Private Question: ${enums.QuestionStatus.PRIVATE.equals(question.status) ? "yes" : "no"}</p>
+    #{/if}
+
+
+    #{if question.answers}
+        <hr><h4>Possible Answers <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.possibleAnswers'}" data-original-title="Possible Answers">?</a></h4>
+
+        <p>${question.answers.escape().nl2br()}</p>
+    #{/if}
+
+    #{deadbolt.restrict roles:[['APP_ADMIN']]}
+        #{if question.prepAnswers}
+            <hr><h4>Possible Prep Answers <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.possiblePrepAnswers'}" data-original-title="Possible Prep Answers">?</a></h4>
+            <p>${question.prepAnswers.escape().nl2br()}</p>
+        #{/if}
+    #{/deadbolt.restrict}
+
+    #{if question.tips}
+        <hr><h4>Tips <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.tips'}" data-original-title="Tips">?</a></h4>
+
+        <p>${question.tips.escape().nl2br()}</p>
+    #{/if}
+    #{form @Questions.saveQuestionComment() , id:'companyNotesForm', class:'form-vertical', autocomplete:"off"}
+        <hr><input type="hidden" name="id" value="${question.id}"/>
+        #{if connectedUser.company}
+            <div class="control-group">
+                <label class="control-label" for="text"><h4>${connectedUser.company.name} Notes <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.companyNotes'}" data-original-title="Company Notes">?</a></h4></label>
+                <div class="controls">
+                    <textarea class="input-xxlarge" id="text" name="text" rows="4">${companyNotes?.text}</textarea>
+                </div>
+                <a><button id="updateNotes" onclick="" class="btn btn-info btn-small no-change-check">Update Notes</button></a>
+            </div>
+        #{/if}
+    #{/form}
+
+    #{if (question.canReview(connectedUser)) || (connectedUser.hasRole(enums.RoleValue.APP_ADMIN) && question.flaggedAsInappropriate)}
+        #{form @Questions.saveReview(question.id) , id:'questionForm', class:'form-horizontal'}
+            <div class="form-actions">
+                #{if !question.flaggedAndReturned()}
+                    <a data-target="#rejectConfirmation" data-toggle="modal"><button id="returnToSubmitterBtn" class="btn btn-warning no-change-check">Return to Submitter</button></a>
+                #{/if}
+                #{if !question.flaggedAsInappropriate}
+                    <a class="pull-right" data-target="#acceptConfirmation" data-toggle="modal"><button id="acceptQuestionBtn" class="btn btn-primary no-change-check"><i class="icon-check icon-white"></i> Accept Question</button></a>
+                #{/if}
+            </div>
+
+            <div id="acceptConfirmation" class="modal hide fade">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Confirmation</h3>
+                </div>
+                <div class="modal-body">
+                    <p>You have selected to accept this question to the public pool.  After clicking the "Accept Question" button this question will be available to all users.</p>
+                    <textarea class="input-xxlarge" id="acceptComment" name="acceptComment" rows="3" placeholder="Add a comment (optional)"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <a id="cancelAccept" data-dismiss="modal" class="btn no-change-check">Cancel</a>
+                    <button class="btn btn-primary no-change-check" id="acceptButton" name="acceptButton" type="submit"><i class="icon-check icon-white"></i> Accept Question</button>
+                </div>
+            </div>
+
+            <div id="rejectConfirmation" class="modal hide fade">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Confirmation</h3>
+                </div>
+                <div class="modal-body">
+                    <p>You have selected to reject this question and send it back to the question submitter. Please enter a comment below indicating why.</p>
+                    <textarea class="input-xxlarge" id="rejectComment" name="rejectComment" rows="3" placeholder="Add a reason for rejection"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <a id="cancelRejectBtn" data-dismiss="modal" class="btn no-change-check">Cancel</a>
+                    <button class="btn btn-warning no-change-check" name="rejectButton" id="rejectButton" type="submit">Return to Submitter</button>
+                </div>
+            </div>
+        #{/form}
+    #{/if}
+        </div>
+        </div>
+
+    </div>
+    <div class="span3 questionViewSidebar">
+        <h4>Question Submitter</h4>
+    #{userData user: user/}
+        <h4>Question Statistics</h4>
+    #{questionData question: question/}
+    #{if !question.canEdit(connectedUser)}
+        <h4>Why can't you edit the question?</h4>
+        <div class="well">
+        <p>
+            #{if question.user.equals(connectedUser) ||
+            (connectedUser.company.equals(question.user.company) && connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN)) ||
+            connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+                The question was used as a public question in an interview.
+            #{/if}
+            #{else}
+                You aren't the question creator or company admin.
+            #{/else}
+        </p>
+        </div>
+    #{/if}
+    #{if duplicates?.size() > 0}
+        <h4>Similar Questions</h4>
+        <div class="well">
+            <ul>
+                #{list items:duplicates, as:'question'}
+                    <li><a href="@{Questions.view()}/${question.id}">${question.text}</a></li>
+                #{/list}
+            </ul>
+        </div>
+    #{/if}
+    #{deadbolt.restrict roles:[['APP_ADMIN']]}
+        <a href="@{Questions.findDuplicate()}?id=${question.id}" class="btn btn-info btn-block"><i class="icon-exclamation-sign icon-white"></i> This is a duplicate</a>
+
+    #{/deadbolt.restrict}
+    #{if question.flaggedAsInappropriate}
+        <p class ="alert alert-error"><strong>WARNING</strong> This question has been flagged as inappropriate and is currently undergoing review.  Please use at your own discretion.
+        <br/><br/>
+        <strong>Reason:</strong> ${question.flaggedReason}
+        </p>
+
+        *{<label class="control-label" for="text"><h4> Reason Flagged </h4></label>}*
+
+        *{<a><button id="edit" onclick="" class="btn btn-info btn-small no-change-check">Edit</button></a>}*
+
+        #{deadbolt.restrict roles:[['APP_ADMIN']]}
+            <a href="@{Questions.setAsAppropriate()}?id=${question.id}" class="btn btn-info btn-block"><i class="icon-flag icon-white"></i> Set as appropriate </a>
+        #{/deadbolt.restrict}
+    #{/if}
+    #{else}
+        <a href="#" class="btn btn-info btn-block" data-target="#flaggedConfirmation" data-toggle="modal"><i class="icon-flag icon-white"></i> Flag as Inappropriate </a>
+        #{form @Questions.flagAsInappropriate(question.id), id:'flaggedReasonForm', class:'form-horizontal'}
+            <div id="flaggedConfirmation" class="modal hide fade">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Flagged As Inappropriate Confirmation</h3>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to flag as inappropriate? Please explain why.</p>
+                    <textarea class="input-xxlarge" id="flaggedText" name="flaggedText" rows="3" placeholder="Add a reason for flag"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <a id="cancelFlagButton" data-dismiss="modal" class="btn no-change-check">No</a>
+                    <button class="btn btn-warning no-change-check" name="acceptFlaggedButton" id="acceptFlaggedButton" type="submit">Yes</button>
+                </div>
+            </div>
+        #{/form}
+    #{/else}
+    #{if question.canEdit(connectedUser)}
+        <a id="editQuestionMode" class="btn btn-warning btn-block" href="@{show(question.id)}"><i class="icon-pencil icon-white"></i> Edit Question</a>
+    #{/if}
+    </div>
+</div>
+
+
+#{if question.canSeeHistory(connectedUser)}
+<div class="row">
+    <div class="span9">
+        #{questionWorkflow question: question/}
+    </div>
+</div>
+#{/if}
+
+#{deadbolt.restrict roles:[['APP_ADMIN']]}
+    #{if duplicates?.size() > 0}
+    <div id="duplicates" class="row">
+        <div class="span9">
+            <h4>Duplicate Questions</h4>
+            <table id="duplicateTable" class="table table-condensed table-striped">
+                <tr>
+                    <th width="5%"></th>
+                    <th width="5%">ID</th>
+                    <th width="35%">Question</th>
+                </tr>
+                #{list items:duplicates, as:'question'}
+                    <tr id="${question.id}">
+                        <td>#{deadbolt.restrictedResource resourceKeys:["Questions.unSetDuplicate"]}<a href="#" onClick="removeDuplicate(${question.id})"><img src="/public/images/list-remove.png" width="20px" height="20px"></a> #{/deadbolt.restrictedResource}</td>
+                        <td>${question.id}</td>
+                        <td><a href="@{Questions.view()}/${question.id}">${question.text}</a></td>
+                    </tr>
+                #{/list}
+            </table>
+        </div>
+    </div>
+    #{/if}
+#{/deadbolt.restrict}
+
+<script type="text/javascript">
+    function edit() {
+        var text_box = document.getElementById('flaggedText2');
+        text_box.attr('readonly', true);
+
+    }
+
+
+    function removeDuplicate(id){
+        new Request('@{Questions.unSetDuplicate()}').postJSON(
+                { id: id },
+                function(data) {
+                    $('#' + id).remove();
+                    var rowCount = $('#duplicateTable tr').length;
+                    if(rowCount == 1){
+                        $('#duplicates').remove();
+                    }
+                });
+    }
+
+    function rate(value) {
+        var rateAction = #{jsAction @rateQuestion(':id', ':rating') /}
+                $.ajax({
+                    url:rateAction({id: ${bug?.id}, rating:value}),
+                    success:function (data) {
+
+                        var newScore = data > 0 ? "+" + data : data;
+                        if (data > 0) {
+                            $('.score').removeClass('score-negative').addClass('score-positive');
+                            $('.score').html(newScore);
+                        } else if (data < 0) {
+                            $('.score').removeClass('score-positive').addClass('score-negative');
+                            $('.score').html(newScore);
+                        }  else if (data == 0) {
+                            $('.score')
+                                    .removeClass('score-positive score-negative')
+                                    .html(newScore);
+                        }
+
+                    }
+
+                });
+    }
+
+    function removeRules(rulesObj){
+        for (item in rulesObj){
+            $('#'+item).rules('remove');
+        }
+    }
+
+    function addRules(rulesObj){
+        for (item in rulesObj){
+            $('#'+item).rules('add',rulesObj[item]);
+        }
+    }
+
+    $(function() {
+        $('#companyNotesForm').ajaxForm(function() {
+            $('#text').effect("highlight", {}, 3000);
+        });
+        var scoreInt = +$('.score').text();
+        if(scoreInt > 0) {
+            $('.score').addClass("score-positive");
+        } else if (scoreInt < 0) {
+            $('.score').addClass("score-negative");
+        }
+        $(".rate").click(function () {
+            var element = $(this)
+            var otherRatingButton = element.siblings(".rate");
+            var validRateUp = element.hasClass('rate-up') && element.hasClass('rate-off');
+            var validRateDown = element.hasClass('rate-down') && element.hasClass('rate-off');
+
+            if (validRateUp) {
+                rate(1);
+                element.toggleClass('rate-off').toggleClass('rate-on');
+
+                if (otherRatingButton.hasClass('rate-on')) {
+                    otherRatingButton.toggleClass('rate-off').toggleClass('rate-on');
+                }
+            } else if (validRateDown) {
+                rate(-1);
+                element.toggleClass('rate-off').toggleClass('rate-on');
+
+                if (otherRatingButton.hasClass('rate-on')) {
+                    otherRatingButton.toggleClass('rate-off').toggleClass('rate-on');
+                }
+            }
+
+        });
+
+        var requiredCommentRule = {
+            rejectComment: {
+                required: true
+            }
+        };
+
+    #{if question.canReview(connectedUser)}
+        $("#questionForm").validate();
+        addRules(requiredCommentRule);
+    #{/if}
+
+        $("#acceptButton").click(function(){
+            removeRules(requiredCommentRule);
+        });
+
+
+    });
+
+</script>
+

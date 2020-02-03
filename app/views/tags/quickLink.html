@@ -1,0 +1,89 @@
+
+*{
+
+	purpose:  			renders an icon that can be clicked to show a read-only
+						text field containing the URL of the current page to make it easier
+						for users to copy and paste quick-links to, for instance, a profile page	
+
+	example usage:  	#{quickLink
+			    			iconSize:25,
+			    			iconToolTip:"Click to get a direct link for this candidate", 
+			    			url:@@Candidates.show(candidate.id)
+			    		/}
+					    
+	dependencies:		jquery core (must be provided)
+						jquery-ui (must be provided)
+						twitter-bootstrap (must be provided)
+
+	design notes:		the javascript is encapsulated as a singleton using closure to hide data and 
+						expose functionality
+
+	author:  			rees.byars
+	
+}*
+	
+<script type="text/javascript">
+
+var QuickLink = (function() {
+	
+	var hidden = true, 
+		$icon = null, 
+		$urlDialog = null;
+	
+	function open() {
+		$urlDialog.dialog('open');
+		hidden = false;
+	}
+	
+	function close() {
+		$urlDialog.dialog('close'); 
+		hidden = true;
+	}
+	
+	return {
+		
+		initialize : function() {
+			$icon = $('#quick_link_icon');
+			$icon.css('cursor', 'pointer');
+			$urlDialog = $('<div></div>')
+				.html('<input id="quick_link_text" type="text" class="pull-center" autofocus="autofocus" onclick="this.select()" value="${_url}"/>')
+				.dialog({ 
+			    	title: "Quick Link", 
+			    	position: { 
+				        my: 'left',
+				        at: 'right',
+				        of: $icon,
+				        offset: "16 36",
+				        collision: "flip"
+				    },
+				    buttons: { "Ok": function() { close(); } },
+				    autoOpen: false
+		    	});
+			$('#quick_link_text').css('cursor', 'default');
+		},
+		
+		toggle : function() {
+			if (hidden) {
+				open();
+			} else {
+				close();
+			}
+		}
+		
+	};
+	
+})();
+
+	$(document).ready(function(){
+		
+		QuickLink.initialize();
+		
+		$('#quick_link_icon').click(function() {
+			QuickLink.toggle();
+		});
+		
+	});
+	
+</script>
+   	
+<img id="quick_link_icon" alt="quick_link_icon" title="${_iconToolTip}" width="${_iconSize}" height="${_iconSize}" src="/public/images/link_icon.png">

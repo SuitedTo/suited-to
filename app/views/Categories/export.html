@@ -1,0 +1,104 @@
+#{extends 'standardPage.html' /}
+#{set title:'Prep Categories' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+#{set tableId:'exportCategories' /}
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Prep Categories</h1>
+        </div>
+    </div>
+</div>
+
+
+#{standardError /}
+
+
+<div class="row">
+    <div class="span12">
+    	#{dataTable tableId}
+    		#{dataTableColumn "ID", sWidth:"4%", sClass:" category-id dataCol_id"/}
+        	#{dataTableColumn "Name", sWidth:"60%", sClass:"category-name dataCol_categoryname" /}
+        	#{dataTableColumn "In Prep?", sWidth:"10%", sClass:"dataCol_inprep" /}
+		#{/dataTable}
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+	
+	var options = {
+		  fnRowCallback: function (nRow, aData, iDisplayIndex) {
+                $(nRow).attr('id', aData[0]);
+                var id = aData[0];
+                var isExported = aData[2];
+                
+                var options = "";
+                var selectOptions = ["Yes","No"];
+                var select = [isExported,!isExported];
+                var destination;
+                for (var i = 0; i < selectOptions.length; ++i) {
+                    
+                    options += "<option";
+                    
+                    if (select[i]) {
+                        options += " selected='selected'";
+                    }
+                    
+                    options += ">"
+                    
+                    options += selectOptions[i] + "</option>";
+                }
+                
+                var selection = $('td:eq(' + 2 + ')', nRow);
+                selection.change(function (evt) {
+                    var val = evt.target.value.toLowerCase();
+                    if(val === 'yes'){
+                    
+                    	var exportAction = #{jsAction @Categories.exportCategory(':categoryId') /};
+
+        				$.post(exportAction({categoryId:id}));
+        				
+                    } else {
+                    
+                    	var retractAction = #{jsAction @Categories.retractCategory(':categoryId') /};
+
+        				$.post(retractAction({categoryId:id}));
+                    	
+                    }
+                });
+                
+                selection.html("<select>" + options + "</select>");
+                
+                return nRow;
+            },
+          aaSorting: [
+                    [0, 'desc']
+                ],
+          sDom: "<'row'<'span6'l><'span6'f>><'tableWorkingSpace'rt><'row'<'span5'i><'span7'p>>",
+          oLanguage: {
+            	    sProcessing: #{jsString}#{processingDisplay /}#{/jsString},
+            	    sLoadingRecords: #{jsString}#{processingDisplay /}#{/jsString},
+            	    sEmptyTable: "No categories are available for export..."
+        	    }
+    }
+    
+    
+    var table = Application.DataTable;
+    
+    table.init("#{get 'tableId' /}", "@{Tables.getReport()}", "category.CategoryExportTable", options);
+    
+   	table.load(null, null);
+	
+</script>

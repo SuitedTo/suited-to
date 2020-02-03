@@ -1,0 +1,77 @@
+*{ Display subnavigation.
+ {
+ { Arguments:
+ {   _section: Indicates which navigation section should be displayed
+ {   _page: Indicates what page is displaying the subnav
+ {   _user: If user is passed in
+ {   _interview: If interview is passed in
+ {   _candidate: If candidate is passed in
+ {   _isReviewer: If user is reviewer
+}*
+
+<ul class="nav sub-nav">
+
+    #{if _section == "Questions"}
+        <li><a id="subnavLink_questionsList" href="@{Questions.list}">View<span class="hidden-phone"> Questions</span></a></li>
+        #{if _isReviewer}
+            <li><a id="subnavLink_questionsReview" href="@{Questions.review}">Review<span class="hidden-phone"> Questions</span></a></li>
+        #{/if}
+        <li><a id="subnavLink_questionsAdd" href="@{Questions.show}"><i class="icon-plus icon-gray"></i> Add<span class="hidden-phone"> a New</span> Question</a></li>
+    #{/if}
+    #{if _section == "Interviews"}
+        <li><a id="subnavLink_interviewTemplates" href="@{Interviews.list}"><span class="hidden-phone">Interview </span>Templates</a></li>
+        <li><a id="subnavLink_interviewCandidates" href="@{Interviews.candidates}">Candidate Interviews</a></li>
+        #{accountAllows enums.AccountLimitedAction.CREATE_INTERVIEW}
+            <li><a id="subnavLink_interviewsAdd" class="" href="@{Interviews.show(null, true)}"><i class="icon-plus icon-gray"></i> Add<span class="hidden-phone"> New</span> Template</a></li>
+        #{/accountAllows}
+        #{else}
+            <li><a id="subnavLink_interviewsAdd" class="disabled" href="#">Add New Template</a></li>
+        #{/else}
+    #{/if}
+    #{if _section == "Candidates"}
+        <li><a id="subnavLink_candidatesList" href="@{Candidates.list}">View Candidates</a></li>
+        <li><a id="subnavLink_candidatesAdd" class="#{accountAllows enums.AccountLimitedAction.CREATE_CANDIDATE}#{/accountAllows}#{else}disabled#{/else}" href="#{accountAllows enums.AccountLimitedAction.CREATE_CANDIDATE}@{Candidates.show}#{/accountAllows}#{else}##{/else}"><i class="icon-plus icon-gray"></i> Add<span class="hidden-phone"> New</span> Candidate</a></li>
+    #{/if}
+    #{if _section == "Community"}
+        <li><a id="subnavLink_community" href="@{Community.community}">Community</a></li>
+        <li><a id="subnavLink_communityBadges" href="@{Community.badges}">Badges</a></li>
+        #{if _page == "Manage Users"}
+            #{deadbolt.restrict roles:[['APP_ADMIN'] , ['COMPANY_ADMIN']]}
+                <li><a id="subnavLink_manageUsers" href="@{Users.list}">Manage Users</a></li>
+            #{/deadbolt.restrict}
+        #{/if}
+        #{else}
+            #{if _user}
+                #{deadbolt.restrict roles:[['APP_ADMIN'] , ['COMPANY_ADMIN']]}
+                    <li><a id="subnavLink_manageUsers" href="@{Users.list}">Manage Users</a></li>
+                #{/deadbolt.restrict}
+            #{/if}
+        #{/else}
+    #{/if}
+    #{if _section == "My Account"}
+        <li><a id="subnavLink_userAccount" href="@{Users.show(controllers.Security.connectedUser().id, "My Account")}">My Account</a></li>
+        #{deadbolt.restrictedResource resourceKeys:["PreferencesPage"]}
+            <li><a id="subnavLink_userPrefs" href="@{Users.preferences(controllers.Security.connectedUser().id)}">My Preferences</a></li>
+        #{/deadbolt.restrictedResource}
+    #{/if}
+    #{if _section == "Categories"}
+        #{deadbolt.restrict roles:[['APP_ADMIN']]}
+            <li><a id="subnavLink_categoriesAdd" href="@{Categories.show}"><i class="icon-plus"></i> Add a New Category</a></li>
+        #{/deadbolt.restrict}
+    #{/if}
+</ul>
+
+<script>
+    $('.sub-nav a[href*="'+window.location.pathname+'"]').parent().addClass('active');
+
+    #{if _section == "Interviews"}
+        #{if _page == "Show" && _interview.hasBeenSaved()}
+            $('.sub-nav a[href*="'+window.location.pathname+'"]').parent().removeClass('active');
+        #{/if}
+    #{/if}
+    #{if _section == "Candidates"}
+        #{if candidate != null }
+            $('.sub-nav a[href*="'+window.location.pathname+'"]').parent().removeClass('active');
+        #{/if}
+    #{/if}
+</script>

@@ -1,0 +1,4 @@
+self: play -> prep 0.1
+
+require:
+    - play

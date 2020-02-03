@@ -1,0 +1,52 @@
+#{extends 'standardPage.html' /}
+#{set title:'SuitedTo Stats' /}
+#{set 'moreScripts'}
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <h1>Scheduled Tasks</h1>
+
+        <h3>This list shows only the tasks that were scheduled with the @Schedule annotation</h3>
+        <br />
+    </div>
+</div>
+
+<div class="row">
+    <div class="span9">
+        <table border="0" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Task Name</th>
+                    <th>Next Planned Execution</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            #{list items:info, as:'i'}
+                 <tr>
+                    <td>${i.name}</td>
+                    <td>${i.nextExecution}</td>
+                    <td><a id="${i.name}ref" href="#" onClick='runTask("${i.key}","${i.name}")' class="btn">Do Now</a>
+                        <a id="${i.name}working" class="hide">...</a>
+                    </td>
+                 </tr>
+            #{/list}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function runTask(key, name){
+        $('#' + name + 'ref').hide();
+        $('#' + name + 'working').show();
+        $.get('@{Admin.runTask}?key=' + key,
+            function(){
+                $('#' + name + 'ref').show();
+                $('#' + name + 'working').hide();
+            }
+        );
+    }
+
+</script>

@@ -1,0 +1,42 @@
+#{extends 'standardPage.html' /}
+#{set title:'Admin' /}
+#{set 'moreScripts'}
+#{/set}
+
+#{if proInterviewerRequests != null && !proInterviewerRequests.isEmpty() }
+<table class="table">
+    <thead>
+    <tr>
+        <th>Action</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Years Category Experience</th>
+        <th>Years Interviewer Experience</th>
+        <th>LinkedIn Profile</th>
+        <th>Categories Requested</th>
+        <th>Document</th>
+    </tr>
+    </thead>
+    <tbody>
+        #{list items:proInterviewerRequests, as:'proInterviewerRequest'}
+        <tr>
+            <td><a id="piAccept" class="btn btn-primary btn-mini" href="@{Admin.acceptProInterviewerRequest(proInterviewerRequest.id)}">Accept</a><a id="piReject" class="btn btn-mini btn-danger" href="@{Admin.rejectProInterviewerRequest(proInterviewerRequest.id)}">Reject</a></td>
+            <td>${proInterviewerRequest.user.fullName}</td>
+            <td>${proInterviewerRequest.user.email}</td>
+            <td>${proInterviewerRequest.phone}</td>
+            <td>${proInterviewerRequest.yearsCategoryExperience}</td>
+            <td>${proInterviewerRequest.yearsInterviewerExperience}</td>
+            <td>#{if proInterviewerRequest.linkedInProfile}<a href="http://www.linkedin.com/in/${proInterviewerRequest.linkedInProfile}">link</a>#{/if}</td>
+            <td>${proInterviewerRequest.getCommaSeparatedCategoryNames()}</td>
+            <td>#{if proInterviewerRequest.supportingDocument}<a href="${proInterviewerRequest.supportingDocument.getTemporaryURL()}">link</a>#{/if}</td>
+        </tr>
+        #{/list}
+    </tbody>
+</table>
+#{/if}
+#{else}
+<div class="alert">
+    Currently no pending requests
+</div>
+#{/else}

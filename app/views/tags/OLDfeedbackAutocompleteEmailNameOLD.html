@@ -1,0 +1,76 @@
+%{
+field = _field; //the name and id of the input element
+value = _value; //the existing value for the input
+helpText = _helpText; //optional help text
+placeholder = _placeholder
+multiple = _multiple
+inputWidth = multiple ? "span5" : "span3"
+}%
+
+<input type="text" class="${inputWidth}" id="${field}" name="${field}" value="${value}" placeholder="${placeholder}"/>
+#{if helpText}
+<p class="help-block">${helpText}</p>
+#{/if}
+<script type="text/javascript">
+    $("#emails").append("<ul><li>one</li><li>two</li><ul/>");
+
+
+    $(function() {
+        function split(val) {
+            return val.split( /,\s*/ );
+        }
+        function extractLast(term) {
+            return split(term).pop();
+        }
+
+        var userListAction = #{jsAction @Users.getUsersForUserCompanyByPartialEmailOrPartialName() /};
+
+        //prevent enter key from submitting the form on this field
+        $("#${field}").keypress(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+            }
+        });
+
+    #{if multiple}
+        $("#${field}").bind( "keydown", function( event ) {
+            if ( event.keyCode === $.ui.keyCode.TAB &&
+                    $( this ).data( "autocomplete" ).menu.active ) {
+                event.preventDefault();
+            }
+    }).autocomplete({
+               source: userListAction($("#${field}").val()),
+               focus: function() {
+                    // prevent value inserted on focus
+                    return false;
+               },
+               select: function( event, ui ) {
+                    var terms = split( this.value );
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push( ui.item.value);
+    // add placeholder to get the comma-and-space at the end
+                    terms.push( "" );
+                    this.value = terms.join( ", " );
+                    return false;
+                }
+    }).data("autocomplete")._renderItem = function (ul, item) {
+    return $("<li></li>")
+        .data("item.autocomplete", item)
+        .append("<a>" + item.label)
+        .appendTo(ul);
+    };
+    #{/if}
+    #{else}
+        $("#${field}").autocomplete({
+            source:userListAction($("#${field}").val())
+    }).data("autocomplete")._renderItem = function (ul, item) {
+        return $("<li></li>")
+            .data("item.autocomplete", item)
+            .append("<a>" + item.label + " (" + item.data.questionCount + ")")
+            .appendTo(ul);
+        };
+    #{/else}
+    });
+</script>

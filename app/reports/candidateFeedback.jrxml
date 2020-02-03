@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version last-->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank A4" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3f5db244-339c-47a1-a9e7-eedafdda070e">
+	<import value="enums.*"/>
+	<import value="models.*"/>
+
+	<field name="candidateName" class="java.lang.String">
+		<fieldDescription><![CDATA[candidate.name]]></fieldDescription>
+	</field>
+	<field name="companyName" class="java.lang.String">
+		<fieldDescription><![CDATA[candidate.company.name]]></fieldDescription>
+	</field>
+	<field name="created" class="java.util.Date">
+		<fieldDescription><![CDATA[created]]></fieldDescription>
+	</field>
+	<field name="comments" class="java.lang.String">
+		<fieldDescription><![CDATA[comments]]></fieldDescription>
+	</field>
+	<field name="summaryChoice" class="enums.FeedbackSummary">
+		<fieldDescription><![CDATA[summaryChoice]]></fieldDescription>
+	</field>
+	<field name="interviewerName" class="java.lang.String">
+		<fieldDescription><![CDATA[feedbackSource.fullName]]></fieldDescription>
+	</field>
+	<field name="interviewerEmail" class="java.lang.String">
+		<fieldDescription><![CDATA[feedbackEmail]]></fieldDescription>
+	</field>
+	<field name="interviewName" class="java.lang.String">
+		<fieldDescription><![CDATA[activeInterview.name]]></fieldDescription>
+	</field>
+	<field name="interviewDate" class="java.util.Date">
+		<fieldDescription><![CDATA[activeInterview.updated]]></fieldDescription>
+	</field>
+	<field name="interviewRating" class="java.lang.Double">
+		<fieldDescription><![CDATA[activeInterview.averageQuestionRating]]></fieldDescription>
+	</field>
+	<variable name="dateFormatter" class="java.text.DateFormat">
+		<variableExpression>DateFormat.getInstance()</variableExpression>
+		<initialValueExpression>DateFormat.getInstance()</initialValueExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="7" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="91" splitType="Stretch">
+			<image>
+				<reportElement uuid="d1021b6e-5c21-4ca8-b7da-4c29987999c9" x="41" y="15" width="136" height="30"/>
+				<imageExpression><![CDATA["/public/images/logo-standard.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement uuid="cbd016a0-9f45-4479-97c8-dd3800c1e385" positionType="FixRelativeToBottom" x="431" y="67" width="72" height="14"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{companyName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="8eb9a6ed-62e1-4b5e-8e8c-3d913880b75e" x="46" y="68" width="349" height="23"/>
+				<textElement>
+					<font fontName="SansSerif" size="18" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{candidateName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="b2ed09c6-34b8-43e8-8d03-13332da64ece" x="323" y="26" width="183" height="17"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Printed on:  " + $V{dateFormatter}.format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="18" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="182" splitType="Stretch">
+			<frame>
+				<reportElement uuid="bf0ae193-1c82-46ea-aa55-f34da30c1051" x="41" y="6" width="467" height="176"/>
+				<box>
+					<pen lineWidth="0.5"/>
+				</box>
+				<textField>
+					<reportElement uuid="678dea35-d6d8-4a92-808b-8cc3175a7bce" x="8" y="4" width="452" height="16"/>
+					<textElement textAlignment="Left">
+						<font fontName="SansSerif" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Interviewer:  " + ($F{interviewerName} == null ? $F{interviewerEmail} : $F{interviewerName})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="678dea35-d6d8-4a92-808b-8cc3175a7bce" x="8" y="16" width="452" height="16"/>
+					<textElement textAlignment="Left">
+						<font fontName="SansSerif" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Feedback submitted:  " + $V{dateFormatter}.format($F{created})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="678dea35-d6d8-4a92-808b-8cc3175a7bce" x="8" y="40" width="452" height="16"/>
+					<textElement textAlignment="Left">
+						<font fontName="SansSerif" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Interview:  " + ($F{interviewName} == null ? "None" : $F{interviewName})]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="678dea35-d6d8-4a92-808b-8cc3175a7bce" x="8" y="56" width="452" height="16"/>
+					<textElement textAlignment="Left">
+						<font fontName="SansSerif" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Interview date:  " + ($F{interviewDate} == null ? "None" : $V{dateFormatter}.format($F{interviewDate}))]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="678dea35-d6d8-4a92-808b-8cc3175a7bce" x="8" y="134" width="452" height="16"/>
+					<textElement textAlignment="Left">
+						<font fontName="SansSerif" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Recommended next steps:    " + $F{summaryChoice}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true">
+					<reportElement uuid="678dea35-d6d8-4a92-808b-8cc3175a7bce" x="8" y="160" width="452" height="16"/>
+					<textElement textAlignment="Left">
+						<font fontName="SansSerif" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Additional Feedback:  " + $F{comments}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement uuid="50dc8732-b28e-411d-8b2a-32a6bfef49b0" x="8" y="72" width="452" height="16"/>
+					<textElement textAlignment="Left">
+						<font fontName="SansSerif" size="9" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Interview rating:  " + ($F{interviewRating} == null ? "None" : $F{interviewRating} + " (on a scale from -2 to 2)")]]></textFieldExpression>
+				</textField>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="34" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement uuid="d9f6cf37-1c08-4df2-99e1-567b2d2fe016" x="432" y="8" width="70" height="30"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

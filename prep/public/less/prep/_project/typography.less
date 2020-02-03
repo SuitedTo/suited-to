@@ -1,0 +1,126 @@
+/**
+ * Prepado - Typography
+ *
+ */
+
+
+/* Typekit font usage: kulturista-web
+
+Thin
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 100;
+
+Light:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 300;
+
+Medium:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 400;
+
+Medium Italic:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: italic;
+  font-weight: 400;
+
+Semi Bold:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 600;
+
+Bold:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 700;
+
+*/
+
+/* Heading Styles
+-------------------------------------------------- */
+
+h1, h2, h3 {
+  font-family: @serifFontFamily;
+}
+
+// Typekit loading
+.wf-loading {
+  h1, h2, h3 {
+    visibility: hidden;
+  }
+}
+// Typekit loaded
+.wf-active {
+  h1, h2, h3 {
+    visibility: visible;
+  }
+}
+
+h1 {
+  font-size: 38.5px;
+  font-weight: 700;
+  margin-top: 0.25em;
+  margin-bottom: 0.75em;
+  color: @prepRed;
+  line-height: 1.25em;
+}
+h2 {
+  font-size: 24px;
+  font-weight: 400;
+  margin-top: 0.75em;
+  margin-bottom: 0.5em;
+  line-height: 1.25em;
+  color: @prepBrownDark;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 400;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.25em;
+  color: @prepBrownDark;
+}
+
+
+/* Text Formatting
+-------------------------------------------------- */
+
+.text-center {
+   text-align: center;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+
+
+
+
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width: 767px) {
+
+  h1 {
+    font-size: 32px;
+  }
+  h2 {
+    font-size: 22px;
+  }
+
+}
+
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width: 480px) {
+  h1 {
+    font-size: 27.5px;
+  }
+  h2 {
+    font-size: 20px;
+  }
+
+}

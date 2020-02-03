@@ -1,0 +1,45 @@
+#{extends 'blowyEmail.html' /}
+#{set title:'SuitedTo Question Flagged' /}
+<!-- // Begin Module: Standard Content \\ -->
+<table border="0" cellpadding="20" cellspacing="0" width="100%">
+  <tr>
+    <td valign="top">
+      <div mc:edit="std_content01">
+        <h3 class="h3">Your Question was Flagged!</h3>
+        <hr class="hr">
+
+        <table border="0" cellpadding="10" cellspacing="0" width="100%">
+          <tr>
+            <td valign="top"></td>
+            <td><h4 class="h4">Hey ${name},</h4>
+              It appears that your question "${questionTitle}" has been flagged as inappropriate.
+              This has caused your street cred to drop, but don't fear, a SuitedTo admin will check out your question to see if it's really inappropriate!
+              If it's marked as appropriate, you'll get your street cred points back ASAP, but if it's not suitable for the public pool, it will be removed.
+
+              <br><br>
+              <a href="@@{Questions.view(questionId)}"><img src="http://content.suitedto.com/email-content/btn-takemethere.png"></a>
+              <br><br>
+
+            #{if streetCred}
+              <h4 class="h4"> Your Street Cred is "${streetCred}"</h4>
+            #{/if}
+            </td>
+
+          </tr>
+
+          <tr>
+            <td valign="top"></td>
+            <td>
+              Sincerely, <br>
+              The SuitedTo TEAM
+
+            </td>
+          </tr>
+        </table>
+
+      </div>
+    </td>
+  </tr>
+</table>
+<!-- // End Module: Standard Content \\ -->
+

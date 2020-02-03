@@ -1,0 +1,125 @@
+#{extends 'standardPage.html' /}
+#{set title:'Question List' /}
+#{set 'moreScripts'}
+
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"Questions", isReviewer:isReviewer /}
+
+            <h1>Review Questions</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+    #{if status}
+        <div class="alert alert-success fade in">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            #{if status == "review"}<strong>Congratulations!</strong> Your question was created successfully and has
+                been submitted for review#{/if}
+            #{elseif status == "saved"}<strong>Congratulations!</strong> your question was saved successfully.#{/elseif}
+            #{elseif status == "resubmit"}<strong>Alright, lets try that again!</strong> Your question has been resubmitted for review.#{/elseif}
+            #{elseif status == "accepted"}<strong>Thank You!</strong> You've accepted a question. Now it's available for
+                others to use.#{/elseif}
+            #{elseif status == "rejected"}<strong>OH NO YOU DIDN'T</strong> You've pushed this question back to the
+                submitter, they'll have to fix it and resubmit.#{/elseif}
+        </div>
+    #{/if}
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12 questionListFilter">
+        <span class="filterLegend">Filter:</span>
+
+        <ul class="filterList">
+            #{if connectedUser.hasReviewCapability()}
+                <li class="filterListItem"><a href="#" id="tab_NeedsReview" data-name="Needs Review" data-source="NeedingReview,excludeByActiveStatus:false">Needs Review<span class="help" rel="popover" data-content="&{'help.questionTab.needsReview'}" data-original-title="Needs Review">?</span></a></li>
+                <li class="filterListItem"><a href="#" id="tab_AwaitingCompletion" data-name="Awaiting Completion" data-source="AwaitingCompletion,excludeByActiveStatus:false">Awaiting Completion<span class="help" rel="popover" data-content="&{'help.questionTab.awaitingCompletion'}" data-original-title="All Questions">?</span></a></li>
+            #{/if}
+            #{deadbolt.restrict roles:[['APP_ADMIN']]}
+                <li class="filterListItem"><a href="#" id="tab_AwaitingCategory" data-name="Awaiting Category" data-source="includeByStatus:AWAITING_CATEGORY">Awaiting Category</a></li>
+                <li class="filterListItem"><a href="#" id="tab_FlaggedQuestions" data-name="Flagged questions" data-source="includeIsFlaggedAsInappropriate:true,excludeByStatus:RETURNED_TO_SUBMITTER">Flagged</a></li>
+                <li class="filterListItem"><a href="#" id="tab_InactiveQuestions" data-name="Inactive questions" data-source="includeByActiveStatus:false">Inactive</a></li>
+            #{/deadbolt.restrict}
+        </ul>
+
+
+    </div>
+</div>
+
+
+<div class="row">
+    <ul id="tabs" class="questionListTabs nav nav-tabs span12">
+        
+    </ul>
+</div>
+
+<div class="row">
+    <div class="span12">
+        
+        #{deadbolt.restrictedResource resourceKeys:["nonLonerOnly"]}
+            #{resourceCount type:enums.AccountResource.PRIVATE_QUESTIONS}
+
+                You are SuitedTo admin.  Create private questions <em>like the wind</em>.
+            #{/resourceCount}
+        #{/deadbolt.restrictedResource}
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <script>
+            var dataTableKey = "DataTables_questionsReview_list";
+        </script>
+    	#{if "standard" == mode || !mode}#{questionTable textHrefLink:@Questions.view(), filters:"NeedingReview,excludeByActiveStatus:false" /}#{/if}
+    </div>
+</div>
+
+<div class="row" id="questionUtils">
+    <div class="span4" id="downloadButtonSection">
+        <a href="@{Questions.show}" class="">
+            <button id="addQuestionBtn" class="btn btn-large btn-primary"><i class="icon-plus icon-white"></i> Add a New Question</button>
+        </a>
+    #{deadbolt.restrictedResource resourceKeys:["Questions.downloadSpreadSheet"]}
+		<div class="controls">
+    		<button class="btn btn-info" onClick="parent.location='@{Questions.downloadSpreadsheet()}'"><i class="icon-white icon-download"></i> Download Questions</button>
+		</div>
+    #{/deadbolt.restrictedResource}
+    </div>
+    <div class="span4 offset4">
+    #{deadbolt.restrictedResource resourceKeys:["Questions.uploadSpreadSheet"]}
+        #{form @Questions.uploadSpreadSheet() , id:'companyForm', class:'form-horizontal', enctype:'multipart/form-data', autocomplete:"off"}
+			<div class="controls1">
+				<label for="spreadsheet" class="control-label1">&{'questions.upload'}</label>
+    			<input type="file" id="spreadsheet" class="input-file" name="spreadsheet" /><br>
+    			<button id="uploadBtn" class="btn btn-info" type="submit"><i class="icon-white icon-upload"></i> Upload</button>
+			</div>    		
+		#{/form}
+    #{/deadbolt.restrictedResource}
+    </div>
+</div>
+
+
+<script>
+var filtersKey = "questionsReview.filters"; // used by ajax table
+Application.Questions.init({
+    tabNameKey: "questionsReview.tab",
+    filtersKey: "questionsReview.filters",
+    reportNameKey: ""
+});
+</script>
+
+
+
+
+

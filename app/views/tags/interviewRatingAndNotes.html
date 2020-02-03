@@ -1,0 +1,78 @@
+
+<div id="ratingSection" class="hide">
+    <h4>Rating</h4>
+    <p>You rated <strong><span id="questionsRated"></span></strong> out of <strong><span id="totalQuestions"></span></strong> questions in this interview.
+    <p>Your average rating was <strong><span id="averageRating"></span></strong> (on a scale of -2 to 2)</p>
+</div>
+<div id="interviewNotesSection" class="hide">
+    <h4>Interview Notes</h4>
+    <p id="interviewNotes"></p>
+</div>
+<div id="questionNotesSection">
+    <h4>Question Notes</h4>
+    <ul class="unstyled" id="questionNotes">
+        <!--content will be inserted via JavaScript-->
+    </ul>
+</div>
+
+<script type="text/javascript">
+    //handles the population of rating and notes section for the selected interview
+    function populateInterviewRatingAndNotes(selectedInterviewId, success, failure){
+
+        var feedbackDataAction = #{jsAction @Interviews.getUserFeedback(':id')/};
+
+        $.get(feedbackDataAction({id: selectedInterviewId}), function(data){
+            //keep track of whether there is any data of any type to display
+            var dataPresent;
+
+            //question rating stats
+            var questionsRated = data.questionsRated;
+            if(questionsRated){
+                $('#questionsRated').html(questionsRated);
+                $('#totalQuestions').html(data.totalQuestions);
+                $('#averageRating').html(data.averageRating.toFixed(2));
+                dataPresent = true;
+            }
+            $('#ratingSection').toggle(!!questionsRated);   //!! to force convert to boolean type expected by jQuery
+
+            //interview level notes
+            var interviewNotes = data.interviewNotes;
+            if(interviewNotes){
+                $('#interviewNotes').html(interviewNotes);
+                dataPresent = true;
+            }
+            $('#interviewNotesSection').toggle(!!interviewNotes);
+
+            //question level notes and ratings
+            var hasQuestionNotes = false;
+            $('#questionNotes').empty();
+            if(data.questions.length){
+                for(var i=0; i<data.questions.length; i++){
+                    var question = data.questions[i];
+                                        /** If we use question.rating here, a question with no comment
+                                         * and a rating of zero will cause this statement to evaluate to false, and
+                                         * the rating will not be displayed.
+                                          */
+                    if(question.comment || (question.rating != undefined || question.rating != null)){
+                        hasQuestionNotes = true;
+                        var liElement =  $('<li class="questionNote"></li>').appendTo($('#questionNotes'));
+                        $('<strong>' + question.questionText + '</strong></p>').appendTo(liElement);
+                        if(question.rating != undefined || question.rating != null){
+                            $('<p>Your Rating: ' + question.rating + '</p>').appendTo(liElement);
+                        }
+
+                        if(question.comment){
+                            $('<p>' + question.comment + '</p>').appendTo(liElement);
+                        }
+                        dataPresent = true;
+                    }
+                }
+            }
+            $('#questionNotesSection').toggle(hasQuestionNotes);
+
+            if(success){
+                success(dataPresent);
+            }
+        }).fail(failure);
+    }
+</script>

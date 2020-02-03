@@ -1,0 +1,164 @@
+#{extends 'standardPage.html' /}
+#{set title:'Candidate List' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set tableId:'candidateTable' /}
+#{set processing:play.Play.configuration.get("dataTable.processing") /}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"Candidates" /}
+
+            <h1>Candidates</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        #{resourceCount type:enums.AccountResource.CANDIDATES}
+        
+            You're SuitedTo admin.  Why are you even looking at this text?  Just
+            do it!
+        #{/resourceCount}
+    </div>
+</div>
+
+#{standardError /}
+
+<div class="row">
+    <div class="span12 form-inline">
+        #{dataTable tableId}
+            #{if connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN) ||
+                    connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+                #{dataTableColumn "ID", sWidth:"5%", sClass:"dataCol_id", sName:"id" /}
+                #{dataTableColumn "Name", sWidth:"20%", sClass:"dataCol_name", sName:"name" /}
+                #{dataTableColumn "Created Date", sWidth:"10%", sClass:"dataCol_dateCreated", sName:"created" /}
+                #{dataTableColumn "Job", sWidth:"20%", sClass:"dataCol_name", sName:"job" /}
+                #{dataTableColumn "Job Status", sWidth:"20%", sClass:"dataCol_name", sName:"jobStatus" /}
+            #{/if}
+            #{else}
+                #{dataTableColumn "ID", sWidth:"15", sClass:"dataCol_id", sName:"id" /}
+                #{dataTableColumn "Name", sWidth:"35%", sClass:"dataCol_name", sName:"name" /}
+                #{dataTableColumn "Created Date", sWidth:"15%", sClass:"dataCol_dateCreated", sName:"created" /}
+                #{dataTableColumn "Job", sWidth:"35%", sClass:"dataCol_name", sName:"job" /}
+            #{/else}
+
+        #{/dataTable}
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <a id="addCandidateBtn" class="btn btn-primary #{accountAllows enums.AccountLimitedAction.CREATE_CANDIDATE}#{/accountAllows}#{else}disabled#{/else}" href="#{accountAllows enums.AccountLimitedAction.CREATE_CANDIDATE}@{Candidates.show}#{/accountAllows}#{else}##{/else}"><i class="icon-plus icon-white"></i> Add a New Candidate</a>
+        #{accountAllows enums.AccountLimitedAction.CREATE_CANDIDATE}
+        #{/accountAllows}
+        #{else}
+            %{
+                java.util.Map<String, Object> params = new java.util.HashMap<String, Object>();
+                
+                if (connectedUser) {
+                    params.put("id", (connectedUser.company == null)?null:connectedUser.company.id);
+                    params.put("accountType", connectedUser.getAccountType().toString().toUpperCase());
+                    params.put("registrationMode", false);
+                }
+
+                connectedUserCompany = play.mvc.Router.reverse("CompanyManagement.manage", params).url;
+            }%
+            <br/><br/>
+            <div class="alert alert-info span5" style="float:right;">&{'limits.candidates.free'}#{deadbolt.restrict roles:[['COMPANY_ADMIN']]} &{'limits.candidates.free.upgrade', connectedUserCompany}#{/deadbolt.restrict}</div>
+        #{/else}
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    // Data table configuration
+    var options = {
+        "fnRowCallback": function(nRow, aData, iDisplayIndex) {
+
+            // name name column values link to candidiate detail page
+            var id = aData[0];
+            var hrefValue = '<a href="@{Candidates.show()}/' + id + '"/>';
+            $('td:eq(1)', nRow).wrapInner(hrefValue);
+
+            // replace commas with line breaks for job and job status column values
+            $('td:eq(3)', nRow).html($('td:eq(3)', nRow).html().split(',').join('<br>'));
+        *{ Status column does not exist for non Company or App admins }*
+        #{deadbolt.restrict roles:[['APP_ADMIN'] , ['COMPANY_ADMIN']]}
+            $('td:eq(4)', nRow).html($('td:eq(4)', nRow).html().split(',').join('<br>'));
+        #{/deadbolt.restrict}
+
+
+        },
+        aaSorting: [
+                [0, 'desc']
+        ],
+        "sDom:": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+        oLanguage: {
+            sProcessing: #{jsString}#{processingDisplay /}#{/jsString},
+            sLoadingRecords: #{jsString}#{processingDisplay /}#{/jsString},
+            sEmptyTable: "No Candidates yet!"
+        }
+    };
+
+    var table = Application.DataTable;
+    table.init("#{get 'tableId' /}", "@{Tables.getReport()}", "candidate.CandidateTable", options);
+    table.load(null, null);
+
+    // hide the table wide filter for now
+    $('#candidateTable_filter').hide();
+    
+    // Gson serialized so should be safe to use .raw()
+    var jobNames = ${jsonJobNames.raw()};
+    var jobStatusNames = ${jsonJobStatusNames.raw()};
+
+    var jobNamesDropdown = '<select><option value="">Search Jobs</option>';
+    for (var i = 0; i < jobNames.length; i++) {
+        jobNamesDropdown += '<option value="'+jobNames[i]+'">'+jobNames[i]+'</option>';
+    }
+    jobNamesDropdown += '</select>';
+    
+    var jobStatusNamesDropdown = '<select><option value="">Search Job Statuses</option>';
+    for (var i = 0; i < jobStatusNames.length; i++) {
+        jobStatusNamesDropdown += '<option value="'+jobStatusNames[i]+'">'+jobStatusNames[i]+'</option>';
+    }
+    jobStatusNamesDropdown += '</select>';
+
+        //'<th><input type="text" name="search_job" value="Search Jobs"></th>'
+            //+ '<th><input type="text" name="search_jobStatus" value="Search Statuses"></th>'
+
+    // Column filter configuration
+    $('thead').append(
+        '<tr>' +
+        '<th><input type="text" name="search_id" value="" placeholder="Search IDs"></th>' +
+        '<th><input type="text" name="search_name" value="" placeholder="Search Names"></th>' +
+        '<th><input type="text" name="search_created" value="" placeholder="Search Dates"></th>' +
+        '<th>'+jobNamesDropdown+'</th>'
+        #{deadbolt.restrict roles:[['APP_ADMIN'] , ['COMPANY_ADMIN']]}
+            + '<th>'+jobStatusNamesDropdown+'</th>'
+        #{/deadbolt.restrict}
+        + '</tr>'
+    );
+
+
+
+    if ($('thead tr').length > 1) {
+        var $colSearchInputs = $($("thead tr")[1]).find('th');
+
+        $colSearchInputs.find('input').keyup(function() {
+            table.table.fnFilter($(this).val(),
+                $colSearchInputs.index($(this).parent()));
+        });
+        
+        $colSearchInputs.find('select').change(function() {
+            table.table.fnFilter($(this).val(),
+                $colSearchInputs.index($(this).parent()));
+        });
+    }
+
+</script>

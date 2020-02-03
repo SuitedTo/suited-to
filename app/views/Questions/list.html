@@ -1,0 +1,134 @@
+#{extends 'standardPage.html' /}
+#{set title:'Question List' /}
+#{set 'moreScripts'}
+
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"Questions", isReviewer:isReviewer /}
+
+            <h1>Questions</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+    #{if status}
+        <div class="alert alert-success fade in">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            #{if status == "review"}<strong>Congratulations!</strong> Your question was created successfully and has
+                been submitted for review#{/if}
+            #{elseif status == "saved"}<strong>Congratulations!</strong> your question was saved successfully.#{/elseif}
+            #{elseif status == "resubmit"}<strong>Alright, lets try that again!</strong> Your question has been resubmitted for review.#{/elseif}
+            #{elseif status == "accepted"}<strong>Thank You!</strong> You've accepted a question. Now it's available for
+                others to use.#{/elseif}
+            #{elseif status == "rejected"}<strong>OH NO YOU DIDN'T</strong> You've pushed this question back to the
+                submitter, they'll have to fix it and resubmit.#{/elseif}
+        </div>
+    #{/if}
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12 questionListFilter">
+        <span class="filterLegend">Filter:</span>
+
+        *{
+            The actual filters for each of these dropdown filter combinations is located in app.js
+            The combinations are defined in the Application.Questions class, runQuestionFilter function
+            The filters are defined in the Application.Questions class, selectTierFilter function
+        }*
+        <div class="questionFilterWrap">
+            <div class="questionFilterWrapTop">
+                <div class="filterLabel top inline">Type:</div>
+                <ul class="filterList top" id="filterListType">
+                    <li class="filterListItem"><a href="#" id="tab_AllQuestions" data-name="All Questions">All Questions<span class="help" rel="popover" data-content="&{'help.questionTab.allQuestions'}" data-original-title="All Questions">?</span></a></li>
+                    <li class="filterListItem"><a href="#" id="tab_MyQuestions" data-name="My Questions">My Questions<span class="help" rel="popover" data-content="&{'help.questionTab.myQuestions'}" data-original-title="My Questions">?</span></a></li>
+                    #{if connectedUser.company != null}
+                    <li class="filterListItem"><a href="#" id="tab_CompanysPrivateQuestions" data-name="Company's Private Questions">Company's Private Questions<span class="help" rel="popover" data-content="&{'help.questionTab.companyPrivateQuestions'}" data-original-title="Your Company Questions">?</span></a></li>
+                    #{/if}
+                </ul>
+            </div>
+
+            <div class="questionFilterWrapBot">
+                <div class="filterLabel inline">Status:</div>
+                <ul class="filterList" id="filterListStatus">
+                    <li class="filterListItem"><a href="#" id="tab_Any" data-name="Any">Any</a></li>
+                    <li class="filterListItem"><a href="#" id="tab_OutForReview" data-name="Out For Review">Out For Review<span class="help" rel="popover" data-content="&{'help.questionTab.outForReviewYou'}" data-original-title="Out For Review - You">?</span></a></li>
+                    #{if connectedUser.company != null}
+                #{/if}
+                    <li class="filterListItem"><a href="#" id="tab_RecentlyUsed" data-name="Recently Used" data-source="RecentlyUsed">Recently Used</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="row">
+    <ul id="tabs" class="questionListTabs nav nav-tabs span12">
+        
+    </ul>
+</div>
+
+<div class="row">
+    <div class="span12">
+        
+        #{deadbolt.restrictedResource resourceKeys:["nonLonerOnly"]}
+            #{resourceCount type:enums.AccountResource.PRIVATE_QUESTIONS}
+
+                You are SuitedTo admin.  Create private questions <em>like the wind</em>.
+            #{/resourceCount}
+        #{/deadbolt.restrictedResource}
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+
+    	#{if "standard" == mode || !mode}#{questionTable textHrefLink:@Questions.view() /}#{/if}
+    </div>
+</div>
+
+<div class="row" id="questionUtils">
+    <div class="span4" id="downloadButtonSection">
+        <a href="@{Questions.show}" class="">
+            <button id="addQuestionBtn" class="btn btn-large btn-primary"><i class="icon-plus icon-white"></i> Add a New Question</button>
+        </a>
+    #{deadbolt.restrictedResource resourceKeys:["Questions.downloadSpreadSheet"]}
+		<div class="controls">
+    		<button class="btn btn-info" onClick="parent.location='@{Questions.downloadSpreadsheet()}'"><i class="icon-white icon-download"></i> Download Questions</button>
+		</div>
+    #{/deadbolt.restrictedResource}
+    </div>
+    <div class="span4 offset4">
+    #{deadbolt.restrictedResource resourceKeys:["Questions.uploadSpreadSheet"]}
+        #{form @Questions.uploadSpreadSheet() , id:'companyForm', class:'form-horizontal', enctype:'multipart/form-data', autocomplete:"off"}
+			<div class="controls1">
+				<label for="spreadsheet" class="control-label1">&{'questions.upload'}</label>
+    			<input type="file" id="spreadsheet" class="input-file" name="spreadsheet" /><br>
+    			<button id="uploadBtn" class="btn btn-info" type="submit"><i class="icon-white icon-upload"></i> Upload</button>
+			</div>    		
+		#{/form}
+    #{/deadbolt.restrictedResource}
+    </div>
+</div>
+
+
+<script>
+var filtersKey = "questions.filters"; // used by ajax table
+Application.Questions.init({
+    tabNameKey: "questions.tab",
+    filtersKey: "questions.filters",
+    reportNameKey: ""
+});
+</script>
+

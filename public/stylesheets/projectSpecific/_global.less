@@ -1,0 +1,549 @@
+/*
+ * Global SuitedTo Styles
+ *
+ * custom styles that are globally used across SuitedTo
+ * these styles may be overridden for specific pages
+ */
+
+
+
+/* Helper classes
+ * From https://github.com/h5bp/html5-boilerplate/blob/master/css/main.css
+-------------------------------------------------- */
+/*
+ * Hide only visually, but have it available for screenreaders: h5bp.com/v
+ */
+
+.visuallyhidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+
+/*
+ * Extends the .visuallyhidden class to allow the element to be focusable
+ * when navigated to via the keyboard: h5bp.com/p
+ */
+
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+}
+
+/*
+ * Hide visually and from screenreaders, but maintain layout
+ */
+
+.invisible {
+    visibility: hidden;
+}
+
+/*
+ * Input placeholder text color for placeholder polyfill
+ */
+input.placeholder, 
+textarea.placeholder { 
+	color: #888; 
+}
+
+
+.label-application, .badge-application {
+	background-color: @application-yellow;
+}
+
+
+/* Alert
+-------------------------------------------------- */
+.alert-info {
+  background-color: lighten(@teal-ultralightest, 2%);
+  border-color: darken(spin(@teal-ultralightest, -10), 5%);
+  color: @teal-main;
+}
+
+
+/* Help Icons
+-------------------------------------------------- */
+a.help {
+	display: inline-block;
+	margin-bottom: .7em;
+	margin-left: .25em;
+	padding: .15em .35em .25em;
+	.border-radius(1em);
+	font-size: .7em;
+	line-height: 1em;
+	vertical-align: middle;
+	color: white;
+	background: #cccccc;
+}
+a.help:hover {
+	background: @teal-main;
+}
+
+span.help {
+	display: inline;
+	float: right;
+	margin: 0px 5px 1em .25em;
+	padding: .15em .35em .25em;
+	.border-radius(1em);
+	font-size: .7em;
+	line-height: 1em;
+	color: white;
+	vertical-align: middle;
+	background: #cccccc;
+}
+span.help:hover {
+	background: @teal-main;
+}
+
+
+
+/* Popovers
+-------------------------------------------------- */
+.popover {
+	.popover-title {
+		font-size: 15px;
+		background-image: url(../images/icon-blowybox-22x19-green.png);
+		background-repeat: no-repeat;
+		background-position: 12px 7px;
+		padding-left: 43px;
+		color: @application-darkgreen;
+
+	}
+	.popover-content p, .popover-content ul, .popover-content ol {
+		font-size: 13px;
+		line-height: 18px;
+	}
+}
+
+
+
+/* User Badges
+-------------------------------------------------- */
+.userBadge {
+	position: relative;
+	font-size: 1em;
+
+	.userBadgeIcon {
+		margin: 0 auto;
+		padding: 0.5em;
+		position: relative;
+		max-width: 145px;
+	}
+	.userBadgeTitle {
+		font-family: @sans-serif-heading-bold;
+		font-size: 0.87em;
+        line-height: 1.12em;
+		//margin-top: 10px;
+		margin-bottom: 0;
+	}
+	.userBadgeProgress { 
+		color: #777; 
+		font-size: 13px; 
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.userBadgeProgressMessage { 
+		color: #777; 
+		font-size: 12px; 
+		line-height: 16px; 
+		font-style: italic;
+		overflow: hidden; 
+
+		em {
+			font-weight: bold;
+			background-color: @application-yellow-lightest;
+			border-radius: 2px;
+			padding: 0px 3px;
+		}
+	}
+	.userBadgeDescription {
+		font-size: 13px;
+		font-style: italic;
+	}
+	.userBadgeMultiplier {
+		position: absolute;
+		right: 0.5em;
+		bottom: 0.5em;
+		height: 2.2em;
+		min-width: 2.2em;
+		font-size: 0.87em;
+		font-weight: bold;
+		line-height: 2.2em;
+		text-align: center;
+		.border-radius(1.5em);
+		border: 4px solid #ccc;
+		background-color: #fff;
+
+		span { padding: 4px; }
+	}
+
+}
+.userBadgeIconPopover {
+	float: right;
+	width: 35px;
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+.userBadgeListItem {
+    .userBadge {
+        float: left;
+        margin-right: 10px;
+        max-width: 80px;
+    }
+    .userBadgeInfo {
+        padding-top: 20px;
+    }
+    .userBadgeName {
+        width: 150px;
+        margin-right: 20px;
+        float: left;
+    }
+    .userBadgeTitle {
+        font-size: 16px;
+    }
+    .userBadgeMultiplier {
+        color: #aaa;
+        span {font-weight: bold;}
+    }
+    .userBadgeDescription {
+        overflow: hidden;
+        font-size: 13px;
+    }
+}
+
+//
+// Responsive: Phone to desktop
+// --------------------------------------------------
+@media (max-width: 979px) {
+
+    .userBadgeListItem {
+        .userBadgeInfo {
+            padding-top: 13px;
+        }
+        .userBadgeName {
+            width: auto;
+            margin-right: 0;
+            float: none;
+        }
+        .userBadgeDescription {
+            margin-top: 5px;
+        }
+    }
+
+}
+
+
+/* Activity Feed
+-------------------------------------------------- */
+.feedItemList {
+
+	.feedItem {
+		position: relative;
+		padding: 10px 8px 22px 0px;
+		//background-image: url(../images/icon-blowybox-22x19-green.png);
+		background-repeat: no-repeat;
+		background-position: 0px 9px;
+		border-top: 1px solid #fff;
+		border-bottom: 1px solid #ddd;
+		color: #777;
+		font-size: 14px;
+		line-height: 16px;
+		word-break: break-word;
+
+		a { 
+			color: #777; 
+			.border-radius(3px);
+			background-color: @application-green-lightest;
+		}
+		a:hover { 
+			text-decoration:none; 
+			background-color: @application-green-light;
+		}
+
+		/*&.darkgreen, &.REVIEWER, &.TOP_CATEGORIES {
+			background-image: url(../images/icon-blowybox-22x19-darkgreen.png);
+			a { background-color: @application-darkgreen-lightest; }
+			a:hover { background-color: @application-darkgreen-light; }
+		}
+		&.yellow, &.PRO_INTERVIEWER {
+			background-image: url(../images/icon-blowybox-22x19-yellow.png);
+			a { background-color: @application-yellow-lightest; }
+			a:hover { background-color: @application-yellow-light; }
+		}
+		&.teal, &.INTERVIEW_COMPLETED {
+			background-image: url(../images/icon-blowybox-22x19-teal.png);
+			a { background-color: @application-teal-lightest; }
+			a:hover { background-color: @application-teal-light; }
+		}*/
+		&.image, &.BADGE {
+			background-image: none;
+			padding-left: 0;
+		}
+
+		.feedImage { 
+			float: left;
+			margin-right: 15px;
+			width: 35px;
+		}
+		&.user.BADGE {
+			.feedImage {
+				float: right;
+				margin-right: 0;
+				margin-left: 15px;
+				width: 60px;
+			}
+		}
+		.feedUserImage {
+			float: left;
+			width: 30px;
+			height: 30px;
+			margin-right: 10px;
+			padding: 2px;
+			overflow: hidden;
+			&.border {
+				border: 1px solid #DDD;
+				background-color: white;
+				img { width: 100%; height: 100%; }
+			}
+			
+		}
+		&.user {
+			.feedUserImage {
+				display: none;
+			}
+		}
+		.feedTitle {
+			font-size: 14px;
+			margin-bottom: 10px;
+			color: #444;
+		}
+		.feedFooter {
+			position: absolute;
+			bottom: 4px;
+			right: 8px;
+			font-size: 10px;
+			line-height: 13px;
+            color: #aaa;
+
+			a { background: none; }
+			a:hover { text-decoration: underline; }
+		}
+		.feedText {
+			font-size: 12px;
+			overflow: hidden;
+		}
+
+		&:hover {
+			background: #fff;
+			margin: -5px -5px -5px -10px;
+			padding: 15px 13px 27px 10px;
+			.box-shadow(0 0 6px rgba(50,50,50,0.4));
+			.feedFooter { bottom: 9px; right: 13px; }
+            z-index: 2;
+		}
+
+        /*&.company:after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-top: 15px solid @application-teal;
+            border-left: 15px solid transparent;
+            border-bottom: 15px solid transparent;
+            position: absolute;
+            top: -1px;
+            right: 1px;
+        }*/
+        &.company {
+          border-right: 3px solid @application-teal;
+        }
+        &.user {
+          border-right: 3px solid @application-yellow;
+        }
+        &.all {
+          border-right: 3px solid #e6e6e6;
+        }
+
+	}
+
+}
+
+.moreFeed {
+    margin-top: 5px;
+	text-align: center;
+
+	#loadingMoreFeed {
+		text-align: center;
+		font-size: 12px;
+		color: @application-mediumgray;
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+	a { 
+		font-size: 12px;
+		color: @application-mediumgray;
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+	.noNewsFeedItems {
+		margin-top: 10px;
+		font-size: 12px;
+		color: @application-mediumgray;
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+}
+
+
+
+/* Candidate Page - Quicklink
+-------------------------------------------------- */
+#quick_link_container {
+  display: inline-block;
+  width: 24px;
+  cursor: pointer;
+}
+#quick_link_wrap {
+  display: hide;
+  &.active {
+    display: inline-block;
+  }
+}
+
+
+
+/* Questions List Filter
+-------------------------------------------------- */
+.questionFilterWrap {
+  overflow: hidden;
+}
+.questionFilterWrapTop, .questionFilterWrapBot {
+  display: inline-block;
+  vertical-align: top;
+}
+.questionFilterWrapTop {
+  border-bottom: 1px solid @application-green-light;
+  margin-bottom: -1px;
+}
+.questionListFilter {
+  margin-bottom: 20px;
+  background-color: lighten(@teal-ultralightest, 6%); //@application-green-lightest;
+  border: 1px solid @teal-ultralightest; //@application-green-light;
+  .border-radius(5px);
+
+  .filterLegend {
+    display: block;
+    position: relative;
+    float: left;
+    margin-right: 15px;
+    padding: 10px 25px 10px 15px;
+    text-transform: uppercase;
+    color: @teal-main; //@application-darkgreen;
+    background-color: @teal-ultralightest; //@application-green-light;
+    &:after {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      content:'';
+      border-top: 19px solid lighten(@teal-ultralightest, 6%);
+      border-bottom: 19px solid lighten(@teal-ultralightest, 6%);
+      border-left: 12px solid transparent;
+      z-index: 1;
+    }
+  }
+  .filterLabel {
+    display: inline-block;
+    padding: 10px 10px 10px 10px;
+    font-size: 13px;
+    //text-transform: uppercase;
+    color: #888;
+
+    //&.top { border-bottom: 1px solid @application-green-light; }
+  }
+
+  .filterList {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    vertical-align: top;
+
+    li {
+      float: left;
+
+      a {
+        display: block;
+        padding: 10px 15px;
+        font-size: 13px;
+        color: #777;
+        text-transform: uppercase;
+
+        &:hover {
+          background-color: @teal-ultralightest;
+          text-decoration: none;
+        }
+        &.active {
+          background-color: @teal-ultralightest;
+          text-decoration: none;
+        }
+        &.disabled {
+          color: #ddd;
+        }
+      }
+    }
+    //&.top { border-bottom: 1px solid @application-green-light; }
+  }
+}
+
+//
+// Responsive: Landscape phone to desktop/tablet
+// --------------------------------------------------
+@media (max-width: 767px) {
+
+//  .questionFilterWrapTop { border-bottom: none; }
+  .questionListFilter {
+    .filterLegend { margin-right: 10px; }
+//    .filterLabel, .filterList li a { border-bottom: 1px solid @application-green-light; }
+    .filterList li a {
+      padding: 10px 10px;
+      font-size: 12px;
+    }
+  }
+
+}
+
+//
+// Responsive: Phone
+// --------------------------------------------------
+@media (max-width: 479px) {
+
+  .questionFilterWrap {
+    clear: left;
+  }
+  .questionListFilter {
+    .filterLegend {
+      margin-right: 5px;
+    }
+    .filterLabel {
+      padding-left: 15px;
+      min-width: 42px;
+    }
+    .filterList li {
+      clear: left;
+      a { padding: 8px; }
+    }
+  }
+
+}

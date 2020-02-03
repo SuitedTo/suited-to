@@ -1,0 +1,29 @@
+*{ Renders a select box containing a list of active interviews associated with a
+ { particular candidate, including a "General" option.  The "value" attribute of
+ { each option will be equal to the active interview ID prefixed by "a" or -1 in
+ { the case of "General".
+ { 
+ { Arguments:
+ {      _arg: The name and id of the select box.  Optional.
+ {      _candidate: The candidate for which to offer a select box of candidate
+ {            interviews.
+ {      _classes: Any classes that should decorate the select box.  Optional.
+ {      _styles: String for the "style" attribute of the select box.  Optional.
+ {      _selected: The id of the initially-selected interview, prefixed "a".  If
+ {            this parameter is omitted, -1, or has an id portion (i.e., without
+ {            the "a") of -1, "General" will be the initial selection.
+ }*
+ 
+%{
+    interview = models.Interview.getCandidateInterviewAssociationFromMagicID(
+            _selected);
+}%
+ 
+<select #{if _arg}id="${_arg}" name="${_arg}"#{/if} 
+            #{if _classes}class="${_classes}"#{/if}
+            #{if _styles}style="${_styles}"#{/if}>
+    <option value="-1" #{if interview == null}selected="selected"#{/if}>General</option>
+    #{list items:_candidate.getActiveInterviewsPastStarted(), as:'activeInterview'}
+        <option value="a${activeInterview.id}" #{if interview == activeInterview}selected="selected"#{/if}>${activeInterview.name}</option>
+    #{/list}
+</select>

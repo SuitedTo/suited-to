@@ -1,0 +1,80 @@
+/*
+    SPARC Web
+    Typography
+*/
+
+
+/*
+    HELPER VARS
+*/
+
+    @fontFamilyGillSans:            'Gill Sans','Lucida Sans',Arial,sans-serif;      // Can't add multiple font values in a variable
+
+
+/*
+    FONT METHODS
+*/
+
+    /* NOTE: Not using font shorthand property because of less compiler */
+
+
+    .font-nav-primary (@fontSize: 1.25em, @fontColor: #333, @fontWeight: 400, @fontStyle: normal, @lineHeight: 100%, @fontFamily: @fontFamilyGillSans) {
+        // 1.38em = 18px
+        font-size: @fontSize;
+        font-weight: @fontWeight;
+        font-style: @fontStyle;
+        font-family: @fontFamily;
+        color: @fontColor;
+        line-height: @lineHeight;
+    }
+
+    .font-sidebar-title (@fontSize: 4.62em, @fontColor: #999, @fontWeight: 100, @fontStyle: normal, @lineHeight: 100%, @fontFamily: @fontFamilyGillSans) {
+        // 4.62em = 60px
+        font-size: @fontSize;
+        font-weight: @fontWeight;
+        font-style: @fontStyle;
+        font-family: @fontFamily;
+        color: @fontColor;
+        line-height: @lineHeight;
+    }
+
+    .font-sidebar-subtitle (@fontSize: 1em, @fontColor: @sparcColor-lightOrange, @fontWeight: normal, @fontStyle: normal, @lineHeight: 100%, @fontFamily: @fontFamilyGillSans) {
+        // 1.23 = 16px
+        font-size: @fontSize;
+        font-weight: @fontWeight;
+        font-style: @fontStyle;
+        font-family: @fontFamily;
+        color: @fontColor;
+        line-height: @lineHeight;
+    }
+
+    .font-sidebar-nav (@fontSize: 1em, @fontColor: @white, @fontWeight: normal, @fontStyle: normal, @lineHeight: 130%, @fontFamily: @fontFamilyGillSans) {
+        font-size: @fontSize;
+        font-weight: @fontWeight;
+        font-style: @fontStyle;
+        font-family: @fontFamily;
+        color: @fontColor;
+        line-height: @lineHeight;
+    }
+
+    .font-homepage-widget-link (@fontSize: 1.23em, @fontColor: @sparcColor-headlineBlue, @fontWeight: 400, @fontStyle: normal, @lineHeight: 130%, @fontFamily: @fontFamilyGillSans) {
+        // 1.23 = 16px
+        font-size: @fontSize;
+        font-weight: @fontWeight;
+        font-style: @fontStyle;
+        font-family: @fontFamily;
+        color: @fontColor;
+        line-height: @lineHeight;
+    }
+
+/*Font Faces*/
+@font-face {
+  font-family: 'Rockwell';
+  src:  url('../../fonts/rockwell.eot');
+  src:  local('☺'),
+  url('../../fonts/rockwell.woff') format('woff'),
+  url('../../fonts/rockwell.ttf') format('truetype'),
+  url('../../fonts/rockwell.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}

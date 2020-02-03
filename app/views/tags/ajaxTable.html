@@ -1,0 +1,272 @@
+*{ Converts the named HTML table into an AJAX table to display searchable,
+ { paginatable entries from a models.tables.BaseTable-backed data source.
+ {
+ { This tag should be used in a Javascript context.  The body of this tag may 
+ { contain the properties of a javascript object (i.e., without the opening and
+ { closing curlies) to be passed to the underlying datatables instance. E.g.,
+ {
+ { #{ajaxTable 'xyzTableElementID', source: 'XYZTable'}
+ {       aoColumns: [   
+ {              {sWidth:"4%"},
+ {              {sWidth:"6%"},
+ {              {sWidth:"42%"},
+ {              {sWidth:"8%"},
+ {              {sWidth:"8%"},
+ {              {sWidth:"15%"},
+ {              {sWidth:"21%"}
+ {       ],
+ {       sDom: "<'row'r>tr<'row'>"
+ { #{/ajaxTable}
+ {
+ { Parameters:
+ {   _arg: The id of the HTML table to transform into an AJAX table.
+ {   _source: The Java classname of the concrete descendent of BaseTable to use
+ {         to back this table.  Name is rooted in models.tables.
+ {   _filters: A comma-delimited String of filters to be applied to the source
+ {         table.  Each filter takes the form 
+ {         "{include|exclude}<FilterName>:value", e.g., "excludeById:5". If
+ {         omitted, no filters will be applied.
+ {   _objectTableName: The name of a Javascript variable to be defined in the 
+ {         current scope with the derived datatable instance.  Optional.
+ {   _refreshFunctionName: The name of a Javascript function to be defined in
+ {         the current scope with a function for refreshing the table.  The
+ {         function takes as its first parameter a filter string to replace the 
+ {         current _filters (if passed null, _filters will remain unchanged.  To
+ {         clear filters, pass ""). As its second parameter, it takes a callback
+ {         function to be called when the refresh is complete.  If this is 
+ {         omitted, no such function will be defined.
+ }*
+
+ %{
+    if (!_filters) {
+        _filters = "";
+    }
+ }%
+ 
+#{set 'moreScripts'}
+    #{get 'moreScripts' /}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+    #{script 'app-json-request.js' /}
+#{/set}
+
+#{set processing:play.Play.configuration.get("dataTable.processing")/} 
+
+#{if _refreshFunctionName}
+    //This gets set to a function later
+    var ${_refreshFunctionName};
+#{/if}
+
+#{if _objectTableName}
+    var ${_objectTableName} =
+#{/if}
+
+(function () {
+    
+    function buildDataObject(array) {
+        var result = {};
+    
+        for (var attr in array) {
+            result[array[attr].name] = array[attr].value;
+        }
+        
+        return result;
+    }
+
+    /*function mergeObjects(o1, o2) {
+        for (var attrname in o2) {
+        
+            if (typeof o2[attrname] === 'object') {
+                var finalObject;
+            
+                if (attrname in o1) {
+                    finalObject = o1[attrname];
+                }
+                else {
+                    if ($.isArray(o2[attrname])) {
+                        finalObject = [];
+                    }
+                    else {
+                        finalObject = {};
+                    }
+                }
+                
+                mergeObjects(finalObject, o2[attrname]);
+                
+                o1[attrname] = finalObject;
+            }
+            else {
+                o1[attrname] = o2[attrname]; 
+            }
+        }
+    }*/
+    
+    $.fn.dataTableExt.oApi.fnReloadAjax = 
+            function (oSettings, sNewSource, fnCallback, bStandingRedraw) {
+                if ( typeof sNewSource != 'undefined' && sNewSource != null ){
+                    oSettings.sAjaxSource = sNewSource;
+                }
+                
+                this.oApi._fnProcessingDisplay( oSettings, true );
+                var that = this;
+                var iStart = oSettings._iDisplayStart;
+                var aData = [];
+
+                this.oApi._fnServerParams( oSettings, aData );
+
+                /* Clear the old information from the table */
+                that.oApi._fnClearTable( oSettings );
+
+                #{if processing == 'client'}
+                    oSettings.fnServerData(
+                            oSettings.sAjaxSource, aData, function(json) {
+
+                                /* Got the data - add it to the table */
+                                var aData =  (oSettings.sAjaxDataProp !== "") ?
+                                        that.oApi._fnGetObjectDataFn(
+                                        oSettings.sAjaxDataProp )( json ) :
+                                            json;
+                #{/if}
+
+                for ( var i=0 ; i<aData.length ; i++ )
+                {
+                    that.oApi._fnAddData( oSettings, aData[i] );
+                }
+
+                oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+                that.fnDraw();
+
+                if ( typeof bStandingRedraw != 'undefined' && bStandingRedraw === true )
+                {
+                    oSettings._iDisplayStart = iStart;
+                    that.fnDraw( false );
+                }
+
+                /* Callback user function - for event handlers etc */
+                if ( typeof fnCallback == 'function' && fnCallback != null )
+                {
+                    fnCallback( oSettings );
+                }
+                #{if processing == 'client'}
+                    }, oSettings );
+                #{/if}
+            };
+
+    var sourceReport = "${_source}";
+    var filters = "${_filters}";
+
+
+    if (typeof filtersKey !== 'undefined' && filtersKey !== null){
+
+        if (Application.Helper.getCookie(filtersKey) !== null) {
+            //console.log('yea');
+            filters = Application.Helper.getCookie(filtersKey);
+        }
+    }
+    
+    #{if _refreshFunctionName}
+        ${_refreshFunctionName} = function(newFilters, callback) {
+        
+            if (typeof newFilters != 'undefined' && newFilters != null) {
+                filters = newFilters;
+            }
+
+            $('#${_arg}').dataTable().fnReloadAjax(null, callback);
+        };
+    #{/if}
+            
+    var setupObject = {
+        sPaginationType: "bootstrap",
+        bProcessing: true,
+        bServerSide: true,
+        oLanguage: {
+            sProcessing: #{jsString}#{processingDisplay /}#{/jsString},
+            sLoadingRecords: #{jsString}#{processingDisplay /}#{/jsString}
+        },
+        sDom: "<'row'<'span6'l><'span6'f>><'tableWorkingSpace'rt><'row'" +
+                "<'span6'i><'span6'p>>",
+        sAjaxSource: "@{Tables.getReport()}",
+        fnServerData: function (sSource, aoData, fnCallback) {
+            ooData = buildDataObject(aoData);
+            
+            var transformer = function (response) {
+
+                if (response.error) {
+                    console.log(response.error);
+                }
+            
+                var datatableData = {
+                    aaData: response.data,
+                    iTotalDisplayRecords: response.matchingCount,
+                    iTotalRecords: response.matchingCount,
+                    sEcho: ooData.sEcho
+                };
+                
+                return fnCallback(datatableData);
+            };
+            
+            var requestData = {
+                reportName: sourceReport,
+                filters: filters,
+                sortColumn: ooData.iSortCol_0,
+                ascending: (ooData.sSortDir_0 == "asc"),
+                startIndex: ooData.iDisplayStart,
+                runLength: ooData.iDisplayLength,
+                searchString: ooData.sSearch
+            };
+
+            // need a synchronous request so that the selected tab stays in sync with the data
+            new Request(sSource).getJSON(requestData, transformer);
+        },
+        fnInitComplete: function(oSettings, json) {
+            // Search field highlighting
+            if($(".dataTables_filter label input").length != 0){
+                if($(".dataTables_filter label input").val().length > 0){
+                    $(".dataTables_filter label input").addClass("search-match");
+                }
+                $(".dataTables_filter label input").keyup(function () {
+                    if($(this).val().length > 0){
+                        $(this).addClass("search-match");
+                    }else{
+                        $(this).removeClass("search-match");
+                    }
+                });
+            }
+
+            // Add clear search button and function
+            $('.dataTables_filter label').append(' <a href="#" id="clearSearch"><i class="icon-remove-sign"></i></a>');
+            $('#clearSearch').on('click',function(e){
+                e.preventDefault();
+                $('.dataTables_filter label input').val('').removeClass('search-match');
+                ${_objectTableName}.dataTableSettings[0].oPreviousSearch.sSearch = "";
+                ${_objectTableName}.dataTableSettings[0].aaSorting = [[0, 'desc']];
+                ${_objectTableName}.dataTable().fnReloadAjax();
+            });
+        }
+    };
+    
+    var externalOptions = {
+        #{doBody /}
+    };
+    
+    //mergeObjects(setupObject, externalOptions);
+    //console.log(setupObject, externalOptions);
+    var dataOptions = $.extend(setupObject, externalOptions);
+
+    return $('#${_arg}').dataTable(dataOptions);
+})();
+
+$.extend($.fn.dataTableExt.oStdClasses, {
+    "sSortAsc":"header headerSortDown",
+    "sSortDesc":"header headerSortUp",
+    "sSortable":"header sorting"
+});
+
+$.extend( $.fn.dataTableExt.oStdClasses, {
+    "sWrapper": "dataTables_wrapper form-inline"
+});
+#{if _objectTableName}
+    $(window).resize(function(){
+        ${_objectTableName}.css('width','')._fnAdjustColumnSizing();
+    });
+#{/if}

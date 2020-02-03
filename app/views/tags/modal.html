@@ -1,0 +1,44 @@
+*{ Creates a bootstrap modal.  The body of the tag will be the contents of the
+ { modal.  It's the responsibility of the client to include modal-body and 
+ { modal-footer, but modal-header will be provided.
+ {
+ { Requires bootstrap-modal.js.
+ {
+ { Arguments:
+ {   _arg: A unique div id.  Required.
+ {   _title: the modal title, default: "".
+ {   _style: any in-line styles to apply to the modal div, default: "".
+ {   _closable: whether or not the modal has a "close" button, default: true.
+ }*
+ 
+%{
+    if (!_title) {
+        _title = "";
+    }
+
+    if (!_style) {
+        _style = "";
+    }
+    
+    if (_closable == null) {
+        _closable = true;
+    }
+}%
+ 
+<div id="${_arg}" class="modal fade hide" style="overflow-y:auto;max-height:90%;">
+    <div class="modal-header">
+        #{if _closable}
+            <a class="close" data-dismiss="modal">×</a>
+        #{/if}
+        <h3>${_title}</h3>
+    </div>
+    #{doBody /}
+</div>
+
+<script type="text/javascript">
+    $(function() {
+        $('#${_arg}').modal({
+            show: false
+        });
+    });
+</script>

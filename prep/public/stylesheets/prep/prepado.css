@@ -1,0 +1,3938 @@
+/*!
+ * Prepado
+ *
+ * Copyright 2014 SPARC LLC
+ * prepado.com | sparcedge.com
+ */
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+/**
+ * Prepado - Helpers
+ *
+ */
+/* ==========================================================================
+   Chrome Frame prompt
+   ========================================================================== */
+.chromeframe {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+/* ==========================================================================
+   Fixes
+   ========================================================================== */
+iframe[id*="oauth2relay"] {
+  top: -1px;
+}
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+/*
+ * Hide from both screenreaders and browsers: h5bp.com/u
+ */
+.hidden {
+  display: none !important;
+  visibility: hidden;
+}
+/*
+ * Hide only visually, but have it available for screenreaders: h5bp.com/v
+ */
+.visuallyhidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+/*
+ * Extends the .visuallyhidden class to allow the element to be focusable
+ * when navigated to via the keyboard: h5bp.com/p
+ */
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+  clip: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  width: auto;
+}
+/*
+ * Hide visually and from screenreaders, but maintain layout
+ */
+.invisible {
+  visibility: hidden;
+}
+/* ==========================================================================
+   Custom Mixins
+   ========================================================================== */
+/*
+ * Bootstrap grid
+ */
+/*
+ * Background Patterns
+ */
+.bgBluePattern {
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+}
+.bgRedPattern {
+  background-color: #ec2e25;
+  background-image: url('../../images/prep/bgPatternRed.png');
+  background-repeat: repeat;
+}
+/*
+ * Buttons
+ */
+.btnBlueGrain {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.btnBlueGrain:hover,
+.btnBlueGrain:focus,
+.btnBlueGrain:active,
+.btnBlueGrain.active,
+.btnBlueGrain.disabled,
+.btnBlueGrain[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.btnBlueGrain:active,
+.btnBlueGrain.active {
+  background-color: #63c3ce \9;
+}
+.btnBlueGrain:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.btnBlueGrain:hover:hover,
+.btnBlueGrain:hover:focus,
+.btnBlueGrain:hover:active,
+.btnBlueGrain:hover.active,
+.btnBlueGrain:hover.disabled,
+.btnBlueGrain:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.btnBlueGrain:hover:active,
+.btnBlueGrain:hover.active {
+  background-color: #63c3ce \9;
+}
+.btnRedGrain {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #ec2e25;
+  background-image: -moz-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ec2e25), to(#ec2e25));
+  background-image: -webkit-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -o-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: linear-gradient(to bottom, #ec2e25, #ec2e25);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffec2e25', endColorstr='#ffec2e25', GradientType=0);
+  border-color: #ec2e25 #ec2e25 #b51710;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #ec2e25;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternRed.png');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.btnRedGrain:hover,
+.btnRedGrain:focus,
+.btnRedGrain:active,
+.btnRedGrain.active,
+.btnRedGrain.disabled,
+.btnRedGrain[disabled] {
+  color: #ffffff;
+  background-color: #ec2e25;
+  *background-color: #e41d14;
+}
+.btnRedGrain:active,
+.btnRedGrain.active {
+  background-color: #cc1a12 \9;
+}
+.btnRedGrain:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.btnRedGrain:hover:hover,
+.btnRedGrain:hover:focus,
+.btnRedGrain:hover:active,
+.btnRedGrain:hover.active,
+.btnRedGrain:hover.disabled,
+.btnRedGrain:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.btnRedGrain:hover:active,
+.btnRedGrain:hover.active {
+  background-color: #63c3ce \9;
+}
+.btnTransparent {
+  background: none;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+/**
+ * Prepado - Typography
+ *
+ */
+/* Typekit font usage: kulturista-web
+
+Thin
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 100;
+
+Light:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 300;
+
+Medium:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 400;
+
+Medium Italic:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: italic;
+  font-weight: 400;
+
+Semi Bold:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 600;
+
+Bold:
+  font-family: "kulturista-web","Rockwell",serif;
+  font-style: normal;
+  font-weight: 700;
+
+*/
+/* Heading Styles
+-------------------------------------------------- */
+h1,
+h2,
+h3 {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+}
+.wf-loading h1,
+.wf-loading h2,
+.wf-loading h3 {
+  visibility: hidden;
+}
+.wf-active h1,
+.wf-active h2,
+.wf-active h3 {
+  visibility: visible;
+}
+h1 {
+  font-size: 38.5px;
+  font-weight: 700;
+  margin-top: 0.25em;
+  margin-bottom: 0.75em;
+  color: #ec2e25;
+  line-height: 1.25em;
+}
+h2 {
+  font-size: 24px;
+  font-weight: 400;
+  margin-top: 0.75em;
+  margin-bottom: 0.5em;
+  line-height: 1.25em;
+  color: #58463b;
+}
+h3 {
+  font-size: 20px;
+  font-weight: 400;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.25em;
+  color: #58463b;
+}
+/* Text Formatting
+-------------------------------------------------- */
+.text-center {
+  text-align: center;
+}
+.text-uppercase {
+  text-transform: uppercase;
+}
+@media (max-width: 767px) {
+  h1 {
+    font-size: 32px;
+  }
+  h2 {
+    font-size: 22px;
+  }
+}
+@media (max-width: 480px) {
+  h1 {
+    font-size: 27.5px;
+  }
+  h2 {
+    font-size: 20px;
+  }
+}
+/**
+ * Prepado - Structure
+ *
+ */
+/* Body
+-------------------------------------------------- */
+body {
+  background-color: #faede5;
+  background-image: url('../../images/prep/pagePatternBgMin.jpg');
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-attachment: scroll;
+  background-size: 100%;
+}
+/* Wrappers
+-------------------------------------------------- */
+html,
+body {
+  height: 100%;
+}
+body > .pageWrapper {
+  min-height: 100%;
+  height: auto !important;
+  margin-bottom: -60px;
+}
+body > .pageWrapper > .push {
+  height: 60px;
+}
+.pageContentWrapper {
+  margin: 60px 0 0;
+  padding-bottom: 60px;
+  min-height: 100px;
+}
+@media (max-width: 767px) {
+  body > .pageWrapper {
+    margin-bottom: -80px;
+  }
+  body > .pageWrapper > .push {
+    height: 80px;
+  }
+  .pageContentWrapper {
+    margin-top: 10px;
+  }
+}
+@media (max-width: 480px) {
+  body > .pageWrapper {
+    margin-bottom: -90px;
+  }
+  body > .pageWrapper > .push {
+    height: 90px;
+  }
+}
+/* Header
+-------------------------------------------------- */
+header[role="banner"] {
+  background: transparent;
+}
+.navbar-static-top {
+  margin-bottom: 20px;
+}
+.navbar-static-top .navbar-inner {
+  background: transparent;
+  border: 0 none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.navbar-static-top .navbar-inner .container,
+.navbar-static-top .navbar-inner nav {
+  position: relative;
+}
+.navbar-static-top .navbar-inner .brand {
+  height: 106px;
+  width: 240px;
+  margin: 0 10px 0 0;
+  padding: 0;
+  text-indent: -9999px;
+  color: #ec2e25;
+  background-image: url('../../images/prep/prepadoLogo.png');
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+.navbar-static-top .navbar-inner .mainNav {
+  padding-top: 30px;
+  padding-right: 168px;
+  margin-top: 0;
+  margin-right: 0;
+}
+.navbar-static-top .navbar-inner .mainNav li {
+  margin: 0 10px;
+}
+.navbar-static-top .navbar-inner .mainNav li a {
+  padding: 2px 0;
+  color: #ec2e25;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 15px;
+  text-transform: uppercase;
+  border-bottom: 1px solid transparent;
+}
+.navbar-static-top .navbar-inner .mainNav li:hover a,
+.navbar-static-top .navbar-inner .mainNav li.active a {
+  color: #bd251e;
+  background: transparent;
+  border-bottom: 1px solid #ec2e25;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.navbar-static-top .navbar-inner .userNav {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 15px;
+  z-index: 2;
+}
+.navbar-static-top .navbar-inner .userNav .accountTypeLabel {
+  color: #58463b;
+  font-size: 11px;
+}
+.navbar-static-top .navbar-inner .userNav .nameBtn {
+  font-size: 15px;
+  color: #aa9d95;
+  cursor: pointer;
+}
+.navbar-static-top .navbar-inner .userNav .nameBtn:hover {
+  color: #58463b;
+  text-decoration: none;
+}
+.navbar-static-top .navbar-inner .userNav .nameBtn .caret {
+  margin-top: 8px;
+  margin-left: 0;
+}
+.navbar-static-top .navbar-inner .userNav.open .nameBtn {
+  color: #58463b;
+  text-decoration: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.navbar-static-top .navbar-inner .userNav .dropdown-menu a {
+  color: #58463b;
+}
+.navbar-static-top .navbar-inner .userNav .dropdown-menu a:hover {
+  color: #fff;
+}
+.navbar-static-top .navbar-inner .userNav .dropdown-menu > .active > a {
+  color: #58463b;
+  background: #ddd;
+}
+@media (max-width: 949px) {
+  .navbar-static-top .navbar-inner .mainNav {
+    width: 460px;
+    float: left;
+    margin-left: 20px;
+  }
+}
+@media (max-width: 767px) {
+  .navbar-static-top .navbar-inner .brand {
+    height: 70px;
+    width: 158.5px;
+  }
+  .navbar-static-top .navbar-inner .mainNav {
+    width: auto;
+    float: none;
+    padding-top: 28px;
+    margin-top: 0;
+    margin-left: 10px;
+  }
+  .navbar-static-top .navbar-inner .mainNav li {
+    margin-bottom: 5px;
+  }
+  .navbar-static-top .navbar-inner .mainNav li a {
+    font-size: 13px;
+    line-height: 13px;
+  }
+}
+@media (max-width: 480px) {
+  .navbar-static-top {
+    margin-bottom: 10px;
+  }
+  .navbar-static-top .navbar-inner .brand {
+    margin: 0 auto;
+    float: none;
+  }
+  .navbar-static-top .navbar-inner .nameBtn .name {
+    display: none;
+  }
+  .navbar-static-top .navbar-inner .accountTypeLabel {
+    display: none;
+  }
+  .navbar-static-top .navbar-inner .mainNav {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 10px;
+    text-align: center;
+    padding-top: 10px;
+  }
+  .navbar-static-top .navbar-inner .mainNav li {
+    float: none;
+    display: inline-block;
+    margin: 0 5px 5px;
+  }
+  .navbar-static-top .navbar-inner .mainNav li a {
+    font-size: 13px;
+  }
+}
+/* Footer
+-------------------------------------------------- */
+/* Footer */
+.pageFooter {
+  position: relative;
+  clear: both;
+  padding: 20px 0;
+  margin: 0;
+  height: 20px;
+  font-family: "proxima-nova-condensed", "proxima-nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #f9e5da;
+  background: #ec2e25 url('../../images/prep/bgPatternRed.png') repeat;
+  overflow: hidden;
+}
+.pageFooter .copyright,
+.pageFooter .footerlinks {
+  vertical-align: top;
+}
+.pageFooter .footerlinks {
+  text-align: right;
+}
+.pageFooter p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 300;
+}
+.pageFooter a {
+  color: #f9e5da;
+  font-size: 14px;
+  font-weight: 300;
+}
+.pageFooter .social {
+  margin-left: 10px;
+}
+.pageFooter .social .icon-dark {
+  color: #ec2e25;
+}
+@media (max-width: 767px) {
+  .pageFooter {
+    height: 40px;
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .pageFooter .copyright,
+  .pageFooter .footerlinks {
+    display: inline-block;
+    width: auto;
+  }
+  .pageFooter .copyright {
+    margin-right: 20px;
+  }
+  .pageFooter .footerlinks {
+    float: none;
+  }
+  .pageFooter p,
+  .pageFooter a {
+    font-weight: 400;
+  }
+}
+@media (max-width: 480px) {
+  .pageFooter {
+    height: 50px;
+  }
+  .pageFooter p,
+  .pageFooter a {
+    font-size: 12px;
+  }
+}
+/**
+ * Prepado - Pages - Main
+ *
+ */
+/* ==========================================================================
+   Login / Register / My Account
+   ========================================================================== */
+.loginWrap,
+.registerWrap,
+.myAccountWrap {
+  max-width: 400px;
+  margin: 20px auto;
+}
+.loginWrap .loginOr,
+.registerWrap .loginOr,
+.myAccountWrap .loginOr {
+  display: block;
+  margin: 20px 0;
+  text-align: center;
+}
+.loginWrap .loginProvidersList,
+.registerWrap .loginProvidersList,
+.myAccountWrap .loginProvidersList {
+  list-style: none;
+  margin: 0;
+}
+.loginWrap .loginProvidersList li,
+.registerWrap .loginProvidersList li,
+.myAccountWrap .loginProvidersList li {
+  margin-bottom: 5px;
+}
+.loginWrap .loginProvidersList li a,
+.registerWrap .loginProvidersList li a,
+.myAccountWrap .loginProvidersList li a {
+  font-size: 16px;
+}
+.loginForm input[type="text"],
+.registerForm input[type="text"],
+.loginForm input[type="email"],
+.registerForm input[type="email"],
+.loginForm input[type="password"],
+.registerForm input[type="password"] {
+  padding: 8px 10px;
+  height: 38px;
+  font-size: 16.95px;
+}
+.myAccountWrap form .alert {
+  padding: 5px 35px 5px 14px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.myAccountWrap .saveCancelWrap,
+.myAccountWrap .stopUpdatePaymentWrap {
+  margin: 20px auto;
+}
+.myAccountWrap .saveCancelWrap .cancel,
+.myAccountWrap .stopUpdatePaymentWrap .cancel,
+.myAccountWrap .saveCancelWrap .save,
+.myAccountWrap .stopUpdatePaymentWrap .save,
+.myAccountWrap .saveCancelWrap .stopPayment,
+.myAccountWrap .stopUpdatePaymentWrap .stopPayment,
+.myAccountWrap .saveCancelWrap .updatePayment,
+.myAccountWrap .stopUpdatePaymentWrap .updatePayment {
+  display: inline-block;
+  vertical-align: top;
+}
+.myAccountWrap .saveCancelWrap .cancel,
+.myAccountWrap .stopUpdatePaymentWrap .cancel,
+.myAccountWrap .saveCancelWrap .stopPayment,
+.myAccountWrap .stopUpdatePaymentWrap .stopPayment {
+  width: 48%;
+  margin-right: 1%;
+}
+.myAccountWrap .saveCancelWrap .save,
+.myAccountWrap .stopUpdatePaymentWrap .save,
+.myAccountWrap .saveCancelWrap .updatepayment,
+.myAccountWrap .stopUpdatePaymentWrap .updatepayment {
+  width: 49%;
+}
+.myAccountWrap .externalAuthProvider i {
+  font-size: 20px;
+}
+/* ==========================================================================
+   Forgot Password
+   ========================================================================== */
+.forgotPasswordView .forgotPasswordWrap {
+  max-width: 400px;
+  margin: 0 auto;
+}
+/*===========================================================================
+    Payment
+  ===========================================================================*/
+.prep-btn-mini {
+  margin-bottom: 10px;
+}
+.discountContainer {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+/* ==========================================================================
+   Dashboard
+   ========================================================================== */
+/* Dashboard Top
+-------------------------------------------------- */
+.dashboardTop {
+  margin: 20px auto;
+}
+.dashboardTop .dashCreateInterview {
+  margin: 20px auto;
+  max-width: 790px;
+  color: #58463b;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  width: 100%;
+  *zoom: 1;
+}
+.dashboardTop .dashCreateInterview:before,
+.dashboardTop .dashCreateInterview:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.dashboardTop .dashCreateInterview:after {
+  clear: both;
+}
+.dashboardTop .dashCreateInterview > .innerWrap {
+  padding: 40px 65px;
+}
+.dashboardTop .dashCreateInterview h1 {
+  margin-bottom: 0.5em;
+  font-size: 2.18em;
+  color: #58463b;
+  font-weight: 400;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+.dashboardTop .dashCreateInterview h1 .name {
+  font-size: 1.67em;
+  font-weight: 700;
+}
+.createInterviewForm h1 {
+  line-height: 1em;
+}
+.createInterviewForm .createInterviewSearch {
+  display: block;
+  margin-bottom: 10px;
+  *zoom: 1;
+}
+.createInterviewForm .createInterviewSearch:before,
+.createInterviewForm .createInterviewSearch:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.createInterviewForm .createInterviewSearch:after {
+  clear: both;
+}
+.createInterviewForm #createJobTitle,
+.createInterviewForm .tt-hint {
+  float: left;
+  margin: 0;
+  padding: 15px 3%;
+  width: 53%;
+  height: 38px;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 27px;
+  line-height: 30px;
+  font-weight: 300;
+  color: #58463b;
+  background: #faede5;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.createInterviewForm .twitter-typeahead {
+  float: left;
+  margin: 0;
+  height: 68px;
+  width: 59%;
+}
+.createInterviewForm .twitter-typeahead #createJobTitle,
+.createInterviewForm .twitter-typeahead .tt-hint {
+  float: none;
+  width: 94%;
+}
+.createInterviewForm .twitter-typeahead .tt-hint {
+  color: #aa9d95;
+}
+.createInterviewForm #createSubmit,
+.createInterviewForm #interviewLoading {
+  float: right;
+  margin: 0;
+  padding: 15px 2%;
+  width: 39%;
+  height: 68px;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-shadow: none;
+  text-transform: uppercase;
+  color: #fff;
+  background: #ec2e25 url('../../images/prep/bgPatternRed.png') repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.createInterviewForm .createInterviewLevel .btn {
+  padding: 3px 8px;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: transparent;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  color: #58463b;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+.createInterviewForm .createInterviewLevel .btn:hover,
+.createInterviewForm .createInterviewLevel .btn.active {
+  color: #fff;
+  background: #ec2e25;
+  text-shadow: none;
+}
+.createInterviewForm .createInterviewOptionsBtn {
+  float: right;
+  margin: 0;
+  padding: 3px 8px 1px;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #58463b;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+.createInterviewForm .createInterviewOptionsBtn i {
+  font-size: 20px;
+  margin-bottom: 2px;
+  vertical-align: middle;
+}
+.createInterviewForm .createInterviewOptionsBtn:hover {
+  text-decoration: none;
+  color: #faede5;
+  background: #ec2e25 url('../../images/prep/bgPatternRed.png') repeat;
+}
+.createInterviewForm div.alert {
+  clear: left;
+  font-size: 16px;
+  padding: 5px 11px;
+}
+.createInterviewFormWrap.accessError {
+  position: relative;
+}
+.createInterviewFormWrap.accessError .createInterviewForm {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.createInterviewFormWrap.accessError .accessErrorBlock {
+  position: absolute;
+  z-index: 3;
+  background: rgba(250, 237, 229, 0.9);
+  top: 0;
+  height: 100%;
+  margin-left: -20px;
+  margin-right: -20px;
+  padding: 0 20px;
+}
+.createInterviewFormWrap.accessError .accessErrorBlock p {
+  margin-top: 20px;
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.25em;
+}
+#joinContainer h1 {
+  font-size: 4em;
+  color: #58463b;
+  font-weight: 400;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.25);
+}
+#joinContainer h2 {
+  font-size: 2em;
+  line-height: 1em;
+  font-weight: 600;
+  color: #ec2e25;
+}
+#joinContainer .btn {
+  width: 360px;
+  height: 68px;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 3em;
+  font-weight: 400;
+  text-shadow: none;
+  text-transform: uppercase;
+  color: #fff;
+  background: #ec2e25 url('../../images/prep/bgPatternRed.png') repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+#joinContainer h3 span.icon-ok {
+  color: #EC2E25;
+  height: 100px;
+  width: 100px;
+}
+@media (max-width: 767px) {
+  .dashboardTop {
+    margin-top: 0;
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  .dashboardTop .dashCreateInterview {
+    margin: 10px 0 0;
+  }
+  .dashboardTop .dashCreateInterview .innerWrap {
+    padding: 30px 30px;
+  }
+  .dashboardTop .dashCreateInterview h1 {
+    font-size: 1.32em;
+    line-height: 1.32em;
+  }
+  .createInterviewForm h1 {
+    font-size: 24px;
+  }
+  .createInterviewForm #createJobTitle,
+  .createInterviewForm .tt-hint {
+    font-size: 20px;
+  }
+  .createInterviewForm #createSubmit,
+  .createInterviewForm #interviewLoading {
+    font-size: 15px;
+  }
+  .createInterviewForm .createInterviewLevel .btn,
+  .createInterviewForm .createInterviewOptionsBtn {
+    font-size: 14px;
+  }
+  .createInterviewFormWrap.accessError .accessErrorBlock p {
+    font-size: 19px;
+  }
+}
+@media (max-width: 480px) {
+  .dashboardTop .dashCreateInterview .innerWrap {
+    padding: 20px 20px;
+  }
+  .createInterviewFormWrap.accessError .accessErrorBlock p {
+    font-size: 17px;
+  }
+}
+@media (max-width: 430px) {
+  .createInterviewForm .twitter-typeahead {
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .createInterviewForm #createSubmit,
+  .createInterviewForm #interviewLoading {
+    width: 100%;
+    height: 45px;
+    line-height: 1em;
+  }
+}
+/* Dashboard Bottom
+-------------------------------------------------- */
+.dashboardBottom {
+  margin: 20px auto;
+  padding: 30px 0 0;
+}
+.dashboardBottom h2 {
+  margin-bottom: 2.5em;
+  font-size: 1.4em;
+  line-height: 1em;
+  font-weight: 600;
+  color: #ec2e25;
+  text-transform: uppercase;
+}
+.dashboardBottom .dashLists {
+  margin: 20px auto;
+  max-width: 790px;
+  width: 100%;
+  *zoom: 1;
+}
+.dashboardBottom .dashLists:before,
+.dashboardBottom .dashLists:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.dashboardBottom .dashLists:after {
+  clear: both;
+}
+.dashboardBottom .dashLists .dashSchedule {
+  width: 48.93617021%;
+  *width: 48.88297872%;
+  display: block;
+  float: left;
+  margin-left: 2.12765957%;
+  *margin-left: 2.07446809%;
+  margin-left: 0;
+}
+.dashboardBottom .dashLists .dashSchedule ul {
+  list-style: none;
+  margin: 0 0 50px;
+  font-family: "proxima-nova-condensed", "proxima-nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.dashboardBottom .dashLists .dashSchedule ul li {
+  width: 100%;
+  margin-bottom: 5px;
+}
+.dashboardBottom .dashLists .dashSchedule ul li .date {
+  display: inline-block;
+  width: 22%;
+  margin-right: 2%;
+}
+.dashboardBottom .dashLists .dashSchedule ul li .time {
+  display: inline-block;
+  width: 18%;
+  margin-right: 2%;
+}
+.dashboardBottom .dashLists .dashSchedule ul li .name {
+  display: inline-block;
+  width: 53%;
+  font-family: "proxima-nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.dashboardBottom .dashLists .dashSchedule .btn {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.dashboardBottom .dashLists .dashSchedule .btn:hover,
+.dashboardBottom .dashLists .dashSchedule .btn:focus,
+.dashboardBottom .dashLists .dashSchedule .btn:active,
+.dashboardBottom .dashLists .dashSchedule .btn.active,
+.dashboardBottom .dashLists .dashSchedule .btn.disabled,
+.dashboardBottom .dashLists .dashSchedule .btn[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.dashboardBottom .dashLists .dashSchedule .btn:active,
+.dashboardBottom .dashLists .dashSchedule .btn.active {
+  background-color: #63c3ce \9;
+}
+.dashboardBottom .dashLists .dashSchedule .btn:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.dashboardBottom .dashLists .dashSchedule .btn:hover:hover,
+.dashboardBottom .dashLists .dashSchedule .btn:hover:focus,
+.dashboardBottom .dashLists .dashSchedule .btn:hover:active,
+.dashboardBottom .dashLists .dashSchedule .btn:hover.active,
+.dashboardBottom .dashLists .dashSchedule .btn:hover.disabled,
+.dashboardBottom .dashLists .dashSchedule .btn:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.dashboardBottom .dashLists .dashSchedule .btn:hover:active,
+.dashboardBottom .dashLists .dashSchedule .btn:hover.active {
+  background-color: #63c3ce \9;
+}
+.dashboardBottom .dashLists .dashSchedule .scheduleAddEvent {
+  background: none;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+.dashboardBottom .dashLists .dashRecentInterviews {
+  width: 100%;
+  *width: 99.94680851%;
+  display: block;
+  float: left;
+  margin-left: 2.12765957%;
+  *margin-left: 2.07446809%;
+  margin-left: 0;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul {
+  list-style: none;
+  margin: 0 0 50px;
+  font-family: "proxima-nova-condensed", "proxima-nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul li {
+  width: 100%;
+  margin-bottom: 5px;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul li .name {
+  display: inline-block;
+  width: 50%;
+  margin-right: 2%;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul li .numQuestion {
+  display: inline-block;
+  width: 10%;
+  margin-right: 2%;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul li .updated {
+  display: inline-block;
+  width: 19%;
+  margin-right: 2%;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul li .action {
+  display: inline-block;
+  width: 13%;
+  text-align: right;
+  text-transform: uppercase;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul li a {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  color: #58463b;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul li.header {
+  font-size: 16px;
+}
+.dashboardBottom .dashLists .dashRecentInterviews ul li.header .action {
+  text-transform: none;
+}
+.dashboardBottom .dashLists .dashRecentInterviews .btn {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover,
+.dashboardBottom .dashLists .dashRecentInterviews .btn:focus,
+.dashboardBottom .dashLists .dashRecentInterviews .btn:active,
+.dashboardBottom .dashLists .dashRecentInterviews .btn.active,
+.dashboardBottom .dashLists .dashRecentInterviews .btn.disabled,
+.dashboardBottom .dashLists .dashRecentInterviews .btn[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.dashboardBottom .dashLists .dashRecentInterviews .btn:active,
+.dashboardBottom .dashLists .dashRecentInterviews .btn.active {
+  background-color: #63c3ce \9;
+}
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover:hover,
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover:focus,
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover:active,
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover.active,
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover.disabled,
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover:active,
+.dashboardBottom .dashLists .dashRecentInterviews .btn:hover.active {
+  background-color: #63c3ce \9;
+}
+.dashboardBottom .dashLists .dashRecentInterviews .noInterviews {
+  margin-bottom: 20px;
+}
+@media (max-width: 767px) {
+  .dashboardBottom {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  .dashboardBottom h2 {
+    margin-bottom: 1em;
+  }
+  .dashboardBottom .dashLists {
+    margin-bottom: 0;
+    width: 100%;
+  }
+  .dashboardBottom .dashLists .dashSchedule {
+    margin-bottom: 40px;
+    float: none;
+    display: block;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin-left: 0;
+  }
+  .dashboardBottom .dashLists .dashSchedule ul {
+    margin-bottom: 20px;
+  }
+  .dashboardBottom .dashLists .dashRecentInterviews {
+    float: none;
+    display: block;
+    width: 100%;
+    margin-left: 0;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+  .dashboardBottom .dashLists .dashRecentInterviews ul {
+    margin-bottom: 20px;
+  }
+}
+@media (max-width: 480px) {
+  .dashboardBottom h2 {
+    font-size: 1.12em;
+  }
+  .dashboardBottom .dashLists .dashSchedule ul li {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc4bf;
+  }
+  .dashboardBottom .dashLists .dashSchedule ul li .date {
+    width: 46%;
+  }
+  .dashboardBottom .dashLists .dashSchedule ul li .time {
+    width: 48%;
+  }
+  .dashboardBottom .dashLists .dashSchedule ul li .name {
+    width: 94%;
+    margin-left: 6%;
+    font-weight: bold;
+  }
+  .dashboardBottom .dashLists .dashSchedule .btn {
+    font-size: 12px;
+    line-height: 18px;
+    padding: 2px 10px;
+  }
+  .dashboardBottom .dashLists .dashRecentInterviews ul li {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc4bf;
+  }
+  .dashboardBottom .dashLists .dashRecentInterviews ul li .name {
+    width: 73%;
+  }
+  .dashboardBottom .dashLists .dashRecentInterviews ul li .numQuestion {
+    width: 21%;
+  }
+  .dashboardBottom .dashLists .dashRecentInterviews ul li .updated {
+    width: 68%;
+    margin-left: 5%;
+    font-size: 13px;
+  }
+  .dashboardBottom .dashLists .dashRecentInterviews ul li .action {
+    width: 23%;
+    font-size: 12px;
+    text-align: left;
+  }
+  .dashboardBottom .dashLists .dashRecentInterviews .btn {
+    font-size: 12px;
+    line-height: 18px;
+    padding: 2px 10px;
+  }
+}
+/**
+ * Prepado - Pages - Interviewer
+ *
+ */
+/* ==========================================================================
+   Interview Common
+   ========================================================================== */
+.questionView .convoCircleQuestion,
+.categorySelectionView .convoCircleQuestion {
+  display: inline-block;
+  height: 120px;
+  width: 120px;
+  line-height: 120px;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  border: 1px solid #eee;
+  -webkit-box-shadow: 3px 3px 6px #dddddd;
+  -moz-box-shadow: 3px 3px 6px #dddddd;
+  box-shadow: 3px 3px 6px #dddddd;
+  background-color: #ec2e25;
+  background-image: url('../../images/prep/bgPatternRed.png');
+  background-repeat: repeat;
+  text-align: center;
+}
+.questionView .convoCircleQuestion img,
+.categorySelectionView .convoCircleQuestion img {
+  width: 100%;
+  height: 100%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}
+/* ==========================================================================
+   Interview Index
+   ========================================================================== */
+.interviewIndexView .interviewIndexListWrap {
+  max-width: 790px;
+  margin: 0 auto;
+}
+.interviewIndexView .recentInterviews ul {
+  list-style: none;
+  margin: 0 0 50px;
+  font-family: "proxima-nova-condensed", "proxima-nova", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.interviewIndexView .recentInterviews ul li {
+  width: 100%;
+  margin-bottom: 15px;
+  font-weight: 400;
+  font-size: 16px;
+}
+.interviewIndexView .recentInterviews ul li .name {
+  display: inline-block;
+  width: 50%;
+  margin-right: 2%;
+}
+.interviewIndexView .recentInterviews ul li .numQuestion {
+  display: inline-block;
+  width: 12%;
+}
+.interviewIndexView .recentInterviews ul li .updated {
+  display: inline-block;
+  width: 21%;
+  font-size: 15px;
+}
+.interviewIndexView .recentInterviews ul li .action {
+  display: inline-block;
+  width: 13%;
+  text-align: right;
+  text-transform: uppercase;
+}
+.interviewIndexView .recentInterviews ul li a {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  color: #58463b;
+}
+.interviewIndexView .recentInterviews ul li.header {
+  font-size: 17px;
+}
+.interviewIndexView .recentInterviews ul li.header .updated {
+  font-size: 17px;
+}
+.interviewIndexView .recentInterviews ul li.header .action {
+  text-transform: none;
+}
+.interviewIndexView .recentInterviews .btn {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.interviewIndexView .recentInterviews .btn:hover,
+.interviewIndexView .recentInterviews .btn:focus,
+.interviewIndexView .recentInterviews .btn:active,
+.interviewIndexView .recentInterviews .btn.active,
+.interviewIndexView .recentInterviews .btn.disabled,
+.interviewIndexView .recentInterviews .btn[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewIndexView .recentInterviews .btn:active,
+.interviewIndexView .recentInterviews .btn.active {
+  background-color: #63c3ce \9;
+}
+.interviewIndexView .recentInterviews .btn:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.interviewIndexView .recentInterviews .btn:hover:hover,
+.interviewIndexView .recentInterviews .btn:hover:focus,
+.interviewIndexView .recentInterviews .btn:hover:active,
+.interviewIndexView .recentInterviews .btn:hover.active,
+.interviewIndexView .recentInterviews .btn:hover.disabled,
+.interviewIndexView .recentInterviews .btn:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewIndexView .recentInterviews .btn:hover:active,
+.interviewIndexView .recentInterviews .btn:hover.active {
+  background-color: #63c3ce \9;
+}
+.interviewIndexView .noInterviews {
+  margin-bottom: 20px;
+}
+.interviewIndexView .createInterviewForm {
+  margin-top: 30px;
+  padding: 40px 65px;
+  color: #58463b;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+}
+@media (max-width: 767px) {
+  .interviewIndexView .createInterviewForm {
+    padding: 30px 30px;
+  }
+}
+@media (max-width: 480px) {
+  .interviewIndexView .createInterviewForm {
+    padding: 20px 20px;
+  }
+  .interviewIndexView .recentInterviews ul li .name {
+    width: 75%;
+  }
+  .interviewIndexView .recentInterviews ul li .numQuestion {
+    width: 20%;
+  }
+  .interviewIndexView .recentInterviews ul li .updated {
+    width: 72%;
+    margin-left: 5%;
+    font-size: 13px;
+  }
+  .interviewIndexView .recentInterviews ul li .action {
+    width: 20%;
+    font-size: 12px;
+    text-align: left;
+  }
+}
+/* ==========================================================================
+   Interview Question View
+   ========================================================================== */
+/* Icons
+-------------------------------------------------- */
+[class^="iconprep-"],
+[class*=" iconprep-"] {
+  display: inline-block;
+  height: 36px;
+  width: 36px;
+  *margin-right: .3em;
+  line-height: 36px;
+  vertical-align: text-top;
+  background-image: url('../../images/prep/iconsPrepQuestionView.png');
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  margin-top: 1px;
+}
+.iconprep-view {
+  background-position: 0 0;
+}
+.iconprep-view:hover,
+.iconprep-view.active {
+  background-position: 0 -36px;
+}
+.iconprep-flag {
+  background-position: -36px 0;
+}
+.iconprep-flag:hover,
+.iconprep-flag.active {
+  background-position: -36px -36px;
+}
+.iconprep-thumbsup {
+  background-position: -72px 0;
+}
+.iconprep-thumbsup:hover,
+.iconprep-thumbsup.active {
+  background-position: -72px -36px;
+}
+.iconprep-thumbsdown {
+  background-position: -108px 0;
+}
+.iconprep-thumbsdown:hover,
+.iconprep-thumbsdown.active {
+  background-position: -108px -36px;
+}
+.iconprep-view-r {
+  background-position: -144px 0;
+}
+.iconprep-view-r:hover,
+.iconprep-view-r.active {
+  background-position: -144px -36px;
+}
+.iconprep-thumbsup-r {
+  background-position: -180px 0;
+}
+.iconprep-thumbsup-r:hover,
+.iconprep-thumbsup-r.active {
+  background-position: -180px -36px;
+}
+.iconprep-thumbsdown-r {
+  background-position: -216px 0;
+}
+.iconprep-thumbsdown-r:hover,
+.iconprep-thumbsdown-r.active {
+  background-position: -216px -36px;
+}
+.iconprep-flag-r {
+  background-position: -252px 0;
+}
+.iconprep-flag-r:hover,
+.iconprep-flag-r.active {
+  background-position: -252px -36px;
+}
+[class^="videoicon-"],
+[class*=" videoicon-"] {
+  display: inline-block;
+  height: 36px;
+  width: 35px;
+  *margin-right: .3em;
+  line-height: 36px;
+  vertical-align: text-top;
+  background-image: url('../../images/prep/videoPlayerControls.png');
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  margin-top: 1px;
+}
+.videoicon-record {
+  background-position: 0 0;
+}
+.videoicon-record.active {
+  background-position: -40px 0;
+}
+.videoicon-play {
+  background-position: -80px 0;
+  width: 26px;
+  height: 26px;
+}
+.videoicon-play.active {
+  background-position: -120px 0;
+}
+.videoicon-position {
+  background-position: -200px 0;
+  width: 26px;
+  height: 26px;
+}
+.questionView {
+  /* Question Ask
+  -------------------------------------------------- */
+  /* Question Respond
+  -------------------------------------------------- */
+  /* CSS3 Transitions
+  -------------------------------------------------- */
+}
+.questionView .interviewInfoRow .interviewName {
+  display: inline-block;
+  width: 60%;
+  text-transform: uppercase;
+  vertical-align: bottom;
+}
+.questionView .interviewInfoRow .interviewName h1 {
+  margin: 0 10px 0 0;
+  font-size: 1.4em;
+  line-height: 1em;
+}
+.questionView .interviewInfoRow .interviewControls {
+  display: inline-block;
+  width: 39%;
+  text-align: right;
+  text-transform: uppercase;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 1.4em;
+  line-height: 1em;
+  font-weight: 700;
+  color: #ec2e25;
+  vertical-align: bottom;
+}
+.questionView .interviewInfoRow .interviewControls span {
+  position: relative;
+}
+.questionView .interviewInfoRow .interviewControls a {
+  cursor: pointer;
+}
+.questionView .interviewInfoRow .interviewControls a:hover {
+  text-decoration: none;
+}
+.questionView .interviewInfoRow .interviewControls .dropdown-menu {
+  -webkit-border-radius: 1px;
+  -moz-border-radius: 1px;
+  border-radius: 1px;
+  background-color: #fdf6f3;
+}
+.questionView .interviewInfoRow .interviewControls .dropdown-menu a {
+  text-transform: none;
+  font-size: 15px;
+}
+.questionView .questionAskRow .questionContainer {
+  margin: 0;
+  color: #58463b;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  position: relative;
+}
+.questionView .questionAskRow .questionContainer .innerWrap {
+  padding: 55px 50px 10px;
+}
+.questionView .questionAskRow .questionContainer .questionText {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 28px;
+  line-height: 40px;
+}
+.questionView .questionAskRow .questionContainer .questionOptions {
+  text-align: right;
+  padding: 0 10px 10px;
+}
+.questionView .questionAskRow .questionContainer .questionOptions .lbl {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+.questionView .questionAskRow .questionContainer .suggestedAnswers {
+  *zoom: 1;
+}
+.questionView .questionAskRow .questionContainer .suggestedAnswers:before,
+.questionView .questionAskRow .questionContainer .suggestedAnswers:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.questionView .questionAskRow .questionContainer .suggestedAnswers:after {
+  clear: both;
+}
+.questionView .questionAskRow .questionContainer .suggestedAnswers .innerWrap {
+  margin: 10px 50px 30px;
+  padding: 10px 20px;
+  background-color: #faede5;
+}
+.questionView .questionAskRow .questionContainer .suggestedAnswers h4 {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-weight: 600;
+  color: #ec2e25;
+  text-transform: uppercase;
+}
+.questionView .questionAskRow .questionContainer .suggestedAnswers p {
+  white-space: pre-wrap;
+}
+.questionView .questionAskRow .questionContainer .arrow {
+  top: 45px;
+  left: -29px;
+  width: 29px;
+  height: 33px;
+  position: absolute;
+  background: url('../../images/prep/bluePatternTriangleLeft.png') no-repeat top right;
+}
+.questionView .questionRespondRow {
+  margin-top: 20px;
+  -webkit-transition: all 0.5s ease-in;
+  -moz-transition: all 0.5s ease-in;
+  -o-transition: all 0.5s ease-in;
+  transition: all 0.5s ease-in;
+}
+.questionView .questionRespondRow > div {
+  position: relative;
+}
+.questionView .questionRespondRow .convoCircleContainer {
+  text-align: right;
+}
+.questionView .questionRespondRow .convoCircleQuestion {
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  margin-top: 40px;
+}
+.questionView .questionRespondRow .responseChoice a {
+  border: 0 none;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  color: #58463b;
+  text-transform: uppercase;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  padding: 5px 14px;
+  -webkit-border-radius: 8px 8px 0 0;
+  -moz-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+}
+.questionView .questionRespondRow .responseChoice a .lbl {
+  display: inline-block;
+  height: 0;
+  font-size: 0;
+  overflow: hidden;
+}
+.questionView .questionRespondRow .responseChoice a .img {
+  display: inline-block;
+  height: 35px;
+  width: 35px;
+}
+.questionView .questionRespondRow .responseChoice a:hover {
+  background-color: #8ad2da;
+}
+.questionView .questionRespondRow .responseChoice a.inactive {
+  background-image: none;
+  background-color: #8ad2da;
+}
+.questionView .questionRespondRow .responseChoice a.active:hover {
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  color: #58463b;
+}
+.questionView .questionRespondRow .responseChoice.choose {
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  padding: 0 20px;
+  text-align: center;
+}
+.questionView .questionRespondRow .responseChoice.choose a {
+  width: 43%;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  color: #58463b;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  padding: 25px 20px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.questionView .questionRespondRow .responseChoice.choose a .lbl {
+  display: inline;
+  height: auto;
+  font-size: 16px;
+}
+.questionView .questionRespondRow .responseChoice.choose a .img {
+  margin-right: 10px;
+  height: 90px;
+  width: 90px;
+}
+.questionView .questionRespondRow .responseChoice.choose a:hover {
+  background-image: none;
+  background-color: #8ad2da;
+}
+.questionView .questionRespondRow .responseContainer {
+  color: #58463b;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  position: relative;
+}
+.questionView .questionRespondRow .responseContainer .innerWrap {
+  padding: 50px 50px 50px;
+}
+.questionView .questionRespondRow .responseContainer.choose .innerWrap {
+  padding: 0;
+}
+.questionView .questionRespondRow .responseContainer .textResponseBlock textarea {
+  margin: 0;
+  width: 94%;
+  max-width: 94%;
+  padding: 2% 3%;
+  min-height: 110px;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 32px;
+  border: 0 none;
+  background-color: #fbf0e9;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock {
+  min-height: 270px;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock a {
+  cursor: pointer;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseContainer {
+  background-image: url('../../images/prep/iconVideoBg.png');
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-color: #faede5;
+  min-height: 185px;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseContainer .notSupported {
+  width: 94%;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 18px;
+  padding: 3% 3% 3% 3%;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseContainer .videoResponse {
+  min-width: 240px;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm {
+  padding-top: 5px;
+  position: relative;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm video {
+  display: block;
+  margin: 0 auto 5px;
+  min-height: 240px;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoStatus {
+  text-align: center;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoStatus h3 {
+  margin: 0 auto;
+  width: 80%;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoStatus .videoMessage {
+  height: 200px;
+  padding-top: 40px;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls {
+  text-align: center;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .startRecording,
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .stopRecording {
+  background-color: #ec2e25;
+  background-image: url('../../images/prep/bgPatternRed.png');
+  background-repeat: repeat;
+  color: #fff;
+  text-transform: uppercase;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  padding: 8px 14px;
+  border: 0;
+  -webkit-border-radius: 8px 8px 0 0;
+  -moz-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .startRecording .lbl,
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .stopRecording .lbl {
+  display: inline-block;
+  height: 0;
+  font-size: 0;
+  overflow: hidden;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .startRecording .img,
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .stopRecording .img {
+  display: inline-block;
+  height: 35px;
+  width: 35px;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .startRecording:hover,
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .stopRecording:hover {
+  background: #bd251e;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .uploadVid {
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  background-image: none;
+  color: #58463b;
+  text-transform: uppercase;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  padding: 8px 14px;
+  border: 0;
+  -webkit-border-radius: 8px 8px 0 0;
+  -moz-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .uploadVid .lbl {
+  display: inline-block;
+  height: 0;
+  font-size: 0;
+  overflow: hidden;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .uploadVid .img {
+  display: inline-block;
+  height: 35px;
+  width: 35px;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoControls .uploadVid:hover {
+  color: #fff;
+  background: #526266;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoResponseForm .videoTimer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.75);
+  padding: 8px 12px;
+  font-size: 22px;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .recordControlWrap {
+  display: block;
+  width: 40px;
+  margin: -10px auto 0;
+  text-align: center;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}
+.questionView .questionRespondRow .responseContainer .videoResponseBlock .videoTimelineWrap {
+  display: inline-block;
+  width: 94%;
+  float: right;
+  height: 19px;
+  background-image: url('../../images/prep/videoPlayerLine.png');
+  background-repeat: no-repeat;
+  background-position: 0 5px;
+}
+.questionView .questionRespondRow .arrow {
+  top: 105px;
+  right: -29px;
+  width: 29px;
+  height: 33px;
+  position: absolute;
+  background: url('../../images/prep/bluePatternTriangleRight.png') no-repeat top right;
+}
+.questionView .questionRespondRow .interviewNav {
+  margin-top: 20px;
+  text-align: right;
+  position: relative;
+}
+.questionView .questionRespondRow .interviewNav .previousQuestion {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover,
+.questionView .questionRespondRow .interviewNav .previousQuestion:focus,
+.questionView .questionRespondRow .interviewNav .previousQuestion:active,
+.questionView .questionRespondRow .interviewNav .previousQuestion.active,
+.questionView .questionRespondRow .interviewNav .previousQuestion.disabled,
+.questionView .questionRespondRow .interviewNav .previousQuestion[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.questionView .questionRespondRow .interviewNav .previousQuestion:active,
+.questionView .questionRespondRow .interviewNav .previousQuestion.active {
+  background-color: #63c3ce \9;
+}
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover:hover,
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover:focus,
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover:active,
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover.active,
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover.disabled,
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover:active,
+.questionView .questionRespondRow .interviewNav .previousQuestion:hover.active {
+  background-color: #63c3ce \9;
+}
+.questionView .questionRespondRow .interviewNav .previousQuestion:focus {
+  outline: transparent;
+  opacity: .85;
+}
+.questionView .questionRespondRow .interviewNav .nextQuestion {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #ec2e25;
+  background-image: -moz-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ec2e25), to(#ec2e25));
+  background-image: -webkit-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -o-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: linear-gradient(to bottom, #ec2e25, #ec2e25);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffec2e25', endColorstr='#ffec2e25', GradientType=0);
+  border-color: #ec2e25 #ec2e25 #b51710;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #ec2e25;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternRed.png');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+  width: 123px;
+  height: 62px;
+  padding-left: 5px;
+  padding-right: 40px;
+  background: url('../../images/prep/redPatternArrow.svg') no-repeat top right;
+}
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover,
+.questionView .questionRespondRow .interviewNav .nextQuestion:focus,
+.questionView .questionRespondRow .interviewNav .nextQuestion:active,
+.questionView .questionRespondRow .interviewNav .nextQuestion.active,
+.questionView .questionRespondRow .interviewNav .nextQuestion.disabled,
+.questionView .questionRespondRow .interviewNav .nextQuestion[disabled] {
+  color: #ffffff;
+  background-color: #ec2e25;
+  *background-color: #e41d14;
+}
+.questionView .questionRespondRow .interviewNav .nextQuestion:active,
+.questionView .questionRespondRow .interviewNav .nextQuestion.active {
+  background-color: #cc1a12 \9;
+}
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover:hover,
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover:focus,
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover:active,
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover.active,
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover.disabled,
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover:active,
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover.active {
+  background-color: #63c3ce \9;
+}
+.questionView .questionRespondRow .interviewNav .nextQuestion:hover {
+  color: #fff !important;
+  background: url('../../images/prep/redPatternArrow.svg') no-repeat top right !important;
+  opacity: 0.8;
+}
+.questionView .questionRespondRow .interviewNav .nextQuestion:focus {
+  background-color: transparent;
+  outline: transparent;
+  opacity: .85;
+}
+.questionView .questionRespondRow .questionOptions {
+  text-align: right;
+  padding: 0 10px 10px;
+}
+.questionView .questionRespondRow .questionOptions .lbl {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+.questionView .questionRespondRow.choose {
+  margin-top: 50px;
+}
+.questionView .questionRespondRow.choose .convoCircleQuestion {
+  margin-top: 0;
+}
+.questionView .questionRespondRow.choose .questionOptions {
+  display: none;
+}
+.questionView .questionRespondRow.choose .arrow {
+  top: 65px;
+}
+.questionView .questionAskRow .questionContainer .innerWrap {
+  -webkit-transition: all 0.5s ease-in;
+  -moz-transition: all 0.5s ease-in;
+  -o-transition: all 0.5s ease-in;
+  transition: all 0.5s ease-in;
+}
+.questionView .questionRespondRow .responseChoice,
+.questionView .questionRespondRow .responseChoice * {
+  -webkit-transition: all 0.25s ease-in;
+  -moz-transition: all 0.25s ease-in;
+  -o-transition: all 0.25s ease-in;
+  transition: all 0.25s ease-in;
+}
+.questionView .questionRespondRow .responseContainer,
+.questionView .questionRespondRow .responseContainer .innerWrap,
+.questionView .questionRespondRow .chooseResponseBlock .textResponseBlock,
+.questionView .questionRespondRow .videoResponseBlock,
+.questionView .questionRespondRow .convoCircleQuestion {
+  -webkit-transition: all 0.5s ease-in;
+  -moz-transition: all 0.5s ease-in;
+  -o-transition: all 0.5s ease-in;
+  transition: all 0.5s ease-in;
+}
+@media (min-width: 1200px) {
+  .questionView .convoCircleQuestion {
+    width: 155px;
+    height: 155px;
+    line-height: 155px;
+  }
+  .questionView .questionAskRow .questionContainer .arrow {
+    top: 60px;
+  }
+  .questionRespondRow .responseChoice.choose a {
+    width: 43%;
+    background-color: #8ad2da;
+    background-image: url('../../images/prep/bgPatternBlue.jpg');
+    background-repeat: repeat;
+    color: #58463b;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    padding: 25px 20px;
+  }
+  .questionRespondRow .responseChoice.choose a .lbl {
+    font-size: 20px;
+  }
+  .questionRespondRow .responseChoice.choose a .img {
+    height: 110px;
+    width: 110px;
+  }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .questionView > .row.interviewInfoRow > .offset2 {
+    margin-left: 206px;
+  }
+  .questionView > .row > .convoCircleContainer {
+    width: 166px;
+  }
+  .questionView > .row > .span8 {
+    width: 538px;
+  }
+  .questionView > .row.questionRespondRow > .offset2 {
+    margin-left: 20px;
+  }
+  .questionView .interviewInfoRow .interviewName {
+    width: 60%;
+  }
+  .questionView .interviewInfoRow .interviewName h1 {
+    font-size: 1.33em;
+  }
+  .questionView .interviewInfoRow .interviewControls {
+    width: 39%;
+    font-size: 1.33em;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a {
+    padding: 20px 10px;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a .lbl {
+    display: block;
+    margin-top: 10px;
+    font-size: 18px;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a .img {
+    height: 80px;
+    width: 80px;
+  }
+  .questionView .questionRespondRow .responseContainer .videoResponseBlock .videoTimelineWrap {
+    width: 92%;
+  }
+}
+@media (max-width: 767px) {
+  .questionView .convoCircleContainer {
+    display: none;
+  }
+  .questionView .interviewInfoRow .interviewName {
+    width: 60%;
+  }
+  .questionView .interviewInfoRow .interviewName h1 {
+    font-size: 1.13em;
+  }
+  .questionView .interviewInfoRow .interviewControls {
+    width: 39%;
+    font-size: 1.13em;
+  }
+  .questionView .questionAskRow .questionContainer .innerWrap {
+    padding: 35px 40px 10px;
+  }
+  .questionView .questionAskRow .questionContainer .suggestedAnswers .innerWrap {
+    margin: 10px 40px 30px;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a {
+    width: 44%;
+    padding: 25px 3%;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a .lbl {
+    display: block;
+    margin-top: 10px;
+    font-size: 18px;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a .img {
+    height: 80px;
+    width: 80px;
+  }
+  .questionView .questionRespondRow .responseContainer .innerWrap {
+    padding: 40px 40px 10px;
+  }
+  .questionView .questionRespondRow .responseContainer .videoResponseBlock .videoTimelineWrap {
+    width: 91%;
+  }
+}
+@media (max-width: 480px) {
+  .questionView .interviewInfoRow .interviewName {
+    width: 100%;
+  }
+  .questionView .interviewInfoRow .interviewName h1 {
+    font-size: 1em;
+  }
+  .questionView .interviewInfoRow .interviewControls {
+    width: 100%;
+    font-size: 1em;
+  }
+  .questionView .questionAskRow .questionContainer .innerWrap {
+    padding: 20px 20px 5px;
+  }
+  .questionView .questionAskRow .questionContainer .questionText {
+    font-size: 20px;
+    line-height: 30px;
+  }
+  .questionView .questionAskRow .questionContainer .suggestedAnswers .innerWrap {
+    margin: 10px 20px 30px;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a {
+    width: 44%;
+    padding: 20px 3%;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a .lbl {
+    display: block;
+    margin-top: 10px;
+    font-size: 15px;
+  }
+  .questionView .questionRespondRow .responseChoice.choose a .img {
+    height: 70px;
+    width: 70px;
+  }
+  .questionView .questionRespondRow .responseContainer .innerWrap {
+    padding: 20px 20px 10px;
+  }
+  .questionView .questionRespondRow .responseContainer .videoResponseBlock .videoTimelineWrap {
+    width: 90%;
+  }
+}
+/* ==========================================================================
+   Category Selection View
+   ========================================================================== */
+.categorySelectionView .categoryListRow .categoryListContainer {
+  margin: 0;
+  color: #58463b;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  position: relative;
+}
+.categorySelectionView .categoryListRow .categoryListContainer h3 {
+  margin: 0;
+  font-size: 30;
+  color: #ec2e25;
+}
+.categorySelectionView .categoryListRow .categoryListContainer .legend {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+.categorySelectionView .categoryListRow .categoryListContainer .innerWrap {
+  padding: 30px;
+}
+.categorySelectionView .categoryListRow .categoryListContainer .categoryList {
+  list-style: none;
+  margin: 10px 0;
+  width: 100%;
+  display: table;
+}
+.categorySelectionView .categoryListRow .categoryListContainer .categoryList li {
+  display: table-row;
+  padding-right: 10px;
+  font-size: 16px;
+}
+.categorySelectionView .categoryListRow .categoryListContainer .categoryList li > span {
+  display: table-cell;
+  padding-bottom: 10px;
+}
+.categorySelectionView .categoryListRow .categoryListContainer .categoryList li .level,
+.categorySelectionView .categoryListRow .categoryListContainer .categoryList li .focust {
+  font-size: 15px;
+}
+.categorySelectionView .categoryListRow .categoryListContainer .categoryList li.header {
+  font-size: 14px;
+  color: #ec2e25;
+  text-transform: uppercase;
+}
+.categorySelectionView .categoryListRow .interviewNav {
+  margin-top: 20px;
+  text-align: right;
+}
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:focus,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:active,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion.active,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion.disabled,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:active,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion.active {
+  background-color: #63c3ce \9;
+}
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover:hover,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover:focus,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover:active,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover.active,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover.disabled,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover:active,
+.categorySelectionView .categoryListRow .interviewNav .previousQuestion:hover.active {
+  background-color: #63c3ce \9;
+}
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #ec2e25;
+  background-image: -moz-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ec2e25), to(#ec2e25));
+  background-image: -webkit-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -o-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: linear-gradient(to bottom, #ec2e25, #ec2e25);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffec2e25', endColorstr='#ffec2e25', GradientType=0);
+  border-color: #ec2e25 #ec2e25 #b51710;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #ec2e25;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternRed.png');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+  width: 123px;
+  height: 62px;
+  padding-left: 5px;
+  padding-right: 40px;
+  background: url('../../images/prep/redPatternArrow.svg') no-repeat top right;
+}
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:focus,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:active,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion.active,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion.disabled,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion[disabled] {
+  color: #ffffff;
+  background-color: #ec2e25;
+  *background-color: #e41d14;
+}
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:active,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion.active {
+  background-color: #cc1a12 \9;
+}
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover:hover,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover:focus,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover:active,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover.active,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover.disabled,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover:active,
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover.active {
+  background-color: #63c3ce \9;
+}
+.categorySelectionView .categoryListRow .interviewNav .nextQuestion:hover {
+  color: #fff !important;
+  background: url('../../images/prep/redPatternArrow.svg') no-repeat top right !important;
+  opacity: 0.8;
+}
+.categorySelectionView .categoryListRow .arrow {
+  top: 45px;
+  left: -29px;
+  width: 29px;
+  height: 33px;
+  position: absolute;
+  background: url('../../images/prep/bluePatternTriangleLeft.png') no-repeat top right;
+}
+.categorySelectionView .relatedCategoriesContainer {
+  margin: 0;
+  color: #58463b;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  position: relative;
+}
+.categorySelectionView .relatedCategoriesContainer h4 {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-weight: 300;
+}
+.categorySelectionView .relatedCategoriesContainer .innerWrap {
+  padding: 20px;
+}
+.categorySelectionView .relatedCategoriesContainer ul {
+  list-style: none;
+  margin: 0 0 10px;
+}
+@media (max-width: 767px) {
+  .categoryListRow .convoCircleContainer {
+    display: none;
+  }
+}
+/* ==========================================================================
+   Interview Review View
+   ========================================================================== */
+.interviewReview {
+  /* Interview Review Top
+  -------------------------------------------------- */
+  /* Interview Review Questions List
+  -------------------------------------------------- */
+}
+.interviewReview .reviewHeader {
+  margin: 20px auto;
+  max-width: 790px;
+  color: #58463b;
+  background-color: #8ad2da;
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  width: 100%;
+  *zoom: 1;
+  text-align: center;
+}
+.interviewReview .reviewHeader:before,
+.interviewReview .reviewHeader:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.interviewReview .reviewHeader:after {
+  clear: both;
+}
+.interviewReview .reviewHeader > .innerWrap {
+  padding: 40px 65px;
+}
+.interviewReview .reviewHeader h1 {
+  font-size: 3.2em;
+  color: #58463b;
+  word-wrap: break-word;
+}
+.interviewReview .reviewHeader h2 {
+  font-size: 2.13em;
+  line-height: 1.25em;
+  color: #58463b;
+}
+.interviewReview .reviewHeader .askedAnswered {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 1.87em;
+  font-weight: 300;
+  line-height: 1.25em;
+}
+.interviewReview .reviewHeader .askedAnswered em {
+  font-weight: 600;
+  font-style: normal;
+}
+.interviewReview h2.letsReview {
+  font-size: 3.47em;
+  font-weight: 700;
+  color: #ec2e25;
+}
+.interviewReview h2.letsReview .btn {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+  margin-top: 10px;
+}
+.interviewReview h2.letsReview .btn:hover,
+.interviewReview h2.letsReview .btn:focus,
+.interviewReview h2.letsReview .btn:active,
+.interviewReview h2.letsReview .btn.active,
+.interviewReview h2.letsReview .btn.disabled,
+.interviewReview h2.letsReview .btn[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewReview h2.letsReview .btn:active,
+.interviewReview h2.letsReview .btn.active {
+  background-color: #63c3ce \9;
+}
+.interviewReview h2.letsReview .btn:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.interviewReview h2.letsReview .btn:hover:hover,
+.interviewReview h2.letsReview .btn:hover:focus,
+.interviewReview h2.letsReview .btn:hover:active,
+.interviewReview h2.letsReview .btn:hover.active,
+.interviewReview h2.letsReview .btn:hover.disabled,
+.interviewReview h2.letsReview .btn:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewReview h2.letsReview .btn:hover:active,
+.interviewReview h2.letsReview .btn:hover.active {
+  background-color: #63c3ce \9;
+}
+.interviewReview .iconprep-questionBubbles {
+  display: inline-block;
+  width: 81px;
+  height: 66px;
+  *margin-right: .3em;
+  line-height: 36px;
+  vertical-align: text-top;
+  background-image: url('../../images/prep/icon-questionBubbles.svg');
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 100%;
+}
+.interviewReview .questionList {
+  list-style: none;
+  margin-left: 0;
+}
+.interviewReview .questionList .questionItem {
+  clear: both;
+  margin-bottom: 25px;
+  padding-bottom: 35px;
+  border-bottom: 1px solid #aa9d95;
+  *zoom: 1;
+}
+.interviewReview .questionList .questionItem:before,
+.interviewReview .questionList .questionItem:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.interviewReview .questionList .questionItem:after {
+  clear: both;
+}
+.interviewReview .questionList .questionItem .num,
+.interviewReview .questionList .questionItem .question,
+.interviewReview .questionList .questionItem .actions,
+.interviewReview .questionList .questionItem .answers {
+  display: inline-block;
+  float: left;
+  vertical-align: top;
+}
+.interviewReview .questionList .questionItem .num {
+  width: 10%;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 3.47em;
+  font-weight: 700;
+  line-height: 0.87em;
+  color: #ec2e25;
+}
+.interviewReview .questionList .questionItem .question {
+  width: 70%;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-weight: 400;
+  font-size: 1.53em;
+  line-height: 1.5em;
+}
+.interviewReview .questionList .questionItem .actions {
+  width: 20%;
+  text-align: right;
+  float: right;
+}
+.interviewReview .questionList .questionItem .answers {
+  clear: left;
+  width: 70%;
+  padding-left: 10%;
+  margin-top: 10px;
+}
+.interviewReview .questionList .questionItem .answers .lbl {
+  margin-top: 20px;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 1.2em;
+  font-weight: 700;
+  color: #ec2e25;
+  text-transform: uppercase;
+}
+.interviewReview .questionList .questionItem .answers .lbl .edit {
+  float: right;
+  font-size: 0.92em;
+}
+.interviewReview .questionList .questionItem .answers .answr {
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 1.2em;
+  line-height: 1.5em;
+  font-weight: 300;
+  white-space: pre-wrap;
+}
+.interviewReview .questionList .questionItem .answers .videoResponseBlock .videoResponse {
+  min-width: 240px;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock textarea {
+  width: 98%;
+  max-width: 98%;
+  min-height: 70px;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 1.2em;
+  line-height: 1.5em;
+  background-color: #fdf6f3;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions {
+  text-align: right;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:focus,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel.active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel.disabled,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel.active {
+  background-color: #63c3ce \9;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover:hover,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover:focus,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover:active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover.active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover.disabled,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover:active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel:hover.active {
+  background-color: #63c3ce \9;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #ec2e25;
+  background-image: -moz-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ec2e25), to(#ec2e25));
+  background-image: -webkit-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -o-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: linear-gradient(to bottom, #ec2e25, #ec2e25);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffec2e25', endColorstr='#ffec2e25', GradientType=0);
+  border-color: #ec2e25 #ec2e25 #b51710;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #ec2e25;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternRed.png');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:focus,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save.active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save.disabled,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save[disabled] {
+  color: #ffffff;
+  background-color: #ec2e25;
+  *background-color: #e41d14;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save.active {
+  background-color: #cc1a12 \9;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover:hover,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover:focus,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover:active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover.active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover.disabled,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover:active,
+.interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save:hover.active {
+  background-color: #63c3ce \9;
+}
+.interviewReview .questionList .questionItem:last-child {
+  border-bottom: 0;
+}
+.interviewReview .interviewNav {
+  margin-top: 20px;
+  text-align: right;
+}
+.interviewReview .interviewNav .retakeInterview {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.interviewReview .interviewNav .retakeInterview:hover,
+.interviewReview .interviewNav .retakeInterview:focus,
+.interviewReview .interviewNav .retakeInterview:active,
+.interviewReview .interviewNav .retakeInterview.active,
+.interviewReview .interviewNav .retakeInterview.disabled,
+.interviewReview .interviewNav .retakeInterview[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewReview .interviewNav .retakeInterview:active,
+.interviewReview .interviewNav .retakeInterview.active {
+  background-color: #63c3ce \9;
+}
+.interviewReview .interviewNav .retakeInterview:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.interviewReview .interviewNav .retakeInterview:hover:hover,
+.interviewReview .interviewNav .retakeInterview:hover:focus,
+.interviewReview .interviewNav .retakeInterview:hover:active,
+.interviewReview .interviewNav .retakeInterview:hover.active,
+.interviewReview .interviewNav .retakeInterview:hover.disabled,
+.interviewReview .interviewNav .retakeInterview:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewReview .interviewNav .retakeInterview:hover:active,
+.interviewReview .interviewNav .retakeInterview:hover.active {
+  background-color: #63c3ce \9;
+}
+.interviewReview .interviewNav .finishInterview {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #ec2e25;
+  background-image: -moz-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ec2e25), to(#ec2e25));
+  background-image: -webkit-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: -o-linear-gradient(top, #ec2e25, #ec2e25);
+  background-image: linear-gradient(to bottom, #ec2e25, #ec2e25);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffec2e25', endColorstr='#ffec2e25', GradientType=0);
+  border-color: #ec2e25 #ec2e25 #b51710;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #ec2e25;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-image: url('../../images/prep/bgPatternRed.png');
+  background-repeat: repeat;
+  border: 0 none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-family: "kulturista-web", Rockwell, "Times New Roman", Times, serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+}
+.interviewReview .interviewNav .finishInterview:hover,
+.interviewReview .interviewNav .finishInterview:focus,
+.interviewReview .interviewNav .finishInterview:active,
+.interviewReview .interviewNav .finishInterview.active,
+.interviewReview .interviewNav .finishInterview.disabled,
+.interviewReview .interviewNav .finishInterview[disabled] {
+  color: #ffffff;
+  background-color: #ec2e25;
+  *background-color: #e41d14;
+}
+.interviewReview .interviewNav .finishInterview:active,
+.interviewReview .interviewNav .finishInterview.active {
+  background-color: #cc1a12 \9;
+}
+.interviewReview .interviewNav .finishInterview:hover {
+  color: #ec2e25;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #8ad2da;
+  background-image: -moz-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#8ad2da), to(#8ad2da));
+  background-image: -webkit-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: -o-linear-gradient(top, #8ad2da, #8ad2da);
+  background-image: linear-gradient(to bottom, #8ad2da, #8ad2da);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8ad2da', endColorstr='#ff8ad2da', GradientType=0);
+  border-color: #8ad2da #8ad2da #50bcc8;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #8ad2da;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.interviewReview .interviewNav .finishInterview:hover:hover,
+.interviewReview .interviewNav .finishInterview:hover:focus,
+.interviewReview .interviewNav .finishInterview:hover:active,
+.interviewReview .interviewNav .finishInterview:hover.active,
+.interviewReview .interviewNav .finishInterview:hover.disabled,
+.interviewReview .interviewNav .finishInterview:hover[disabled] {
+  color: #ec2e25;
+  background-color: #8ad2da;
+  *background-color: #77cbd4;
+}
+.interviewReview .interviewNav .finishInterview:hover:active,
+.interviewReview .interviewNav .finishInterview:hover.active {
+  background-color: #63c3ce \9;
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .interviewReview .iconprep-questionBubbles {
+    width: 70px;
+    height: 57px;
+  }
+  .interviewReview h2.letsReview {
+    font-size: 2.67em;
+  }
+  .interviewReview .questionList .questionItem .num {
+    font-size: 2.67em;
+    width: 10%;
+  }
+  .interviewReview .questionList .questionItem .question {
+    width: 75%;
+  }
+  .interviewReview .questionList .questionItem .actions {
+    width: 15%;
+  }
+}
+@media (max-width: 767px) {
+  .interviewReview .interviewReviewTop {
+    margin-top: 0;
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+  .interviewReview .reviewHeader {
+    margin: 10px 0 0;
+  }
+  .interviewReview .reviewHeader .innerWrap {
+    padding: 30px 30px;
+  }
+  .interviewReview .reviewHeader h1 {
+    font-size: 2em;
+  }
+  .interviewReview .reviewHeader h2 {
+    font-size: 1.73em;
+  }
+  .interviewReview .reviewHeader .askedAnswered {
+    font-size: 1.47em;
+  }
+  .interviewReview .iconprep-questionBubbles {
+    width: 65px;
+    height: 53px;
+  }
+  .interviewReview h2.letsReview {
+    font-size: 2.4em;
+  }
+  .interviewReview .questionList .questionItem .num {
+    font-size: 1.67em;
+    width: 10%;
+  }
+  .interviewReview .questionList .questionItem .question {
+    width: 73%;
+    font-size: 1.2em;
+  }
+  .interviewReview .questionList .questionItem .actions {
+    width: 15%;
+  }
+  .interviewReview .questionList .questionItem .answers {
+    width: 88%;
+  }
+  .interviewReview .questionList .questionItem .answers .lbl {
+    margin-top: 10px;
+  }
+  .interviewReview .questionList .questionItem .answers .answr {
+    font-size: 1.13em;
+    line-height: 1.32em;
+  }
+  .interviewReview .questionList .questionItem .answers .textResponseBlock textarea {
+    font-size: 1.13em;
+  }
+}
+@media (max-width: 480px) {
+  .interviewReview .reviewHeader {
+    margin-bottom: 10px;
+  }
+  .interviewReview .reviewHeader .innerWrap {
+    padding: 15px 20px;
+  }
+  .interviewReview .reviewHeader h1 {
+    font-size: 1.6em;
+  }
+  .interviewReview .reviewHeader h2 {
+    font-size: 1.2em;
+  }
+  .interviewReview .reviewHeader .askedAnswered {
+    font-size: 1.07em;
+  }
+  .interviewReview .iconprep-questionBubbles {
+    width: 40px;
+    height: 32.6px;
+  }
+  .interviewReview h2.letsReview {
+    font-size: 1.47em;
+  }
+  .interviewReview h2.letsReview .btn {
+    font-size: 12px;
+    padding: 2px 10px;
+  }
+  .interviewReview .questionList {
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+  .interviewReview .questionList .questionItem {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+  }
+  .interviewReview .questionList .questionItem .num {
+    display: block;
+    width: 100%;
+    margin-bottom: 5px;
+    font-size: 1.2em;
+  }
+  .interviewReview .questionList .questionItem .question {
+    width: 84%;
+    font-size: 1em;
+    line-height: 1.2em;
+  }
+  .interviewReview .questionList .questionItem .answers {
+    padding-left: 0%;
+    width: 100%;
+  }
+  .interviewReview .questionList .questionItem .answers .lbl {
+    margin-top: 10px;
+    font-size: 1em;
+  }
+  .interviewReview .questionList .questionItem .answers .answr {
+    font-size: 0.87em;
+    font-weight: 400;
+    line-height: 1.2em;
+  }
+  .interviewReview .questionList .questionItem .answers .textResponseBlock textarea {
+    font-size: 0.87em;
+  }
+  .interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.cancel,
+  .interviewReview .questionList .questionItem .answers .textResponseBlock .textResponseActions a.save {
+    font-size: 12px;
+    padding: 2px 10px;
+  }
+  .interviewReview .interviewNav .retakeInterview,
+  .interviewReview .interviewNav .finishInterview {
+    font-size: 12px;
+    padding: 2px 10px;
+  }
+}
+/*!
+ * typeahead.js 0.8.1
+ * https://github.com/twitter/typeahead
+ * Copyright 2013 Twitter, Inc. and other contributors; Licensed MIT
+ */
+.twitter-typeahead {
+  position: relative !important;
+  display: inline-block;
+  *display: inline;
+  *zoom: 1;
+}
+.tt-query {
+  position: relative !important;
+  /* for unknown reasons, this fixes alignment issues in ie7 */
+  *margin-top: -1px !important;
+  vertical-align: top !important;
+  background-color: transparent !important;
+  /* ie6-8 doesn't fire hover and click events for transparent elements
+   for a workaround, use a 1x1 transparent gif */
+  background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7) !important;
+}
+.tt-hint {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  border-color: transparent !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+}
+.tt-dropdown-menu,
+.tt-suggestions,
+.tt-suggestion {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.tt-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  /* TODO: need default z-index, should be configurable */
+  display: none;
+}
+.tt-dropdown-menu.tt-is-open {
+  display: block;
+}
+.tt-dropdown-menu.tt-is-empty {
+  display: none;
+}
+.tt-suggestion {
+  display: block;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tt-suggestion * {
+  white-space: normal;
+}
+/* rtl support */
+/* ----------- */
+.twitter-typeahead.tt-rtl {
+  direction: rtl;
+}
+.twitter-typeahead.tt-rtl .tt-dropdown-menu {
+  left: auto;
+  right: 0;
+}
+.typeahead,
+.tt-query,
+.tt-hint {
+  width: 396px;
+  height: 30px;
+  padding: 8px 12px;
+  font-size: 24px;
+  line-height: 30px;
+  border: 2px solid #ccc;
+  outline: none;
+}
+.typeahead {
+  background-color: #fff;
+}
+.typeahead:focus {
+  border: 2px solid #0097cf;
+}
+.tt-query {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.tt-hint {
+  color: #999999;
+}
+.tt-dropdown-menu {
+  width: 100%;
+  margin-top: 0px;
+  padding: 8px 0;
+  background-color: #fff;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+.tt-suggestion {
+  padding: 3px 20px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 24px;
+}
+.tt-suggestion p {
+  margin: 0;
+}
+.tt-suggestion .resultHint {
+  font-size: 16px;
+  font-weight: 300;
+}
+.tt-suggestion .resultType {
+  float: right;
+  font-size: 13px;
+  font-weight: 700;
+  color: #bbb;
+  display: inline-block;
+  margin-left: 5px;
+}
+.tt-suggestion.tt-is-under-cursor {
+  color: #fff;
+  background-color: #ec2e25;
+}
+/* example specific styles */
+/* ----------------------- */
+.example-twitter-oss .tt-suggestion {
+  padding: 8px 20px;
+}
+.example-twitter-oss .tt-suggestion + .tt-suggestion {
+  border-top: 1px solid #ccc;
+}
+.example-twitter-oss .repo-language {
+  float: right;
+  font-style: italic;
+}
+.example-twitter-oss .repo-name {
+  font-weight: bold;
+}
+.example-twitter-oss .repo-description {
+  font-size: 14px;
+}
+.example-arabic .tt-dropdown-menu {
+  text-align: right;
+}
+@media (max-width: 767px) {
+  .tt-suggestion {
+    padding: 5px 20px;
+    font-size: 14px;
+    line-height: 16px;
+  }
+  .tt-suggestion .resultHint {
+    font-size: 15px;
+    font-weight: 300;
+  }
+  .tt-suggestion .resultType {
+    float: right;
+    font-size: 11px;
+    font-weight: 400;
+  }
+}
+/*!
+ * Datepicker for Bootstrap
+ *
+ * Copyright 2012 Stefan Petre
+ * Improvements by Andrew Rowls
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ */
+.datepicker {
+  padding: 4px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  direction: ltr;
+  /*.dow {
+		border-top: 1px solid #ddd !important;
+	}*/
+}
+.datepicker-inline {
+  width: 220px;
+}
+.datepicker.datepicker-rtl {
+  direction: rtl;
+}
+.datepicker.datepicker-rtl table tr td span {
+  float: right;
+}
+.datepicker-dropdown {
+  top: 0;
+  left: 0;
+}
+.datepicker-dropdown:before {
+  content: '';
+  display: inline-block;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 7px solid #ccc;
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: -7px;
+  left: 6px;
+}
+.datepicker-dropdown:after {
+  content: '';
+  display: inline-block;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #ffffff;
+  position: absolute;
+  top: -6px;
+  left: 7px;
+}
+.datepicker > div {
+  display: none;
+}
+.datepicker.days div.datepicker-days {
+  display: block;
+}
+.datepicker.months div.datepicker-months {
+  display: block;
+}
+.datepicker.years div.datepicker-years {
+  display: block;
+}
+.datepicker table {
+  margin: 0;
+}
+.datepicker td,
+.datepicker th {
+  text-align: center;
+  width: 20px;
+  height: 20px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  border: none;
+}
+.table-striped .datepicker table tr td,
+.table-striped .datepicker table tr th {
+  background-color: transparent;
+}
+.datepicker table tr td.day:hover {
+  background: #eeeeee;
+  cursor: pointer;
+}
+.datepicker table tr td.old,
+.datepicker table tr td.new {
+  color: #999999;
+}
+.datepicker table tr td.disabled,
+.datepicker table tr td.disabled:hover {
+  background: none;
+  color: #999999;
+  cursor: default;
+}
+.datepicker table tr td.today,
+.datepicker table tr td.today:hover,
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today.disabled:hover {
+  background-color: #fde19a;
+  background-image: -moz-linear-gradient(top, #fdd49a, #fdf59a);
+  background-image: -ms-linear-gradient(top, #fdd49a, #fdf59a);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fdd49a), to(#fdf59a));
+  background-image: -webkit-linear-gradient(top, #fdd49a, #fdf59a);
+  background-image: -o-linear-gradient(top, #fdd49a, #fdf59a);
+  background-image: linear-gradient(top, #fdd49a, #fdf59a);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fdd49a', endColorstr='#fdf59a', GradientType=0);
+  border-color: #fdf59a #fdf59a #fbed50;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  color: #000 !important;
+}
+.datepicker table tr td.today:hover,
+.datepicker table tr td.today:hover:hover,
+.datepicker table tr td.today.disabled:hover,
+.datepicker table tr td.today.disabled:hover:hover,
+.datepicker table tr td.today:active,
+.datepicker table tr td.today:hover:active,
+.datepicker table tr td.today.disabled:active,
+.datepicker table tr td.today.disabled:hover:active,
+.datepicker table tr td.today.active,
+.datepicker table tr td.today:hover.active,
+.datepicker table tr td.today.disabled.active,
+.datepicker table tr td.today.disabled:hover.active,
+.datepicker table tr td.today.disabled,
+.datepicker table tr td.today:hover.disabled,
+.datepicker table tr td.today.disabled.disabled,
+.datepicker table tr td.today.disabled:hover.disabled,
+.datepicker table tr td.today[disabled],
+.datepicker table tr td.today:hover[disabled],
+.datepicker table tr td.today.disabled[disabled],
+.datepicker table tr td.today.disabled:hover[disabled] {
+  background-color: #fdf59a;
+}
+.datepicker table tr td.today:active,
+.datepicker table tr td.today:hover:active,
+.datepicker table tr td.today.disabled:active,
+.datepicker table tr td.today.disabled:hover:active,
+.datepicker table tr td.today.active,
+.datepicker table tr td.today:hover.active,
+.datepicker table tr td.today.disabled.active,
+.datepicker table tr td.today.disabled:hover.active {
+  background-color: #fbf069 \9;
+}
+.datepicker table tr td.active,
+.datepicker table tr td.active:hover,
+.datepicker table tr td.active.disabled,
+.datepicker table tr td.active.disabled:hover {
+  background-color: #006dcc;
+  background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -ms-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
+  background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -o-linear-gradient(top, #0088cc, #0044cc);
+  background-image: linear-gradient(top, #0088cc, #0044cc);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0088cc', endColorstr='#0044cc', GradientType=0);
+  border-color: #0044cc #0044cc #002a80;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.datepicker table tr td.active:hover,
+.datepicker table tr td.active:hover:hover,
+.datepicker table tr td.active.disabled:hover,
+.datepicker table tr td.active.disabled:hover:hover,
+.datepicker table tr td.active:active,
+.datepicker table tr td.active:hover:active,
+.datepicker table tr td.active.disabled:active,
+.datepicker table tr td.active.disabled:hover:active,
+.datepicker table tr td.active.active,
+.datepicker table tr td.active:hover.active,
+.datepicker table tr td.active.disabled.active,
+.datepicker table tr td.active.disabled:hover.active,
+.datepicker table tr td.active.disabled,
+.datepicker table tr td.active:hover.disabled,
+.datepicker table tr td.active.disabled.disabled,
+.datepicker table tr td.active.disabled:hover.disabled,
+.datepicker table tr td.active[disabled],
+.datepicker table tr td.active:hover[disabled],
+.datepicker table tr td.active.disabled[disabled],
+.datepicker table tr td.active.disabled:hover[disabled] {
+  background-color: #0044cc;
+}
+.datepicker table tr td.active:active,
+.datepicker table tr td.active:hover:active,
+.datepicker table tr td.active.disabled:active,
+.datepicker table tr td.active.disabled:hover:active,
+.datepicker table tr td.active.active,
+.datepicker table tr td.active:hover.active,
+.datepicker table tr td.active.disabled.active,
+.datepicker table tr td.active.disabled:hover.active {
+  background-color: #003399 \9;
+}
+.datepicker table tr td span {
+  display: block;
+  width: 23%;
+  height: 54px;
+  line-height: 54px;
+  float: left;
+  margin: 1%;
+  cursor: pointer;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.datepicker table tr td span:hover {
+  background: #eeeeee;
+}
+.datepicker table tr td span.disabled,
+.datepicker table tr td span.disabled:hover {
+  background: none;
+  color: #999999;
+  cursor: default;
+}
+.datepicker table tr td span.active,
+.datepicker table tr td span.active:hover,
+.datepicker table tr td span.active.disabled,
+.datepicker table tr td span.active.disabled:hover {
+  background-color: #006dcc;
+  background-image: -moz-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -ms-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0044cc));
+  background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);
+  background-image: -o-linear-gradient(top, #0088cc, #0044cc);
+  background-image: linear-gradient(top, #0088cc, #0044cc);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0088cc', endColorstr='#0044cc', GradientType=0);
+  border-color: #0044cc #0044cc #002a80;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+.datepicker table tr td span.active:hover,
+.datepicker table tr td span.active:hover:hover,
+.datepicker table tr td span.active.disabled:hover,
+.datepicker table tr td span.active.disabled:hover:hover,
+.datepicker table tr td span.active:active,
+.datepicker table tr td span.active:hover:active,
+.datepicker table tr td span.active.disabled:active,
+.datepicker table tr td span.active.disabled:hover:active,
+.datepicker table tr td span.active.active,
+.datepicker table tr td span.active:hover.active,
+.datepicker table tr td span.active.disabled.active,
+.datepicker table tr td span.active.disabled:hover.active,
+.datepicker table tr td span.active.disabled,
+.datepicker table tr td span.active:hover.disabled,
+.datepicker table tr td span.active.disabled.disabled,
+.datepicker table tr td span.active.disabled:hover.disabled,
+.datepicker table tr td span.active[disabled],
+.datepicker table tr td span.active:hover[disabled],
+.datepicker table tr td span.active.disabled[disabled],
+.datepicker table tr td span.active.disabled:hover[disabled] {
+  background-color: #0044cc;
+}
+.datepicker table tr td span.active:active,
+.datepicker table tr td span.active:hover:active,
+.datepicker table tr td span.active.disabled:active,
+.datepicker table tr td span.active.disabled:hover:active,
+.datepicker table tr td span.active.active,
+.datepicker table tr td span.active:hover.active,
+.datepicker table tr td span.active.disabled.active,
+.datepicker table tr td span.active.disabled:hover.active {
+  background-color: #003399 \9;
+}
+.datepicker table tr td span.old {
+  color: #999999;
+}
+.datepicker th.switch {
+  width: 145px;
+}
+.datepicker thead tr:first-child th,
+.datepicker tfoot tr:first-child th {
+  cursor: pointer;
+}
+.datepicker thead tr:first-child th:hover,
+.datepicker tfoot tr:first-child th:hover {
+  background: #eeeeee;
+}
+.datepicker .cw {
+  font-size: 10px;
+  width: 12px;
+  padding: 0 2px 0 5px;
+  vertical-align: middle;
+}
+.datepicker thead tr:first-child th.cw {
+  cursor: default;
+  background-color: transparent;
+}
+.input-append.date .add-on i,
+.input-prepend.date .add-on i {
+  display: block;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+/*!
+ * Timepicker Component for Twitter Bootstrap
+ *
+ * Copyright 2013 Joris de Wit
+ *
+ * Contributors https://github.com/jdewit/bootstrap-timepicker/graphs/contributors
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+.bootstrap-timepicker {
+  position: relative;
+}
+.bootstrap-timepicker.pull-right .bootstrap-timepicker-widget.dropdown-menu {
+  left: auto;
+  right: 0;
+}
+.bootstrap-timepicker.pull-right .bootstrap-timepicker-widget.dropdown-menu:before {
+  left: auto;
+  right: 12px;
+}
+.bootstrap-timepicker.pull-right .bootstrap-timepicker-widget.dropdown-menu:after {
+  left: auto;
+  right: 13px;
+}
+.bootstrap-timepicker .add-on {
+  cursor: pointer;
+}
+.bootstrap-timepicker .add-on i {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+.bootstrap-timepicker-widget.dropdown-menu {
+  padding: 2px 3px 2px 2px;
+}
+.bootstrap-timepicker-widget.dropdown-menu.open {
+  display: inline-block;
+}
+.bootstrap-timepicker-widget.dropdown-menu:before {
+  border-bottom: 7px solid rgba(0, 0, 0, 0.2);
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  content: "";
+  display: inline-block;
+  left: 9px;
+  position: absolute;
+  top: -7px;
+}
+.bootstrap-timepicker-widget.dropdown-menu:after {
+  border-bottom: 6px solid #FFFFFF;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  content: "";
+  display: inline-block;
+  left: 10px;
+  position: absolute;
+  top: -6px;
+}
+.bootstrap-timepicker-widget a.btn,
+.bootstrap-timepicker-widget input {
+  border-radius: 4px;
+}
+.bootstrap-timepicker-widget table {
+  width: 100%;
+  margin: 0;
+}
+.bootstrap-timepicker-widget table td {
+  text-align: center;
+  height: 30px;
+  margin: 0;
+  padding: 2px;
+}
+.bootstrap-timepicker-widget table td:not(.separator) {
+  min-width: 30px;
+}
+.bootstrap-timepicker-widget table td span {
+  width: 100%;
+}
+.bootstrap-timepicker-widget table td a {
+  border: 1px transparent solid;
+  width: 100%;
+  display: inline-block;
+  margin: 0;
+  padding: 8px 0;
+  outline: 0;
+  color: #333;
+}
+.bootstrap-timepicker-widget table td a:hover {
+  text-decoration: none;
+  background-color: #eee;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  border-color: #ddd;
+}
+.bootstrap-timepicker-widget table td a i {
+  margin-top: 2px;
+}
+.bootstrap-timepicker-widget table td input {
+  width: 25px;
+  margin: 0;
+  text-align: center;
+}
+.bootstrap-timepicker-widget .modal-content {
+  padding: 4px;
+}
+@media (min-width: 767px) {
+  .bootstrap-timepicker-widget.modal {
+    width: 200px;
+    margin-left: -100px;
+  }
+}
+@media (max-width: 767px) {
+  .bootstrap-timepicker {
+    width: 100%;
+  }
+  .bootstrap-timepicker .dropdown-menu {
+    width: 100%;
+  }
+}
+/*
+
+RESPONSIVE QUERIES:
+
+// Responsive: Large desktop and up
+@media (min-width: 1200px) {
+}
+
+// Responsive: Tablet to desktop
+@media (min-width: 768px) and (max-width: 979px) {
+}
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width:767px) {
+}
+
+// Responsive: Up to landscape phone
+@media (max-width:479px) {
+}
+
+*/

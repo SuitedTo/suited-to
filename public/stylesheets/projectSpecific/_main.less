@@ -1,0 +1,959 @@
+//@charset "UTF-8";
+/* CSS Document */
+//@import "_docs.less";       // from bootstrap docs
+
+
+/* Body and structure
+-------------------------------------------------- */
+body {
+  position: relative;
+  background-color: #fff;
+}
+
+header {
+  padding-top: 10px;
+  //  background: none repeat scroll 0 0 #F5F5F5;
+}
+
+#headerLogo {
+  display: block;
+  background-image: url(../images/logo-standard.png);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  width: 235px;
+  height: 36px;
+  text-indent: -9999px;
+}
+// following will fail to compile on less version 1.3.0 and below // requires less 1.3.1
+@media only screen and (-webkit-min-device-pixel-ratio: 2),
+  only screen and (-moz-min-device-pixel-ratio: 2),
+  only screen and (-o-min-device-pixel-ratio: 2/1),
+  only screen and (min-device-pixel-ratio: 2) {
+    #headerLogo { 
+      background: url('../images/logo-standard.png');
+      -webkit-background-size: 100%;
+         -moz-background-size: 100%;
+              background-size: 100%;
+    }
+}
+
+#page-content { 
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+footer {
+  padding: 1.5em 0;
+  margin-top: 30px;
+  border-top: 1px solid #dddddd;
+}
+#page-footer {
+  font-size: .85em;
+  min-height: 3em;
+  background: #eeeeee;
+  .box-shadow(inset 0 1px 2px #dddddd);
+  span {
+    display: inline-block;
+    padding: 0.5em 0;
+    color: #aaaaaa;
+    vertical-align: middle;
+  } 
+  a {
+    margin:0 3px 0 0;
+    color: #aaaaaa;
+    vertical-align: middle;
+  }
+  .footerRight {
+    text-align: right;
+    color: #aaaaaa;
+  }
+}
+
+
+
+/* Typography
+-------------------------------------------------- */
+
+/* Headings */
+h1 {
+  font-size: 44px;
+  letter-spacing: -1px; 
+  line-height: 1; 
+  font-family: @serif;
+  color: @teal-main;
+  text-rendering: optimizelegibility; 
+  font-weight: normal; 
+  margin: 0 0 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ececec;
+}
+.page-header {
+  margin-top: 0;
+
+  h1 {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+}
+.page-description{
+  font-size: 17px;
+  font-weight: 300;
+  margin-bottom: 20px;
+}
+h2 {
+  font-size: 27px; 
+  letter-spacing: -1px; 
+  line-height: 1.25em; 
+  font-family: @sans-serif-heading; 
+  text-rendering: optimizelegibility; 
+  font-weight: normal; 
+  margin: 0 0 0.25em; 
+  /*margin: 1em 0 0.5em;*/ 
+}
+h3 { 
+  font-size: 18px; 
+  line-height: 27px; 
+  margin: 0 0 0.25em; /*margin: 15px 0 5px; */ 
+}
+
+
+/* Custom Headings */
+.subhead h1 { 
+  font-size: 60px; 
+}
+/*#welcome {
+  padding-bottom: 0px;
+  margin-bottom: 24px;
+  border-bottom: 1px #d3d3d3 solid;
+}*/
+h1.questionText{
+  font-size: 30px;
+  border: 0;
+  padding-bottom: 0;
+}
+
+p { 
+  font-size: 15px; 
+  line-height: 22px; 
+}
+.center-text {
+  text-align: center;
+}
+
+a {
+  color: @teal-main;
+}
+
+th.header {
+  font-size: 16px;
+  font-family: @serif;
+  color: @teal-text;
+}
+
+/* Sections
+-------------------------------------------------- */
+section {
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+
+/* Faded out hr */
+hr.soften {
+  height: 1px;
+  margin: 54px 0;
+  background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
+  background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
+  background-image:     -ms-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
+  background-image:      -o-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,.1), rgba(0,0,0,0));
+  border: 0;
+}
+hr.questionHr { 
+  clear: left; 
+}
+
+
+
+/* Buttons
+-------------------------------------------------- */
+/* button colors - SPARC Styleguide */
+.btn-primary {
+  .buttonBackground(@teal-main, @teal-main);
+}
+.btn-primary:hover, .btn-primary:active, .btn-primary.active, .btn-primary.disabled, .btn-primary[disabled], .btn-group.open .btn-primary.dropdown-toggle {
+  background-color: darken(@teal-main, 10%);
+}
+
+.btn-primary2 {
+  .buttonBackground(lighten(@application-darkgray, 15%), @application-darkgray);
+}
+.btn-primary2:hover, .btn-primary2:active, .btn-primary2.active, .btn-primary2.disabled, .btn-primary2[disabled] {
+  background-color: darken(@application-darkgray, 2%);
+}
+
+.btn-warning {
+  .buttonBackground(@application-yellow, darken(@application-yellow, 15%));
+}
+.btn-warning:hover, .btn-warning:active, .btn-warning.active, .btn-warning.disabled, .btn-warning[disabled] {
+  background-color: darken(@application-yellow, 17%);
+}
+
+/*.btn-success {
+  //.buttonBackground(@teal-main, darken(@teal-main, 15%));
+  .buttonBackground(lighten(@teal-main, 2%), darken(@teal-main, 13%));
+}
+.btn-success:hover, .btn-success:active, .btn-success.active, .btn-success.disabled, .btn-success[disabled] {
+  //background-color: darken(@teal-main, 17%);
+  background-color: darken(@teal-main, 15%);
+}*/
+
+.btn-info {
+  .buttonBackground(@teal-lighter, @teal-lighter);
+}
+.btn-info:hover, .btn-info:active, .btn-info.active, .btn-info.disabled, .btn-info[disabled] {
+  background-color: @teal-light;
+}
+.btn-inverse {
+  .buttonBackground(lighten(@application-darkgreen, 2%), darken(@application-darkgreen, 8%));
+}
+.btn-inverse:hover, .btn-inverse:active, .btn-inverse.active, .btn-inverse.disabled, .btn-inverse[disabled] {
+  background-color: darken(@application-darkgreen, 10%);
+}
+
+.icon-gray {
+  background-image: url(../images/glyphicons-halflings-gray.png);
+}
+
+
+
+/* Jumbotrons
+-------------------------------------------------- */
+.jumbotron {
+  position: relative;
+  h1 {
+    margin-bottom: 9px;
+    font-size: 81px;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  p {
+    margin-bottom: 18px;
+    font-weight: 300;
+   }
+  .btn-large {
+    font-size: 20px;
+    font-weight: normal;
+    padding: 14px 24px;
+    margin-right: 10px;
+    .border-radius(6px);
+  }
+}
+
+/* Masthead (docs home) */
+.masthead {
+  padding-top: 36px;
+  margin-bottom: 72px;
+  h1 {
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  p {
+    text-align: center;
+    margin-left: 5%;
+    margin-right: 5%;
+    font-size: 30px;
+    line-height: 36px;
+  }
+}
+
+/* Specific jumbotrons
+------------------------- */
+/* supporting docs pages */
+.subhead {
+  padding-bottom: 0;
+  margin-bottom: 9px;
+  h1 {
+    font-size: 54px;
+  }
+}
+
+/* hero styles */
+.lead { 
+  line-height: 40px; 
+  font-size: 17px; 
+}
+.masthead .inner { 
+  text-align: center; 
+  /*background: transparent url(../../../img/featured-light.png) 50% 50% no-repeat;*/ 
+  border-radius: 6px 6px 6px 6px; 
+  padding: 0; 
+}
+ /* hero - dark */
+.darkHero {
+  .masthead .inner {
+    background: url("../images/grain.png") #000 repeat; 
+    border-radius: 0; }
+  .masthead .subhead h1 {
+    color: #fff;
+    text-shadow: 2px 2px #333333, -4px -4px #333333;
+  }
+  .masthead .lead {
+    color: #CCC;
+  }
+}
+
+
+
+/* Misc
+-------------------------------------------------- */
+
+/* Make tables spaced out a bit more */
+h2 + table,
+h3 + table,
+h4 + table,
+h2 + .row {
+  margin-top: 5px;
+}
+
+/* Remove bottom margin on example forms in wells */
+form.well {
+  padding: 14px;
+}
+
+/* Tighten up spacing */
+.well hr {
+  margin: 18px 0;
+}
+
+/* Fake the :focus state to demo it */
+.focused {
+  border-color: rgba(82,168,236,.8);
+  .box-shadow(inset 0 1px 3px rgba(0,0,0,.1), 0 0 8px rgba(82,168,236,.6));
+  outline: 0;
+}
+
+
+
+/* Modals
+-------------------------------------------------- */
+.modal-body { 
+  max-height: inherit; 
+}
+/*.modal { 
+  overflow-y: auto;
+  max-height: 90%;
+  margin-top: -45%;
+  position: fixed;
+}*/
+body.modal-open {
+  overflow: hidden;
+}
+.modal form { 
+  margin-bottom: 0; 
+}
+
+
+
+/* Additional Styles
+-------------------------------------------------- */
+.no-pull-desktop {
+  float: none;
+}
+form label.required:after {
+	content: "*";
+	font-weight: bold;
+}
+
+div.inline {
+  float: left;
+  padding-right: 4px;
+}
+
+#star {
+  padding-top: 8px;
+}
+
+.repeatable {
+  padding-bottom: 6px;
+}
+
+.btn-toolbar a.visibleText {
+  font-size: 14px;
+}
+
+#error_block {
+  margin: 0 auto;
+  border-bottom: 1px solid #d3d3d3;
+  width: 50%;
+  padding-bottom: 10em;
+  background-image:url('../images/Oopsy-daisy.jpg');
+  background-position: right bottom;
+  background-repeat: no-repeat;
+
+  h1 {
+    padding-bottom: 6px;
+    border-bottom: 2px solid #d3d3d3;
+  }
+
+  p {
+    margin-top: 1em;
+  }
+
+  .btn {
+    margin-top: 80px;
+  }
+}
+#questionUtils {
+  margin-top:40px;
+  position:relative;
+
+  #downloadButtonSection {
+    /*position:absolute;
+    vertical-align:bottom;
+    bottom:0;*/
+
+    div {
+        padding:15px 0;
+    }
+  }
+}
+
+#app-info {
+  background-color: #ffffe0;
+  //margin-top: 40px;
+  .innerWrap { padding: 10px; }
+}
+#switcheroo {
+  background-color: #e0ffff;
+  .innerWrap { padding: 10px; }
+}
+
+.loginWrapper { 
+  max-width: 970px; 
+  margin: 20px auto;
+}
+.loginOrDivider {
+  background-image: url('../images/icon-blowyshape-yellow-47x40.png');
+  background-repeat: none;
+  height: 30px;
+  width: 42px;
+  margin: 15px auto 10px auto;
+  padding: 10px 5px 0 0;
+  font-size: 16px;
+  font-weight: normal;
+  text-align: center;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.25);
+}
+.loginHrDivider {
+  background-color: @application-yellow;
+  height: 120px;
+  width: 1px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.registrationWrapper {
+  max-width: 970px;
+  margin: 0 auto;
+
+  .regBtn {
+    display: block;
+    padding: 0;
+    background: #f9f9f9;
+
+    h3 {
+      padding: 0 10px 0;
+      font-size: 13px;
+      font-weight: normal;
+      color: #aaa;
+      background-color: #ddd;
+      border-bottom: 1px solid #ddd;
+      text-transform: uppercase;
+    }
+    ul {
+      margin: 0;
+      padding: 10px 0 15px;
+      text-align: left;
+      list-style: none;
+
+      li {
+        padding: 5px 20px 6px;
+        font-size: 16px;
+        margin-bottom: 3px;
+        color: #444;
+
+        &.highlight { font-size: 17px; background-color: @teal-light; }
+      }
+    }
+    span.btn {
+      border-radius: 0;
+
+      &.company {}
+      &.contributor {}
+    }
+    &:hover { .box-shadow(0 0 10px rgba(50,50,50,.3)); }
+    &.company {
+      li.highlight { background-color: @application-yellow-light; }
+      span.btn { .buttonBackground(@application-yellow, darken(@application-yellow,10)); }
+    }
+    &.contributor {
+      li.highlight { background-color: @teal-light; }
+      span.btn { .buttonBackground(@teal-main, darken(@teal-main,10)); }
+    }
+
+  }
+
+}
+
+
+
+/* Question View Page */
+.questionContent {
+
+  h4 {
+    background-image: url(../images/icon-blowybox-22x19-green.png);
+    background-repeat: no-repeat;
+    background-position: 0 2px;
+    padding-left: 30px;
+    min-height: 21px;
+    color: @teal-text;
+    font-family: @serif;
+  }
+
+}
+.questionViewSidebar {
+
+  h4 {
+    margin: .25em 0;
+    font-family: @serif;
+    font-size: 16px;
+    font-weight: normal;
+    color: @teal-text;
+  }
+  h5 {
+    margin: 0 0 10px;
+    padding: 0 0 3px;
+    color: #666;
+    border-bottom: 1px solid #ddd;
+  }
+
+  p { line-height: 1em; color: #555; font-size: 14px; }
+
+  .userData {
+    list-style: none;
+    margin-left: 0;
+
+    li { margin-bottom: 5px; }
+
+    .lbl {
+      margin-left: 5px;
+      font-size: 13px;
+      line-height: 12px;
+      text-transform: uppercase;
+      color: #777;
+    }
+    .val {
+      font-size: 18px;
+      font-weight: bold;
+      color: #777;
+    }
+  }
+  .questionData {
+    list-style: none;
+    margin-left: 0;
+
+    li {
+      margin-bottom: 5px;
+      font-size: 14px;
+      color: #555;
+    }
+
+  }
+
+  .btn-block {
+    margin-bottom: 5px;
+  }
+
+  #flaggedReasonForm { margin-bottom: 0; }
+
+}
+
+
+/* Community Users Page */
+#communityList {
+
+  .dataDisplayResults.list {
+    .span4 {
+      width: 940px;
+    }
+  }
+
+  .userCard { 
+    height: 100px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-top: 2px solid @teal-main;
+    .border-radius(3px);
+    .box-shadow(1px 2px 3px rgba(50,50,50,.2));
+    .clearfix();
+
+    &.reviewer {
+      background-color: lighten(@teal-ultralightest, 8%);
+    }
+
+    .userPicture {
+      display: block;
+      float: left;
+      width: 100px;
+      height: 100px;
+      margin-right: 10px;
+
+      img { width: 100%; height: 100%; }
+    }
+
+    .userName {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    .userStreetCred {
+      float: right;
+      min-width: 15px;
+      margin-left: 15px;
+      margin-bottom: 5px;
+      padding: 5px;
+      font-size: 20px;
+      text-align: center;
+      color: #fff;
+      background-color: @teal-main;
+      .border-radius(3px);
+    }
+    .userReviewer, .userCategories { 
+      margin-left: 110px;
+    }
+    .userReviewer {
+      color: @teal-text;
+      margin-bottom: 2px;
+    }
+    .userCategories {
+      font-size: 13px;
+      line-height: 14px;
+      color: lighten(@application-darkgray,30);
+    }
+  }
+
+}
+
+@media (min-width: 1200px) {
+  #communityList .dataDisplayResults.list .span4 { width: 1170px; }
+}
+@media (max-width: 979px) and (min-width: 768px) {
+  #communityList .dataDisplayResults.list .span4 { width: 724px; }
+}
+@media (max-width: 767px) {
+  #communityList .dataDisplayResults.list .span4 { width: 100%; }
+}
+
+/* Feedback Page */
+#ratingAndNotes {
+  p, li {
+    font-size: 14px;
+    margin-bottom: 4px;
+
+  }
+  div {
+    padding-bottom: 10px;
+  }
+  h4 {
+    text-transform: uppercase;
+    font-family: @sans-serif;
+    color: @teal-text
+  }
+  li.questionNote {
+    border-bottom: 2px solid @teal-ultralightest;
+    padding-bottom: 6px;
+  }
+}
+
+
+/* Responsive Docs
+-------------------------------------------------- */
+
+//
+// Responsive: Large desktop and up
+// --------------------------------------------------
+@media (min-width: 1210px) {
+
+
+}
+
+
+//
+// Responsive: Phone to Large desktop
+// --------------------------------------------------
+@media (max-width: 1199px) {
+
+  /* Community Users Page */
+  #communityList {
+    .userCard { 
+      height: 90px;
+
+      .userPicture {
+        width: 80px;
+        height: 80px;
+      }
+      .userReviewer, .userCategories { 
+        margin-left: 90px;
+      }
+    }
+  }
+
+}
+
+
+//
+// Responsive: Tablet to desktop
+// --------------------------------------------------
+@media (min-width: 768px) and (max-width: 979px) {
+
+  /* Remove any padding from the body */
+  body {
+    padding-top: 0;
+  }
+
+  .no-pull-tablet {
+    float: none;
+  }
+
+  /* Scale down the jumbotron content */
+  .jumbotron h1 {
+    font-size: 72px;
+  }
+
+  #communityList {
+    .dataDisplayResults .span4 {
+      width: 352px;
+    }
+  }
+
+}
+
+
+
+//
+// Responsive: Phone to desktop
+// --------------------------------------------------
+@media (max-width: 979px) {
+
+  /* Community Users Page */
+  #communityList {
+    .userCard { 
+      height: 85px;
+
+      .userPicture {
+        width: 60px;
+        height: 60px;
+      }
+      .userReviewer, .userCategories { 
+        margin-left: 70px;
+      }
+
+    }
+  }
+
+}
+
+
+
+//
+// Responsive: Landscape phone to desktop/tablet
+// --------------------------------------------------
+@media (min-width: 480px) and (max-width: 767px) {
+
+  /* Scale down the jumbotron content */
+  .jumbotron h1 {
+    font-size: 54px;
+  }
+  .jumbotron p {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+}
+
+
+@media (min-width: 768px) {
+
+  /* Community Users Page */
+  #communityList {
+    .dataDisplayResults.list {
+
+      .userCard { 
+        height: 60px; 
+        margin-bottom: 0;
+        .border-radius(0);
+        .box-shadow(none);
+        border-top-width: 1px;
+      }
+
+      .span4 {
+        &:first-child .userCard { .border-top-radius(3px); }
+        &:last-child .userCard { .border-bottom-radius(3px); }        
+      }
+
+      .userPicture { 
+        width: 80px;
+        height: 80px;
+        margin-top: -10px;
+        margin-left: -10px;
+      }
+
+      .userName, .userReviewer, .userCategories { 
+        display: inline-block; 
+      }
+      .userReviewer {
+        margin-left: 5px;
+      }
+      .userCategories { 
+        float: right; 
+        clear: right; 
+        margin-top: 5px; 
+      }
+
+    }
+  }
+
+}
+
+
+
+//
+// Responsive: Landscape phone to desktop/tablet
+// --------------------------------------------------
+@media (max-width: 767px) {
+
+  /* Remove any padding from the body */
+  body {
+    padding-top: 0;
+  }
+
+  #headerLogo {
+    max-width: 200px;
+    max-height: 30px;
+  }
+
+  #page-content { 
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  h1 {
+    font-size: 38px;
+  }
+
+  .no-pull-phone {
+    float: none;
+  }
+
+  #page-footer {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    .footerRight {
+      text-align: left;
+    }
+  }
+  #app-info, #switcheroo {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    .innerWrap { padding: 10px 0; }
+  }
+
+  /* Jumbotron buttons */
+  .jumbotron .btn {
+    margin-bottom: 10px;
+  }
+
+  .modal.fade.in { top: 5%; max-height: 90%; }
+
+
+  /* Community Users Page */
+  #communityList {
+    .userCard { 
+      height: auto;
+      margin-bottom: 10px;
+    }
+  }
+
+}
+  @media only screen and (-webkit-min-device-pixel-ratio: 2),
+  only screen and (-moz-min-device-pixel-ratio: 2),
+  only screen and (-o-min-device-pixel-ratio: 2/1),
+  only screen and (min-device-pixel-ratio: 2) {
+    #headerLogo { 
+      -webkit-background-size: 100%;
+         -moz-background-size: 100%;
+              background-size: 100%;
+    }
+  }
+
+
+//
+// Responsive: Phone
+// --------------------------------------------------
+@media (max-width: 479px) {
+
+  /* Change up some type stuff */
+  h2 {
+    margin-top: 5px;
+  }
+  h2 small {
+    display: block;
+    line-height: 18px;
+  }
+  h3 {
+    margin-top: 5px;
+  }
+
+  /* Adjust the jumbotron */
+  .jumbotron h1,
+  .jumbotron p {
+    text-align: center;
+    margin-right: 0;
+  }
+  .jumbotron h1 {
+    font-size: 45px;
+    margin-right: 0;
+  }
+  .jumbotron p {
+    margin-right: 0;
+    margin-left: 0;
+    font-size: 18px;
+    line-height: 24px;
+  }
+  .jumbotron .btn {
+    display: block;
+    font-size: 18px;
+    padding: 10px 14px;
+    margin: 0 auto 10px;
+  }
+  /* Masthead (home page jumbotron) */
+  .masthead {
+    padding-top: 0;
+  }
+
+  table code {
+    white-space: normal;
+    word-wrap: break-word;
+    word-break: break-all;
+  }
+
+}
+
+

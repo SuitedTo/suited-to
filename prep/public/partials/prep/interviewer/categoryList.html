@@ -1,0 +1,71 @@
+<div class="container categorySelectionView" ng-controller="categoryListCtrl">
+
+    <div class="row">
+        <p>{{ errorMessage }}</p>
+    </div>
+
+    <div class="row interviewInfoRow">
+        <div class="span8 offset2">
+            <h2>Almost ready to start...</h2>
+        </div>
+    </div>
+
+    <div class="row categoryListRow">
+
+        <div class="span2 convoCircleContainer">
+            <div class="convoCircleQuestion">
+                <img src="/public/images/prep/questionMark.png" alt="" />
+            </div>
+        </div>
+
+        <div class="span7">
+            <div class="categoryListContainer">
+                <div class="innerWrap">
+                    <div class="back pull-right"><a href="" class="btn btn-primary">Back</a></div>
+                    <h3>{{interview.name}}</h3>
+                    <p class="legend">Category Options</p>
+
+                    <ul class="categoryList">
+                        <li class="header">
+                            <span class="category">Category</span>
+                            <span class="level">Level</span>
+                            <span class="focus">Focus</span>
+                            <span class="remove">Remove</span>
+                        </li>
+                        <li ng-repeat="entry in categoryList.categories">
+                            <span class="category">{{entry.category.name}}</span>
+                            <span class="level">{{entry.difficulty}}</span>
+                            <span class="focus">{{entry.contribution}}</span>
+                            <span class="remove"><a href="">X</a></span>
+                        </li>
+                    </ul>
+
+                </div>
+                <div class="arrow"></div>
+
+            </div>
+            <div class="interviewNav">
+                <button class="previousQuestion">Previous</button>
+                <button class="nextQuestion">Next</button>
+            </div>
+
+        </div>
+        <div class="span3">
+            <div class="relatedCategoriesContainer">
+                <div class="innerWrap">
+                    <h4>Related Categories</h4>
+                    <!--<ul>
+                        <li>Web Design</li>
+                        <li>HTML</li>
+                        <li>CSS</li>
+                        <li>JavaScript</li>
+                        <li>Culture</li>
+                        <li>Programming</li>
+                    </ul>-->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

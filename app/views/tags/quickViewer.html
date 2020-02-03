@@ -1,0 +1,54 @@
+
+*{
+
+	purpose:  			attaches a simple image- and pdf-viewing modal dialogue to the onclick of anchors with of class "quick-view-trigger".
+						pdfs will be rendered with the client's pdf plugin if available, otherwise it will render the pdf as an image
+
+	example usage:  	near bottom of page:  #{quickViewer /} (bottom of page is best for dialog divs so that it will not appear when page first loads)
+						then it triggers on anchors with class of 'quick-view-trigger'
+						important:  appends an "inline" parameter that controllers should use to set the download as inline or attachment
+						
+						<a href="@{getCandidateFile()}?id=${file.id}" class="quick-view-trigger" type="${file.type}" title="View">${file.name}</a>
+
+                        or
+                        <a href="@{getCandidateFile(file.id,false,false})}" class="quick-view-trigger" type="${file.type}" title="View">${file.name}</a>
+
+	
+	author:  			rees.byars
+	
+}*
+
+#{set 'moreScripts'}
+    #{get 'moreScripts' /}
+    #{script 'quick-viewer.js' /}
+    #{script 'pdf-renderer.js' /}
+#{/set}
+
+#{set 'moreStyles'}
+	#{get 'moreStyles' /}
+	#{stylesheet 'quick-viewer.css' /}
+#{/set}
+
+
+<div id="quickViewFeedback" class="modal fade" style="display:none;">
+	<div class="modal-header" id="quick-view-header">
+        <a class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+        <h3><img id="quick-view-logo" src="@{'/public/images/favicon.png'}" alt="SuitedTo Logo"> QuickView</h3>
+    </div>
+    <div class="modal-body">
+    	<div id="quick-view-body">
+	    </div>
+    </div>
+    <div class="modal-footer" id="quick-view-footer">
+        <a id="quick-view-dispose-anchor-2" class="quick-view-dispose" href="#" data-dismiss="modal">
+    		<button id="quick-view-dispose-button" type="button" class="btn no-change-check">
+    			Close
+    		</button>
+    	</a>
+        <a id="quick-view-download-anchor" href="#">
+        	<button id="quick-view-download-button" class="btn btn-primary no-change-check">
+        		<i class="icon-download icon-white"></i> Download
+        	</button>
+        </a>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+<div class="well">
+    %{
+      //Note that this data may be a bit out of date, but that's no big: the
+      //Question metrics job will run eventually and update it
+      interviews = _question.totalInterviews
+      companies = _question.getCompanies().size()
+    }%
+    <ul class="questionData">
+        <li>Used in
+            #{if interviews == 0}
+                no interviews.
+            #{/if}
+            #{elseif interviews == 1}
+                1 interview.
+            #{/elseif}
+            #{elseif companies == 0}
+                ${interviews} interviews.
+            #{/elseif}
+            #{elseif companies == 1}
+                ${interviews} interviews for 1 company.
+            #{/elseif}
+            #{else}
+                ${interviews} interviews across ${companies} companies.
+            #{/else}
+        </li>
+    </ul>
+</div>

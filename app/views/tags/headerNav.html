@@ -1,0 +1,99 @@
+*{ Display all the basic navigation stuff.
+ {
+ { Arguments:
+ {   _currentSection: Indicates which navigation tab should receive the
+ {         highlight, by name of controller, e.g. "controllers.Questions"
+ {   _loggingIn: Indicates that this is being displayed on the login page, and
+ {         the "Log in" button should not be displayed.
+ {   _connectedUser: the connected User
+ }*
+
+#{if session.username}
+<div class="nav-session">
+#{/if}
+#{else}
+<div class="nav-nosession">
+#{/else}
+
+    #{if session.username}
+    <ul class="nav nav-pills mainNav">
+        <li class="${_currentSection == 'controllers.Questions' ? 'active' : ''}"><a id="headerQuestionsLink" href="@{Questions.list}">Questions</a></li>
+        #{deadbolt.restrictedResource resourceKeys:["Interviews.list"]}
+        <li class="${_currentSection == 'controllers.Interviews' ? 'active' : ''}"><a id="headerInterviewsLink" href="@{Interviews.list}">Interviews</a></li>
+        #{/deadbolt.restrictedResource}
+        #{deadbolt.restrictedResource resourceKeys:["Candidates.list"]}
+        <li class="${_currentSection == 'controllers.Candidates' ? 'active' : ''}"><a id="headerCandidatesLink" href="@{Candidates.list}">Candidates</a></li>
+        #{/deadbolt.restrictedResource}
+        #{deadbolt.restrictedResource resourceKeys:["Jobs.list"]}
+        <li class="${_currentSection == 'controllers.Jobs' ? 'active' : ''}"><a id="headerJobsLink" href="@{Jobs.list}">Jobs</a></li>
+        #{/deadbolt.restrictedResource}
+        <li class="${_currentSection == 'controllers.Community' || request.current().action == 'Users.list' ? 'active' : ''}"><a id="headerCommunityLink" href="@{Community.community}">Community</a></li>
+
+    </ul>
+    #{/if}
+
+
+        #{if session.username}
+        <ul class="nav nav-pills nav-collapse1 pull-right utilityNav">
+            <li class="dropdown" id="accountMenu">
+                <a id="accountDropdown" class="dropdown-toggle" data-toggle="dropdown" href="#">${session.prettyusername} <b class="caret"></b> </a>
+                <ul class="dropdown-menu" role="menu">
+                #{deadbolt.restrict roles:[['COMPANY_ADMIN']]}
+                    <li><a id="headerCompanyManagement" href="@{CompanyManagement.manage(controllers.Security.connectedUser().company?.id)}">Manage Company</a></li>
+                #{/deadbolt.restrict}
+                #{deadbolt.restrict roles:[['APP_ADMIN'] , ['COMPANY_ADMIN']]}
+                    <li><a id="headerUsersLink" href="@{Users.list}">Manage Users</a></li>
+                #{/deadbolt.restrict}
+                    <li><a id="headerMyAccount" href="@{Users.show(controllers.Security.connectedUser().id, "My Account")}">My Account</a></li>
+                #{deadbolt.restrictedResource resourceKeys:["PreferencesPage"]}
+                    <li><a id="headerPreferences" href="@{Users.preferences(controllers.Security.connectedUser().id)}">Preferences</a></li>
+                #{/deadbolt.restrictedResource}
+                <li><a id="headerHelp" href="https://suitedto.zendesk.com" rel="external">Help</a></li>
+                    <li class="divider"></li>
+                #{deadbolt.restrict roles:[['APP_ADMIN']]}
+                    <li><a id="headerAdminUtil" href="@{Admin.admin()}">Admin Utilities</a></li>
+                    <li><a id="headerConfigs" href="@{CRUD.index()}">Configurations</a></li>
+                    <li><a id="headerCompanies" href="@{Companies.list}">Companies</a></li>
+                    <li><a id="headerCategories" href="@{Categories.list}">Categories</a></li>
+                    <li><a id="headerStats" href="@{Admin.stats()}">Stats</a></li>
+                    <li><a id="headerTasks" href="@{InvocationExceptions.list()}">Errors</a></li>
+                    <!--li><a id="headerStatus" href="@{Admin.status()}">Application Status</a></li-->
+                    <li><a id="headerTasks" href="@{Admin.tasks()}">Scheduled Tasks</a></li>
+                    <li class="divider"></li>
+                    <li><a id="prepAdminUtils" href="@{PrepAdmin.admin()}">Prep Admin Utils</a></li>
+                    <li class="divider"></li>
+                #{/deadbolt.restrict}
+                    <li><a id="headerLogout" href="@{Security.logout()}">Logout</a></li>
+
+                </ul>
+            </li>
+
+        </ul>
+        #{/if}
+        #{else}
+        
+        %{ 
+            signUpTarget = java.lang.System.getenv("SIGNUP_URL");
+            if (signUpTarget != null && signUpTarget.trim().equals("")) {
+                signUpTarget = null;
+            }
+        }%
+        
+        <div class="nav pull-right">
+            #{if !_loggingIn}<a id="headerLoginBtn" class="btn btn-primary" href="@{Security.login()}">Log in</a>#{/if}
+            <a href="#{if signUpTarget}${signUpTarget}#{/if}#{else}@{Community.index()}#{/else}" id="headerSignUpBtn" class="btn btn-primary">Sign up</a>
+        </div>
+        #{/else}
+
+
+#{if _connectedUser}
+    <div class="accountTypeWrap">
+        <span class="accountType">Account Type: &{_connectedUser.accountType}</span>
+    %{def upgradeOptions = _connectedUser.accountUpgradeOptions}%
+        #{if upgradeOptions}
+            &nbsp;|&nbsp; <a href="@{Application.upgradeAccount()}">Upgrade</a>
+        #{/if}
+    </div>
+#{/if}
+
+</div>

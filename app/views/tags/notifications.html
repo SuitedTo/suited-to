@@ -1,0 +1,105 @@
+<ul class="notificationsList" id="notificationsList">
+    %{
+        company = _user.company;
+        hrCompliance = play.Play.configuration.get("quiz.hrCompliance");
+    }%
+    
+    #{if company && company.accountType.equals(enums.AccountType.STANDARD)
+            && _user.hasRole(enums.RoleValue.COMPANY_ADMIN)}
+        %{
+            try {
+                daysLeft = company.daysRemainingInFreeTrial();
+                
+                freeTrial = (daysLeft >= 0);
+                
+                if (daysLeft == 1) {
+                    days = "day";
+                }
+                else {
+                    days = "days";
+                }
+            }
+            catch (IllegalStateException ise) {
+                freeTrial = false;
+            }
+            
+            freeTrial = freeTrial && !company?.lastFourCardDigits;
+        }%
+        
+        #{if freeTrial}
+            <li class="green">
+                <span class="title">Welcome to SuitedTo!</span> You have ${daysLeft} ${days}
+                remaining in your free trial.
+                <strong><a href="@{CompanyManagement.manage(company.id, controllers.CompanyManagement.Mode.STANDARD)}">
+                Update your account now
+                </a></strong> 
+                to continue using SuitedTo after the trial.
+            </li>
+        #{/if}
+    #{/if}
+        
+#{list items: _user.notifications, as: 'notification'}
+
+    #{if notification instanceof models.ActiveInterviewNotification}
+        %{
+            interview = notification.workflow.event.activeInterview;
+        }%
+    
+        #{if notification.workflow.event.toState.equals(enums.ActiveInterviewState.STARTED)}
+            <li class="yellow">
+                <a href="#" id="remove_${notification.id}" class="close" data-dismiss="alert">×</a>
+                <span class="title">Interview Still Running</span> <strong>Hey!</strong> Your interview, <a href="@{LiveInterviews.live(notification.workflow.event.activeInterview.id)}">
+                    ${notification.workflow.event.activeInterview.name}</a>, is still running.  If it's done, why not 
+                    <a href="@{Feedbacks.create(interview.interviewee.id, interview.id)}">provide some feedback?</a>
+                    If the interview got rescheduled, consider stopping it so you can start it when you're ready. 
+            </li>
+        #{/if}
+        #{elseif notification.workflow.event.toState.equals(enums.ActiveInterviewState.FINISHED)}
+            <li class="">
+                <a href="#" id="remove_${notification.id}" class="close" data-dismiss="alert">×</a>
+                <span class="title">Provide Feedback</span> You completed the interview  
+                <a href="@{Interviews.show(notification.workflow.event.activeInterview.id, true, false)}">
+                    ${notification.workflow.event.activeInterview.name}</a>, but
+                haven't provided any feedback.  Why not 
+                <a href="@{Feedbacks.create(interview.interviewee.id, interview.id)}">
+                    do so now</a>?
+            </li>
+        #{/elseif}
+    #{/if}
+    #{elseif notification instanceof models.QuestionNotification}
+        #{if notification.workflow.status.equals(enums.QuestionStatus.RETURNED_TO_SUBMITTER)}
+            <li class="darkgreen">
+                <a href="#" id="remove_${notification.id}" class="close" data-dismiss="alert">×</a>
+                <span class="title">Question Returned</span> Hey There. Your Question <a href="@{Questions.view(notification.workflow.question.id)}">"${notification.workflow.question.text}"</a> was returned to you for additional edits.
+            </li>
+        #{/if}
+    #{/elseif}
+    #{elseif notification instanceof models.EEOCQuizResultNotification}
+        #{if notification.workflow.pass}
+            <li class="teal">
+                <a href="#" id="remove_${notification.id}" class="close" data-dismiss="alert">×</a>
+                #{if !_user.reviewCategories.isEmpty()}
+                    <span class="title">Congratulations!</span> You have passed the HR Compliance quiz and become a reviewer!
+                #{/if}
+                #{else}
+                    <span class="title">Congratulations!</span> You have passed the HR Compliance quiz! You are one step closer toward becoming a reviewer.  Once you have submitted <strong>15 questions</strong> and your <strong>street cred is 400</strong>, you will become a reviewer!"
+                #{/else}
+            </li>
+        #{/if}
+        #{else}
+            <li class="teal">
+                <a href="#" id="remove_${notification.id}" class="close" data-dismiss="alert">×</a>
+                <span class="title">Lo siento,</span> you haven't passed the HR Compliance training this time around.  Feel free to <a href="@{Quizes.show('HR Compliance Quiz', hrCompliance)}">
+                retake the quiz </a> at anytime and earn the badge!
+            </li>
+        #{/else}
+    #{/elseif}
+    #{elseif notification instanceof models.NearingReviewerNotification}
+        <li class="">
+            <span class="title">Almost there!</span> You're really close to becoming a reviewer. Go ahead and complete the <a href="@{Quizes.show('HR Compliance Quiz', hrCompliance)}">HR compliance training</a> and be a step ahead!
+        </li>
+    #{/elseif}
+
+#{/list}
+    <li id="noNotifications" class="${(!freeTrial && _user.notifications.size() == 0) ? '' : 'hide'} green" >Welcome Back! You have no notifications</li>
+</ul>

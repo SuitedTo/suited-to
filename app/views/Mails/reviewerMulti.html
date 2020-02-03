@@ -1,0 +1,39 @@
+#{extends 'blowyEmail.html' /}
+<!-- // Begin Module: Standard Content \\ -->
+<table border="0" cellpadding="20" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div mc:edit="std_content01">
+                <h3 class="h3">You’re a reviewer!</h3>
+                <hr class="hr">
+
+                <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                    <tr>
+                        <td valign="top"></td>
+                        <td><h4 class="h4"> #{if user.displayName}${user.displayName}#{/if}#{else}${user.fullName}#{/else},</h4>
+                            Congratulations! You are now a reviewer for new categories.
+
+                            Clearly, you know your stuff.  As SuitedTo contributor, you have shown your expertise in #{list items:categories, as:'category'}${category_isLast ? 'and ' : ''}${category.name}${category_isLast ? '' : ', '}#{/list} and have qualified to review questions in your categories.  When a new question is submitted, reviewers make sure that the question is accurate, complete, and appropriate for the public pool!
+
+                            You'll notice that "Needs Review" is a new tab on your questions list.  There you can find new questions in your categories that need further review and approval.  You can also claim anonymously submitted questions from the "Awaiting Completion" tab and earn additional street cred by filling in the blanks and submitting them!
+                            <br><br>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td valign="top"></td>
+                        <td>
+                            Sincerely, <br>
+                            The SuitedTo TEAM
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
+<!-- // End Module: Standard Content \\ -->

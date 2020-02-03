@@ -1,0 +1,39 @@
+
+*{
+
+This isn't what we want to end up with from a UI standpoint; it's more of a functional prototype I guess.
+Ultimately we might want some little icon to show up somewhere in the standard header to represent the presence
+of a particular type of alert. Maybe a red exclamation mark would represent an ERROR alert, an envelope
+could represent a NEW_MESSAGE alert, etc. Or maybe something entirely different, but I think we need
+some way to realize certain types of events asynchronously.
+
+}*
+
+<div id="alert" class="alert alert-error" style="display:none"><a id="successNotification" onClick="closeAlert();" href="#">×</a><span id="alertMessage"></span></div>
+<script type="text/javascript">
+	function closeAlert(){
+			$('#alert').hide();
+	}
+	
+    $(function() {
+    	$('#alert').hide();
+    	checkForAlerts();
+    	
+        function checkForAlerts() {
+			$.ajax({
+				url: "@{Alerts.next()}",
+				success: function(data){processAlert(data);},
+				error: function(error){checkForAlerts();}
+			});
+		}
+
+		function processAlert( alert ) {
+			if(!$.isEmptyObject(alert) && ($('#alert:visible').length === 0)){
+				$('#alertMessage').html(alert.message);
+				$('#alert').show();			
+				$.ajax({ url: "@{Alerts.ack()}?id=" + alert.id });
+			}
+			setTimeout(checkForAlerts, 5000);			
+		}
+    });
+</script>

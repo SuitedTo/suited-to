@@ -1,0 +1,115 @@
+#{extends 'print.html' /}
+#{set 'moreScripts'}
+#{/set}
+#{set 'moreStyles'}
+<link rel="stylesheet" media="screen" type="text/css" href="/public/stylesheets/printable.css" charset="utf-8" ></link>
+<link rel="stylesheet" media="print" type="text/css" href="/public/stylesheets/print.css" charset="utf-8" ></link>
+#{/set}
+#{set title: interview?.name /}
+
+ <div class="container">
+     <div class="controlBox noPrint">
+        <div class="row">
+            <div class="span2">
+                <input type="checkbox" id="statsHide" name="questionFields" checked="yes" /><label class="questionFields">Stats</label>
+            </div>
+            <div class="span2">
+            <input type="checkbox" id="printNotesSpanHide" name="questionFields" checked="yes" /><label class="questionFields">Writing space</label>
+            </div>
+            <div class="span2">
+            <input type="checkbox" id="notesHide" name="questionFields" checked="yes" /><label class="questionFields">Company Notes</label>
+            </div>
+            <div class="span6">
+                <a href="javascript:window.print()" class="btn btn-primary btn-large"><i class="icon-print icon-white"></i> Print Now</a> </div>
+            </div>
+         <div class="row">
+             <div class="span2">
+                 <input type="checkbox" id="tipsHide" name="questionFields" checked="yes" /><label class="questionFields">Tips</label>
+             </div>
+             <div class="span2">
+                <input type="checkbox" id="commentaryHide" name="questionFields" checked="yes" /><label class="questionFields">Commentary</label>
+             </div>
+            <div class="span2">
+                <input type="checkbox" id="answersHide" name="questionFields" checked="yes" /><label class="questionFields">Possible Answers</label>
+            </div>
+            <div class="span6">
+                 <p>Uncheck the boxes to remove components of the printout.<br>This box will not be printed.</p>
+            </div>
+        </div>
+     </div>
+
+     <img class="logo" src="@{'/public/images/logo-standard.png'}">
+     <h1 class="pull-right">${interview?.company?.name}</h1>
+     <hr>
+
+<h1 class="pull-right">${interview?.name} #{if candidateInterviewCandidateName} with ${candidateInterviewCandidateName}#{/if}</h1>
+
+<h4>${interview.interviewQuestions.size()} Questions ${interview ? "  (" + interview.getDuration() + " minutes)" : ""}<br>
+Printed On: ${new java.util.Date().format("MM/dd/yyyy")} </h4>
+<br />
+
+    #{list items: interview.interviewQuestions, as: "interviewQuestion"}
+    <h3>${interviewQuestion_index}. ${interviewQuestion.question.text}</h3>
+<p class="stats"><em class="questionDescription">${interviewQuestion.question.descriptiveString}</em></p>
+    <div class="row">
+        <div class="span4 printNotesSpan">
+            <div class="printNotes">
+                <img class="printVertRatingScale" src="/public/images/printVertRatingScale.jpg" alt="Vertical Rating Scale">
+                <!--Space for notes -->
+            </div>
+        </div>
+        <div class="span8 questionSpace">
+            <div class="answers">
+                <p><strong>Possible Answers:</strong> ${interviewQuestion.question.answers ? interviewQuestion.question.answers.escape().nl2br() : "-none-"}</p>
+            </div>
+            <div class="tips">
+                <p><strong>Tips:</strong> ${interviewQuestion.question.tips ? interviewQuestion.question.tips.escape().nl2br() : "-none-"}</p>
+            </div>
+            #{if company}
+            <div class="notes">
+                <p><strong>Company Specific Notes:</strong> ${interviewQuestion.question.getQuestionNote(company)?.text ? interviewQuestion.question.getQuestionNote(company)?.text.escape().nl2br() : "-none-"}</p>
+            </div>
+            #{/if}
+            #{if candidateInterview}
+            <div class="comments">
+                <p><strong>Comments:</strong> ${interviewQuestion.comment ? interviewQuestion.comment.escape().nl2br() : "-none-"}</p>
+            </div>
+            #{/if}
+        </div>
+    </div>
+     <hr>
+
+    #{/list}
+
+</div>
+
+<script type="text/javascript">
+    $(function() {
+
+    $("#:checkbox").click(function() {
+        if( $(this).attr("id") === "printNotesSpanHide") {
+            if( $(this).is(':checked')) {
+                $(".questionSpace").removeClass("span12").addClass("span8");
+                $(".printNotesSpan").show("fast");
+                $(".printNotesSpan").addClass("span4");
+                $(".printNotes").show("fast");
+            } else {
+                $(".printNotes").hide("fast");
+                $(".printNotesSpan").removeClass("span4");
+                $(".printNotesSpan").hide("fast");
+                $(".questionSpace").removeClass("span8").addClass("span12");
+        }
+    }
+    else {
+        var chkBoxID = $(this).attr("id");
+        var classToHide = "." + chkBoxID.substring(0,chkBoxID.length-4);
+        if( $(this).is(':checked')) {
+            $(classToHide).show("fast");
+        } else {
+            $(classToHide).hide("fast");
+        }
+     }
+        });
+    });
+</script>
+

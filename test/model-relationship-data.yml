@@ -1,0 +1,99 @@
+#Data population file that is specific to testing persistence and cascading behavior of model classes.
+Company(company1):
+  name: Test Company
+  accountType: STANDARD
+
+User(user1):
+  email: admin@suitedto.com
+  roles: [APP_ADMIN]
+
+User(user2):
+  email: user2@test.com
+  company: company1
+  roles: [COMPANY_ADMIN]
+
+User(user3):
+  email: user3@test.com
+  company: company1
+  roles: [QUESTION_ENTRY]
+
+Candidate(candidate1):
+  company: company1
+  phoneNumbers: [
+    { phoneNumberType: MOBILE, phoneNumberValue: 123-456-7890 },
+    { phoneNumberType: MOBILE, phoneNumberValue: 123-456-7899 }
+  ]
+
+ActiveInterview(activeInterview1):
+  user: user1
+  company: company1
+  interviewee: candidate1
+  interviewer: user2
+
+ActiveInterviewStateChange(activeInterviewStateChange1):
+  activeInterview: activeInterview1
+  initiatingUser: user2
+
+ActiveInterviewWorkflow(activeInterviewWorkflow1):
+  activeInterviewEvent: activeInterviewStateChange1
+
+ActiveInterviewStateChange(activeInterviewStateChange2):
+  activeInterview: activeInterview1
+  initiatingUser: user2
+
+ActiveInterviewWorkflow(activeInterviewWorkflow2):
+  event: activeInterviewStateChange2
+
+ActiveInterviewNotification(activeInterviewNotification):
+  user: user2
+  worfklow: activeInterviewWorkflow1
+
+Interview(interview1):
+  user: user2
+  company: company1
+
+Category(category1):
+  creator: user3
+
+Question(question1):
+  user: user1
+  category: category1
+
+Question(question2):
+  user: user2
+
+InterviewQuestion(interviewQuestion1):
+  question: question1
+  interview: activeInterview1
+
+InterviewQuestion(interviewQuestion2):
+  question: question1
+  interview: interview1
+
+InterviewQuestion(interviewQuestion3):
+  question: question2
+  interview: activeInterview1
+
+Feedback(feedback1):
+  feedbackSource: user2
+  activeInterview: activeInterview1
+  candidate: candidate1
+
+QuestionMetadata(questionMetadata1):
+  question: question1
+  user: user2
+
+Event(event1):
+  relatedUser: user1
+
+Story(story1):
+  company: company1
+
+Story(story2):
+  user: user2
+  event: event1
+
+
+
+
+

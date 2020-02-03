@@ -1,0 +1,40 @@
+#{extends 'blowyEmail.html' /}
+
+<!-- // Begin Module: Standard Content \\ -->
+<table border="0" cellpadding="20" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div mc:edit="std_content01">
+                <h3 class="h3">Here are your interviews for today!</h3>
+                <hr class="hr">
+
+                <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                    <tr>
+                        <td valign="top"></td>
+                        <td><h4 class="h4"> Hey ${name},</h4>
+                            You have the following interview#{if plural}s#{/if} scheduled for today: <br><br>
+                            #{list items:interviews, as:'interview'}
+                            <a href="@@{Interviews.show(interview.id)}">${interview.name}</a><br>
+                            #{/list}
+                            <br><br>
+
+                            Follow the links to go to the interview and edit as necessary.  Happy interviewing!
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td valign="top"></td>
+                        <td>
+                            Sincerely, <br>
+                            The SuitedTo TEAM
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
+<!-- // End Module: Standard Content \\ -->

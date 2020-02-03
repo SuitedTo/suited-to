@@ -1,0 +1,75 @@
+#{extends 'standardPage.html' /}
+#{set title:'Prep Coupons' /}
+#{set 'moreScripts'}
+    #{script 'jquery-ui-1.9.0.custom.min.js' /}
+    #{script 'jquery.validate.min.js'/}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Prep Coupons</h1>
+        </div>
+    </div>
+</div>
+
+
+#{standardError /}
+
+<form id="couponForm" action="/prepadmin/createprepcoupon/" method="POST">
+    <label for="name" class="required">Name</label>
+    <input id="name" class="required" type="text" name="name" placeholder="Name" />
+    <br/>
+    <label for="periods">Pay periods</label>
+    <input id="periods" type="text" name="periods" placeholder="Pay Periods" id="periods" />
+    <br/>
+    <label for="max" class="required digits">Max Uses</label>
+    <input id="max" type="text" name="max" class="required digits" placeholder="Max Uses" />
+    <br/>
+    <label for="discount" class="required digits">Discount %</label>
+    <input id="discount" type="text" name="discount" class="required digits" placeholder="(1-100)" />
+    <br/>
+    <button id="saveBtn" class="submit-button btn btn-primary no-change-check">Submit</button>
+</form>
+
+<script type="text/javascript">
+
+$(document).ready(function () {
+    $("#couponForm").validate({
+        rules: {
+            periods:{
+                digits: true,
+                min: 1
+            },
+            max:{
+                required: true,
+                digits: true,
+                min: 1
+            },
+            discount:{
+                required: true,
+                min: 1,
+                max: 100
+            }
+        },
+
+        errorClass: "alert",
+        highlight: function (element) {
+            $(element).closest('.control-group').addClass("error");
+        },
+        unhighlight: function (element) {
+            $(element).closest('.control-group').removeClass("error");
+        },
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        },
+        submitHandler: function (form) {
+            form.submit();
+        }
+    })
+});
+</script>

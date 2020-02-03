@@ -1,0 +1,17 @@
+<h4>Question History</h4>
+<table class="table table-condensed table-striped">
+    <tr>
+        <th width="15%">User</th>
+        <th width="20%">Time</th>
+        <th width="10">Action</th>
+        <th>Comment</th>
+    </tr>
+    #{list items:_question.workflows, as:'workflow'}
+    <tr>
+        <td>${workflow.user.getPublicDisplayName()}</td>
+        <td>${workflow.created.since()}</td>
+        <td>${workflow.status}</td>
+        <td>${workflow.comment}</td>
+    </tr>
+    #{/list}
+</table>

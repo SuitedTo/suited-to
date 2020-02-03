@@ -1,0 +1,1212 @@
+/**
+ * Prepado - Pages - Interviewer
+ *
+ */
+
+
+
+/* ==========================================================================
+   Interview Common
+   ========================================================================== */
+
+.questionView, .categorySelectionView {
+
+  .convoCircleQuestion {
+    display: inline-block;
+    height: 120px;
+    width: 120px;
+    line-height: 120px;
+    .border-radius(50%);
+    border: 1px solid #eee;
+    .box-shadow(3px 3px 6px #DDD);
+    .bgRedPattern;
+    text-align: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      .border-radius(50%);
+    }
+  }
+
+}
+
+
+
+/* ==========================================================================
+   Interview Index
+   ========================================================================== */
+
+.interviewIndexView {
+
+  .interviewIndexListWrap {
+    max-width: 790px;
+    margin: 0 auto;
+  }
+
+  .recentInterviews {
+    //max-width: 600px;
+
+    ul {
+      list-style: none;
+      margin: 0 0 50px;
+      font-family: @sansCondensedFontFamily;
+      //font-family: @serifFontFamily;
+
+      li {
+        width: 100%;
+        margin-bottom: 15px;
+        font-weight: 400;
+        font-size: 16px;
+
+        .name { display: inline-block; width: 50%; margin-right: 2%; }
+        .numQuestion { display: inline-block; width: 12%; }
+        .updated { display: inline-block; width: 21%; font-size: 15px; }
+        .action { display: inline-block; width: 13%; text-align: right; text-transform: uppercase; }
+        a {
+          //text-transform: uppercase;
+          font-family: @serifFontFamily;
+          color: @prepBrownDark;
+        }
+
+        &.header {
+          font-size: 17px;
+
+          .updated { font-size: 17px; }
+          .action { text-transform: none; }
+        }
+      }
+    }
+    .btn {
+      .btnBlueGrain();
+    }
+  }
+
+  .noInterviews {
+    margin-bottom: 20px;
+  }
+
+  .createInterviewForm {
+    margin-top: 30px;
+    padding: 40px 65px;
+    color: @prepBrownDark;
+    .bgBluePattern;
+  }
+
+}
+
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width: 767px) {
+
+  .interviewIndexView {
+    .createInterviewForm {
+      padding: 30px 30px;
+    }
+  }
+
+}
+
+
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width: 480px) {
+
+  .interviewIndexView {
+
+    .createInterviewForm {
+        padding: 20px 20px;
+    }
+
+    .recentInterviews {
+      ul {
+        li {
+          .name { width: 75%; }
+          .numQuestion { width: 20%; }
+          .updated { width: 72%; margin-left: 5%; font-size: 13px; }
+          .action { width: 20%; font-size: 12px; text-align: left; }
+        }
+      }
+    }
+
+  }
+
+}
+
+
+
+/* ==========================================================================
+   Interview Question View
+   ========================================================================== */
+
+
+
+/* Icons
+-------------------------------------------------- */
+[class^="iconprep-"],
+[class*=" iconprep-"] {
+  display: inline-block;
+  height: 36px;
+  width: 36px;
+  .ie7-restore-right-whitespace();
+  line-height: 36px;
+  vertical-align: text-top;
+  background-image: url('@{prepImagePath}iconsPrepQuestionView.png');
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  margin-top: 1px;
+}
+.iconprep-view { background-position: 0 0;
+  &:hover,&.active{ background-position: 0 -36px; }
+}
+.iconprep-flag { background-position: -36px 0;
+  &:hover,&.active{ background-position: -36px -36px; }
+}
+.iconprep-thumbsup { background-position: -72px 0;
+  &:hover,&.active{ background-position: -72px -36px; }
+}
+.iconprep-thumbsdown { background-position: -108px 0;
+  &:hover,&.active{ background-position: -108px -36px; }
+}
+.iconprep-view-r { background-position: -144px 0;
+  &:hover,&.active{ background-position: -144px -36px; }
+}
+.iconprep-thumbsup-r { background-position: -180px 0;
+  &:hover,&.active{ background-position: -180px -36px; }
+}
+.iconprep-thumbsdown-r { background-position: -216px 0;
+  &:hover,&.active{ background-position: -216px -36px; }
+}
+.iconprep-flag-r { background-position: -252px 0;
+  &:hover,&.active{ background-position: -252px -36px; }
+}
+
+[class^="videoicon-"],
+[class*=" videoicon-"] {
+  display: inline-block;
+  height: 36px;
+  width: 35px;
+  .ie7-restore-right-whitespace();
+  line-height: 36px;
+  vertical-align: text-top;
+  background-image: url('@{prepImagePath}videoPlayerControls.png');
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  margin-top: 1px;
+}
+
+.videoicon-record {
+  background-position: 0 0;
+  &.active {
+    background-position: -40px 0;
+  }
+}
+.videoicon-play {
+  background-position: -80px 0;
+  width: 26px;
+  height: 26px;
+  &.active {
+    background-position: -120px 0;
+  }
+}
+.videoicon-position {
+  background-position: -200px 0;
+  width: 26px;
+  height: 26px;
+}
+
+
+
+
+.questionView {
+
+
+  .convoCircleUser {
+
+  }
+
+  .interviewInfoRow {
+    .interviewName {
+      display: inline-block;
+      width: 60%;
+      text-transform: uppercase;
+      vertical-align: bottom;
+
+      h1 {
+        margin: 0 10px 0 0;
+        font-size: 1.4em;
+        line-height: 1em;
+      }
+    }
+    .interviewControls {
+      display: inline-block;
+      width: 39%;
+      text-align: right;
+      text-transform: uppercase;
+      font-family: @serifFontFamily;
+      font-size: 1.4em;
+      line-height: 1em;
+      font-weight: 700;
+      color: @prepRed;
+      vertical-align: bottom;
+
+      span { position: relative; }
+      a { cursor: pointer;
+        &:hover { text-decoration: none; }
+      }
+      .dropdown-menu {
+        .border-radius(1px);
+        background-color: @prepCreamLight;
+
+        a { text-transform: none; font-size: 15px; }
+      }
+
+    }
+  }
+
+  /* Question Ask
+  -------------------------------------------------- */
+  .questionAskRow {
+    .questionContainer {
+      margin: 0;
+      color: @prepBrownDark;
+      .bgBluePattern;
+      position: relative;
+
+      .innerWrap {
+        padding: 55px 50px 10px;
+      }
+
+      .questionText {
+        font-family: @serifFontFamily;
+        font-size: 28px;
+        line-height: 40px;
+      }
+
+      .questionOptions {
+        text-align: right;
+        padding: 0 10px 10px;
+
+        .lbl { .visuallyhidden; }
+      }
+      .suggestedAnswers {
+        .clearfix();
+
+        .innerWrap {
+          margin: 10px 50px 30px;
+          padding: 10px 20px;
+          background-color: @prepCream;
+        }
+        h4 {
+          font-family: @serifFontFamily;
+          font-weight: 600;
+          color: @prepRed;
+          text-transform: uppercase;
+        }
+        p { white-space: pre-wrap; }
+      }
+
+      .arrow {
+        top: 45px;
+        left: -29px;
+        width: 29px;
+        height: 33px;
+        position: absolute;
+        background: url('@{prepImagePath}bluePatternTriangleLeft.png') no-repeat top right;
+      }
+    }
+    .convoCircleContainer {}
+  }
+
+  /* Question Respond
+  -------------------------------------------------- */
+  .questionRespondRow {
+    margin-top: 20px;
+    .transition(all 0.5s ease-in);
+
+    > div { position: relative; }
+
+    .convoCircleContainer {
+      text-align: right;
+    }
+    .convoCircleQuestion {
+      .bgBluePattern;
+      margin-top: 40px;
+    }
+
+    .responseChoice {
+      a {
+        border: 0 none;
+        .bgBluePattern;
+        color: @prepBrownDark;
+        text-transform: uppercase;
+        font-family: @serifFontFamily;
+        padding: 5px 14px;
+        .border-radius(8px 8px 0 0);
+
+        .lbl { display: inline-block; height: 0; font-size: 0; overflow: hidden; }
+        .img { display: inline-block; height: 35px; width: 35px; }
+
+        &:hover {
+          background-color: @prepBlue;
+        }
+        &.inactive {
+          //.buttonBackground(@prepBlue, @prepBlue, @textColor: @prepRed, @textShadow: 0 -1px 0 rgba(0,0,0,.25));
+          background-image: none;
+          background-color: @prepBlue;
+        }
+        &.active:hover {
+          .bgBluePattern;
+          color: @prepBrownDark;
+        }
+      }
+
+      &.choose {
+        .bgBluePattern;
+        padding: 0 20px;
+        text-align: center;
+
+        a {
+          width: 43%;
+          .bgBluePattern;
+          color: @prepBrownDark;
+          .box-shadow(none);
+          padding: 25px 20px;
+          .border-radius(0);
+
+          .lbl { display: inline; height: auto; font-size: 16px; }
+          .img { margin-right: 10px; height: 90px; width: 90px; }
+          &:hover {
+            background-image: none;
+            background-color: @prepBlue;
+          }
+        }
+
+      }
+    }
+    .responseContainer {
+      color: @prepBrownDark;
+      .bgBluePattern;
+      position: relative;
+
+      .innerWrap {
+        padding: 50px 50px 50px;
+      }
+      &.choose .innerWrap { padding: 0; }
+
+      .textResponseBlock {
+        textarea {
+          margin: 0;
+          width: 94%;
+          max-width: 94%;
+          padding: 2% 3%;
+          min-height: 110px;
+          font-family: @serifFontFamily;
+          font-weight: 400;
+          font-size: 18px;
+          line-height: 32px;
+          border: 0 none;
+          background-color: lighten(@prepCream,1);
+        }
+      }
+      .videoResponseBlock {
+        min-height: 270px;
+
+        a { cursor: pointer; }
+
+        .videoResponseContainer {
+          background-image: url('@{prepImagePath}iconVideoBg.png');
+          background-repeat: no-repeat;
+          background-position: 50% 50%;
+          background-color: @prepCream;
+          min-height: 185px;
+
+          .notSupported {
+            width: 94%;
+            font-family: @serifFontFamily;
+            font-size: 18px;
+            padding: 3% 3% 3% 3%;
+
+          }
+          .videoResponse {
+          	min-width: 240px;
+          }
+        }
+
+        .videoResponseForm {
+          padding-top: 5px;
+          position: relative;
+
+          video {
+            display: block;
+            margin: 0 auto 5px;
+            min-height: 240px;
+//            background: rgba(0,0,0,.4);
+          }
+
+          .videoStatus {
+            text-align: center;
+
+            h3 {
+              margin: 0 auto;
+              width: 80%;
+            }
+
+            .videoMessage {
+              height: 200px;
+              padding-top: 40px;
+            }
+          }
+
+          .videoControls {
+            text-align: center;
+
+            .startRecording, .stopRecording {
+              .bgRedPattern;
+              color: #fff;
+              text-transform: uppercase;
+              font-family: @serifFontFamily;
+              padding: 8px 14px;
+              border: 0;
+              .border-radius(8px 8px 0 0);
+
+              .lbl { display: inline-block; height: 0; font-size: 0; overflow: hidden; }
+              .img { display: inline-block; height: 35px; width: 35px; }
+
+              &:hover {
+                background: @prepRedDark;
+              }
+            }
+            .uploadVid {
+              .bgBluePattern;
+              background-image: none;
+              color: @prepBrownDark;
+              text-transform: uppercase;
+              font-family: @serifFontFamily;
+              padding: 8px 14px;
+              border: 0;
+              .border-radius(8px 8px 0 0);
+
+              .lbl { display: inline-block; height: 0; font-size: 0; overflow: hidden; }
+              .img { display: inline-block; height: 35px; width: 35px; }
+
+              &:hover {
+                color: #fff;
+                background: @prepBlueDark;
+              }
+            }
+
+          }
+
+          .videoTimer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(255,255,255,.75);
+            padding: 8px 12px;
+            font-size: 22px;
+          }
+
+        }
+
+
+        .recordControlWrap {
+          display: block;
+          width: 40px;
+          margin: -10px auto 0;
+          text-align: center;
+          .bgBluePattern;
+          .border-radius(50%);
+        }
+        .videoTimelineWrap {
+          display: inline-block;
+          width: 94%;
+          float: right;
+          height: 19px;
+          background-image: url('@{prepImagePath}videoPlayerLine.png');
+          background-repeat: no-repeat;
+          background-position: 0 5px;
+        }
+
+
+      }
+
+    }
+
+    .arrow {
+      top: 105px;
+      right: -29px;
+      width: 29px;
+      height: 33px;
+      position: absolute;
+      background: url('@{prepImagePath}bluePatternTriangleRight.png') no-repeat top right;
+    }
+
+    .interviewNav {
+      margin-top: 20px;
+      text-align: right;
+      position: relative;
+
+      .previousQuestion {
+        .btnBlueGrain;
+        &:focus {
+          outline: transparent;
+          opacity: .85;
+        }
+      }
+      .nextQuestion {
+        .btnRedGrain;
+        width: 123px;
+        height: 62px;
+        padding-left: 5px;
+        padding-right: 40px;
+        background: url('@{prepImagePath}redPatternArrow.svg') no-repeat top right;
+        &:hover {
+          color: #fff !important;
+          background: url('@{prepImagePath}redPatternArrow.svg') no-repeat top right !important;
+          opacity: 0.8;
+        }
+        &:focus {
+          background-color: transparent;
+          outline: transparent;
+          opacity: .85;
+        }
+      }
+//      .nextQuestion:after {
+////      .nextArrow {
+//        content:'';
+//        position:absolute;
+//        display: block;
+//        right:-17px;
+//        top:-1px;
+//        z-index:-1;
+//        width:32px;
+//        height:32px;
+//        .bgRedPattern;
+//        -moz-transform:rotate(45deg);
+//        -webkit-transform:rotate(45deg);
+//        transform:rotate(45deg);
+//      }
+    }
+
+
+    .questionOptions {
+      text-align: right;
+      padding: 0 10px 10px;
+
+      .lbl { .visuallyhidden; }
+    }
+
+    &.choose {
+      margin-top: 50px;
+
+      .convoCircleQuestion {
+        margin-top: 0;
+      }
+      .questionOptions {
+        display: none;
+      }
+      .arrow {
+        top: 65px;
+      }
+
+    }
+
+  }
+
+  /* CSS3 Transitions
+  -------------------------------------------------- */
+  .questionAskRow {
+    .questionContainer .innerWrap {
+      .transition(all 0.5s ease-in);
+    }
+  }
+  .questionRespondRow {
+    .responseChoice, .responseChoice * {
+      .transition(all 0.25s ease-in);
+    }
+
+    .responseContainer, .responseContainer .innerWrap,
+    .chooseResponseBlock .textResponseBlock, .videoResponseBlock, .convoCircleQuestion {
+        .transition(all 0.5s ease-in);
+    }
+  }
+
+}
+
+
+
+
+
+// Responsive: Large desktop and up
+@media (min-width: 1200px) {
+
+  .questionView {
+    .convoCircleQuestion {
+      width: 155px;
+      height: 155px;
+      line-height: 155px;
+    }
+    .questionAskRow .questionContainer .arrow {
+      top: 60px;
+    }
+
+  }
+  .questionRespondRow {
+    .responseChoice.choose a {
+      width: 43%;
+      .bgBluePattern;
+      color: @prepBrownDark;
+      .box-shadow(none);
+      padding: 25px 20px;
+
+      .lbl { font-size: 20px; }
+      .img { height: 110px; width: 110px; }
+
+    }
+  }
+
+}
+
+
+
+// Responsive: Tablet to desktop
+@media (min-width: 768px) and (max-width: 979px) {
+
+  .questionView {
+    > .row {
+      &.interviewInfoRow > .offset2 { margin-left: 206px; }
+      > .convoCircleContainer { width: 166px; }
+      > .span8 { width: 538px; }
+      &.questionRespondRow > .offset2 { margin-left: 20px; }
+    }
+    .interviewInfoRow {
+      .interviewName { width: 60%;
+        h1 { font-size: 1.33em; }
+      }
+      .interviewControls { width: 39%; font-size: 1.33em; }
+    }
+    .questionRespondRow {
+      .responseChoice.choose a {
+        padding: 20px 10px;
+        .lbl { display: block; margin-top: 10px; font-size: 18px; }
+        .img { height: 80px; width: 80px; }
+      }
+      .responseContainer {
+        .videoResponseBlock .videoTimelineWrap { width: 92%; }
+      }
+    }
+  }
+
+}
+
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width:767px) {
+
+  .questionView {
+    .convoCircleContainer { display: none; }
+    .interviewInfoRow {
+      .interviewName { width: 60%;
+        h1 { font-size: 1.13em; }
+      }
+      .interviewControls { width: 39%; font-size: 1.13em; }
+    }
+    .questionAskRow .questionContainer {
+      .innerWrap { padding: 35px 40px 10px; }
+      .suggestedAnswers .innerWrap { margin: 10px 40px 30px; }
+    }
+    .questionRespondRow {
+      .responseChoice.choose a {
+        width: 44%; padding: 25px 3%;
+        .lbl { display: block; margin-top: 10px; font-size: 18px; }
+        .img { height: 80px; width: 80px; }
+      }
+      .responseContainer {
+        .innerWrap { padding: 40px 40px 10px; }
+        .videoResponseBlock .videoTimelineWrap { width: 91%; }
+      }
+    }
+  }
+
+}
+
+// Responsive: Up to landscape phone
+@media (max-width:480px) {
+
+  .questionView {
+    .interviewInfoRow {
+      .interviewName { width: 100%;
+        h1 { font-size: 1em; }
+      }
+      .interviewControls { width: 100%; font-size: 1em; }
+    }
+    .questionAskRow .questionContainer {
+      .innerWrap { padding: 20px 20px 5px; }
+      .questionText { font-size: 20px; line-height: 30px; }
+      .suggestedAnswers .innerWrap { margin: 10px 20px 30px; }
+    }
+    .questionRespondRow {
+      .responseChoice.choose a {
+        width: 44%; padding: 20px 3%;
+
+        .lbl { display: block; margin-top: 10px; font-size: 15px; }
+        .img { height: 70px; width: 70px; }
+      }
+      .responseContainer {
+        .innerWrap { padding: 20px 20px 10px; }
+        .videoResponseBlock .videoTimelineWrap { width: 90%; }
+      }
+    }
+  }
+
+}
+
+
+
+
+
+/* ==========================================================================
+   Category Selection View
+   ========================================================================== */
+
+.categorySelectionView {
+
+  .categoryListRow {
+
+    .categoryListContainer {
+      margin: 0;
+      color: @prepBrownDark;
+      .bgBluePattern;
+      position: relative;
+
+      h3 {
+        margin: 0;
+        font-size: 30;
+        color: @prepRed;
+      }
+      .legend {
+        font-family: @serifFontFamily;
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+
+      .innerWrap {
+        padding: 30px;
+      }
+
+      .categoryList {
+        list-style: none;
+        margin: 10px 0;
+        width: 100%;
+        display: table;
+
+        li {
+          display: table-row;
+          padding-right: 10px;
+          font-size: 16px;
+
+          > span {
+            display: table-cell;
+            padding-bottom: 10px;
+          }
+          .level, .focust {
+            font-size: 15px;
+          }
+
+          &.header {
+            font-size: 14px;
+            color: @prepRed;
+            text-transform: uppercase;
+          }
+        }
+      }
+    }
+
+    .interviewNav {
+      margin-top: 20px;
+      text-align: right;
+
+      .previousQuestion {
+        .btnBlueGrain;
+      }
+      .nextQuestion {
+        .btnRedGrain;
+        width: 123px;
+        height: 62px;
+        padding-left: 5px;
+        padding-right: 40px;
+        background: url('@{prepImagePath}redPatternArrow.svg') no-repeat top right;
+        &:hover {
+          color: #fff !important;
+          background: url('@{prepImagePath}redPatternArrow.svg') no-repeat top right !important;
+          opacity: 0.8;
+        }
+      }
+    }
+
+    .arrow {
+      top: 45px;
+      left: -29px;
+      width: 29px;
+      height: 33px;
+      position: absolute;
+      background: url('@{prepImagePath}bluePatternTriangleLeft.png') no-repeat top right;
+    }
+
+  }
+
+  .relatedCategoriesContainer {
+    margin: 0;
+    color: @prepBrownDark;
+    .bgBluePattern;
+    position: relative;
+
+    h4 {
+      font-family: @serifFontFamily;
+      font-weight: 300;
+    }
+
+    .innerWrap {
+      padding: 20px;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0 0 10px;
+    }
+
+  }
+
+}
+
+
+// Responsive: Tablet to desktop
+@media (min-width: 768px) and (max-width: 979px) {
+
+  .categoryListRow {
+
+  }
+
+}
+
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width:767px) {
+
+  .categoryListRow {
+    .convoCircleContainer { display: none; }
+  }
+
+}
+
+
+
+
+
+
+
+
+/* ==========================================================================
+   Interview Review View
+   ========================================================================== */
+
+.interviewReview {
+
+  /* Interview Review Top
+  -------------------------------------------------- */
+  .reviewHeader {
+    margin: 20px auto;
+    max-width: 790px;
+    color: @prepBrownDark;
+    .bgBluePattern;
+    #custom .row-fluid();
+    text-align: center;
+
+    > .innerWrap {
+      padding: 40px 65px;
+    }
+
+    h1 {
+      font-size: 3.2em;
+      color: @prepBrownDark;
+      word-wrap: break-word;
+    }
+    h2 {
+      font-size: 2.13em;
+      line-height: 1.25em;
+      color: @prepBrownDark;
+    }
+    .askedAnswered {
+      font-family: @serifFontFamily;
+      font-size: 1.87em;
+      font-weight: 300;
+      line-height: 1.25em;
+      em {
+        font-weight: 600;
+        font-style: normal;
+      }
+    }
+
+  }
+
+
+  /* Interview Review Questions List
+  -------------------------------------------------- */
+  h2.letsReview {
+    font-size: 3.47em;
+    font-weight: 700;
+    color: @prepRed;
+
+    .btn {
+      .btnBlueGrain();
+      margin-top: 10px;
+    }
+  }
+  .iconprep-questionBubbles {
+    display: inline-block;
+    width: 81px;
+    height: 66px;
+    .ie7-restore-right-whitespace();
+    line-height: 36px;
+    vertical-align: text-top;
+    background-image: url('@{prepImagePath}icon-questionBubbles.svg');
+    background-position: 0 0;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    //margin-top: 1px;
+  }
+
+
+  .questionList {
+    list-style: none;
+    margin-left: 0;
+
+    .questionItem {
+      clear: both;
+      margin-bottom: 25px;
+      padding-bottom: 35px;
+      border-bottom: 1px solid @prepBrownLight;
+      .clearfix();
+
+      .num, .question, .actions, .answers {
+        display: inline-block;
+        float: left;
+        vertical-align: top;
+      }
+      .num {
+        width: 10%;
+        font-family: @serifFontFamily;
+        font-size: 3.47em;
+        font-weight: 700;
+        line-height: 0.87em;
+        color: @prepRed;
+      }
+      .question {
+        width: 70%;
+        font-family: @serifFontFamily;
+        font-weight: 400;
+        font-size: 1.53em;
+        line-height: 1.5em;
+      }
+      .actions {
+        width: 20%;
+        text-align: right;
+        float: right;
+      }
+      .answers {
+        clear: left;
+        width: 70%;
+        padding-left: 10%;
+        margin-top: 10px;
+
+        .lbl {
+          margin-top: 20px;
+          font-family: @serifFontFamily;
+          font-size: 1.2em;
+          font-weight: 700;
+          color: @prepRed;
+          text-transform: uppercase;
+
+          .edit {
+            float: right;
+            font-size: 0.92em;
+          }
+        }
+        .answr {
+          font-family: @serifFontFamily;
+          font-size: 1.2em;
+          line-height: 1.5em;
+          font-weight: 300;
+          white-space: pre-wrap;
+        }
+        .videoResponseBlock{
+        	.videoResponse {
+        		min-width: 240px;
+          	}
+        }
+        .textResponseBlock {
+          textarea {
+            width: 98%;
+            max-width: 98%;
+            min-height: 70px;
+            font-family: @serifFontFamily;
+            font-size: 1.2em;
+            line-height: 1.5em;
+            background-color: @prepCreamLight;
+          }
+          .textResponseActions {
+            text-align: right;
+            a.cancel {
+              .btnBlueGrain;
+            }
+            a.save {
+              .btnRedGrain;
+            }
+          }
+
+        }
+
+      }
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+    }
+
+  }
+
+  .interviewNav {
+    margin-top: 20px;
+    text-align: right;
+
+    .retakeInterview{
+      .btnBlueGrain;
+    }
+    .finishInterview {
+      .btnRedGrain;
+    }
+  }
+
+
+}
+
+
+
+// Responsive: Tablet to desktop
+@media (min-width: 768px) and (max-width: 979px) {
+
+  .interviewReview {
+
+    .iconprep-questionBubbles { width: 70px; height: 57px; }
+    h2.letsReview { font-size: 2.67em; }
+    .questionList .questionItem {
+      .num { font-size: 2.67em; width: 10%; }
+      .question { width: 75%; }
+      .actions { width: 15%; }
+    }
+
+  }
+
+}
+
+
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width: 767px) {
+
+  .interviewReview {
+    .interviewReviewTop {
+      margin-top: 0;
+      margin-left: -20px;
+      margin-right: -20px;
+    }
+    .reviewHeader {
+      margin: 10px 0 0;
+
+      .innerWrap {
+        padding: 30px 30px;
+      }
+      h1 { font-size: 2em; }
+      h2 { font-size: 1.73em; }
+      .askedAnswered { font-size: 1.47em; }
+
+    }
+    .iconprep-questionBubbles { width: 65px; height: 53px; }
+    h2.letsReview { font-size: 2.4em; }
+    .questionList .questionItem {
+      .num { font-size: 1.67em; width: 10%; }
+      .question { width: 73%; font-size: 1.2em; }
+      .actions { width: 15%; }
+      .answers { width: 88%;
+        .lbl { margin-top: 10px; }
+        .answr { font-size: 1.13em; line-height: 1.32em; }
+        .textResponseBlock {
+          textarea { font-size: 1.13em; }
+        }
+      }
+    }
+  }
+
+}
+
+
+
+// Responsive: Landscape phone to desktop/tablet
+@media (max-width: 480px) {
+
+  .interviewReview {
+    .reviewHeader {
+      margin-bottom: 10px;
+      .innerWrap {
+        padding: 15px 20px;
+      }
+      h1 { font-size: 1.6em; }
+      h2 { font-size: 1.2em; }
+      .askedAnswered { font-size: 1.07em; }
+    }
+    .iconprep-questionBubbles { width: 40px; height: 32.6px; }
+    h2.letsReview { font-size: 1.47em;
+      .btn { font-size: 12px; padding: 2px 10px; }
+    }
+    .questionList {
+      margin-left: -10px; margin-right: -10px;
+      .questionItem {
+        margin-bottom: 15px; padding-bottom: 15px;
+        .num { display: block; width: 100%; margin-bottom: 5px; font-size: 1.2em; }
+        .question { width: 84%; font-size: 1em; line-height: 1.2em; }
+        .answers { padding-left: 0%; width: 100%;
+          .lbl { margin-top: 10px; font-size: 1em; }
+          .answr { font-size: 0.87em; font-weight: 400; line-height: 1.2em; }
+          .textResponseBlock {
+            textarea { font-size: 0.87em; }
+            .textResponseActions {
+              a.cancel, a.save { font-size: 12px; padding: 2px 10px; }
+            }
+          }
+        }
+      }
+    }
+    .interviewNav {
+      .retakeInterview, .finishInterview {
+        font-size: 12px; padding: 2px 10px;
+      }
+    }
+
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

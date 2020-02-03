@@ -1,0 +1,598 @@
+*{ Displays information about the given user (required).  Any field that the
+ { logged-in user is permitted to edit will display as editable, the rest will
+ { display as uneditable text.
+ {
+ { Creating a new user is handled by invitation.html.
+ {
+ { Parameters:
+ {   user: The user for which to display account information.  Required.
+ }*
+ 
+#{extends 'standardPage.html' /}
+#{set title:title /}
+#{set 'moreScripts'}
+    #{script 'jquery-ui-1.9.0.custom.min.js' /}
+    #{script 'changes-alert.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"My Account" /}
+
+            <h1>#{if user.email}${user.fullName} <small>${user.email}</small> #{/if}#{else}Create User#{/else}</h1>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+        #{if enums.UserStatus.PENDING.equals(user?.status)}
+            <div class="alert alert-info">This user has been invited but has not yet activated their account.  <a class="btn inline" href="@{Users.resendInvitation(user.id)}">Resend Invitation Email</a></div>
+        #{/if}
+        #{elseif enums.UserStatus.INVITATION_WITHDRAWN.equals(user?.status)}
+            <div class="alert alert-info">This user invitation was withdrawn before the user accepted. The user can be re-invited be resending the invitation email. <a class="btn inline" href="@{Users.resendInvitation(user.id)}">Resend Invitation Email</a></div>
+        #{/elseif}
+    </div>
+</div>
+
+
+#{standardError /}
+
+<div class="row">
+    <div class="span9">
+    #{form @Users.save(user?.id) , id:'userForm', class:'form-horizontal', autocomplete:"off"}
+        <input type="hidden" id="displayNameRequired" value="${user?.displayNameRequired()}">
+        <input type="hidden" id="fullNameRequired" value="${user?.fullNameRequired()}"/>
+        <fieldset>
+            #{userPropertyHeading "fullName", label: "Full Name", 
+                    required: true}
+            
+                #{userProperty "fullName", displayUser: user, 
+                        connectedUser: connectedUser /}
+                        
+            #{/userPropertyHeading}
+            
+            #{userPropertyHeading "displayName", label: "Display Name"}
+                #{userProperty "displayName", displayUser: user, 
+                        displayIfNone: false, connectedUser: connectedUser /}
+                        
+            #{/userPropertyHeading}
+
+            #{if user.publicEmail || 
+                    connectedUser.hasRole(enums.RoleValue.APP_ADMIN) ||
+                    user.company == connectedUser.company}
+
+                #{userPropertyHeading "email", label: "Email *"}
+                    #{userProperty "email", displayUser: user, noDefault: true,
+                            connectedUser: connectedUser}
+                    
+                        #{if fieldMode.equals(enums.FieldDisplayMode.VIEW)}
+                            ${fieldValue}
+                        #{/if}
+                        #{else}
+                            <input type="text" data-provide="typeahead" id="email" 
+                                name="email" value="${user?.email}" required>
+                        #{/else}
+                        
+                    #{/userProperty} <br/><br/>
+
+                    #{userProperty "publicEmail", displayUser: user,
+                            connectedUser: connectedUser, noDefault: true}
+
+                        %{
+                            view = fieldMode.equals(enums.FieldDisplayMode.VIEW);
+                        }%
+
+                        <label class="checkbox">
+                            <input id="allowViewableEmail" type="checkbox" name="publicEmail" #{if view}disabled="disabled"#{/if} ${user?.publicEmail?'checked':''} />
+                            Allow other users to see #{if user == connectedUser}my#{/if} email
+                        </label>
+                    #{/userProperty}
+
+                    #{userProperty "questionStatusEmails", displayUser: user,
+                            connectedUser: connectedUser, noDefault: true}
+
+                        %{
+                            view = fieldMode.equals(enums.FieldDisplayMode.VIEW);
+                        }%
+
+                        <label class="checkbox">
+                            <input id="getNotifications" type="checkbox" name="questionStatusEmails" #{if view}disabled="disabled"#{/if} ${user?.questionStatusEmails?'checked':''}>
+                            Send email notifications when #{if user == connectedUser}my#{/if}#{else}user's#{/else} questions' statuses change
+                        </label>
+                    #{/userProperty}
+                #{deadbolt.restrictedResource resourceKeys:["Candidates.list"]}
+                    #{userProperty "feedbackReplyEmails", displayUser: user,
+                        connectedUser: connectedUser, noDefault: true}
+
+                        %{
+                           view = fieldMode.equals(enums.FieldDisplayMode.VIEW);
+                        }%
+
+                        <label class="checkbox">
+                            <input id="getFeedbackNotifications" type="checkbox" name="feedbackReplyEmails" #{if view}disabled="disabled"#{/if} ${user?.feedbackReplyEmails?'checked':''}>
+                            Send email notifications when #{if user == connectedUser}I leave #{/if}#{else}this user leaves#{/else} candidate feedback via email
+                        </label>
+                    #{/userProperty}
+
+                    #{userProperty "interviewStopReminder", displayUser: user,
+                    connectedUser: connectedUser, noDefault: true}
+
+                    %{
+                    view = fieldMode.equals(enums.FieldDisplayMode.VIEW);
+                    }%
+
+                    <label class="checkbox">
+                        <input id="getInterviewStopReminders" type="checkbox" name="interviewStopReminder" #{if view}disabled="disabled"#{/if} ${user?.interviewStopReminder?'checked':''}>
+                        Send email notifications when #{if user == connectedUser}I may have forgotten to stop an interview I conducted#{/if}#{else}an interview has not been stopped after conducted#{/else}
+                    </label>
+                    #{/userProperty}
+
+                    #{userProperty "feedbackRequestedReminder", displayUser: user,
+                    connectedUser: connectedUser, noDefault: true}
+
+                    %{
+                    view = fieldMode.equals(enums.FieldDisplayMode.VIEW);
+                    }%
+
+                    <label class="checkbox">
+                        <input id="getInterviewStopReminders" type="checkbox" name="feedbackRequestedReminder" #{if view}disabled="disabled"#{/if} ${user?.feedbackRequestedReminder?'checked':''}>
+                        Send email notifications when #{if user == connectedUser}my feedback is needed on an interview I conducted.#{/if}#{else}feedback from a user is needed.#{/else}
+                    </label>
+                    #{/userProperty}
+                #{/deadbolt.restrictedResource}
+                #{/userPropertyHeading}
+            #{/if}
+            
+            #{userPropertyHeading "password", label: "New Password", 
+                    noDefault: true}
+                    
+                #{userProperty "password", displayUser: user, noView: true,
+                        connectedUser: connectedUser, noDefault: true}
+
+                    <input class="input-medium" type="password" id="password" name="password">
+                    <span class="score badge"></span>
+                    <p class="help-block">Must be between 6 and 20 characters</p>
+                    
+                #{/userProperty}
+            #{/userPropertyHeading}
+            
+            #{userPropertyHeading "confirmPassword", 
+                    label: "Confirm New Password"}
+               *{it's kindof weird to use the value "password" here, but this is correct behavior.  We want to leverage any
+               rules defined on the password field of the User class to determine the visibility/editability of the password
+               confirmation field here on the page.  One side effect is that its going to add a duplicate "password" item
+               to the includedFields input when the form is submitted so we need to be aware of that and handle it on
+               the server side. }*
+                #{userProperty "password", displayUser: user, noView: true,
+                        connectedUser: connectedUser, noDefault: true}
+                
+                    <input class="input-medium" type="password" id="confirmPassword" name="confirmPassword">
+                #{/userProperty}
+                    
+            #{/userPropertyHeading}
+
+        <div class="control-group">
+            <label for="password" class="control-label">Google OpenID URL</label>
+            <div class="controls">
+            *{<input id="openIdUrl" name="openIdUrl" class="input-large" type="text" value="${user?.googleOpenIdUrl}">}*
+                    ${user?.googleOpenIdUrl ? user?.googleOpenIdUrl : "None"}
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="password" class="control-label">Google OpenID Email</label>
+            <div class="controls">
+            *{<input id="openIdUrl" name="openIdUrl" class="input-large" type="text" value="${user?.googleOpenIdUrl}">}*
+                    ${user?.googleOpenIdEmail ? user?.googleOpenIdEmail : "None"}
+            </div>
+        </div>
+            
+            #{deadbolt.restrictedResource resourceKeys:["nonLonerOnly"]}
+                #{userPropertyHeading "roles", label: "User Role"}
+                    #{userProperty "roles", displayUser: user, 
+                            connectedUser: connectedUser, noDefault: true}
+
+                        %{
+                            soleAdmin = user.hasRole(enums.RoleValue.COMPANY_ADMIN) &&
+                                    user.company.getAdministrators().size() == 1;
+                        }%
+                            
+                        #{if fieldMode.equals(enums.FieldDisplayMode.VIEW)}
+                            #{list items: user?.roles, as:"role"}
+                                &{role} *{There should only be one of these }*
+                            #{/list}
+                        #{/if}
+                        #{else}
+
+                            %{
+                                moreAdministrators = 
+                                        enums.AccountLimitedAction.CREATE_ADMINISTRATOR
+                                                .canPerform(connectedUser);
+                            }%
+
+                            #{list items: roleOptions, as:"role"}
+
+                                %{ 
+                                    isCompanyAdmin = role.equals(
+                                            enums.RoleValue.COMPANY_ADMIN);
+                                    canSelect =
+                                            (isCompanyAdmin && (moreAdministrators || soleAdmin)) ||
+                                            (!isCompanyAdmin && !soleAdmin);
+                                }%
+
+                                <label class="radio"><input id="${role}" class="userRole_button" type="radio" name="roles" #{if !canSelect}disabled="disabled"#{/if} value="${role.name()}" ${user?.hasRole(role) ? "checked" : ""}/>&{role.messageKey}</label>
+                            #{/list}
+
+                            #{if connectedUser.hasRole(enums.RoleValue.APP_ADMIN) &&
+                                    !enums.AccountLimitedAction.CREATE_ADMINISTRATOR.canPerform(user)}
+                                <div class="alert span5">This company has max'd out
+                                    its administrators.  As SuitedTo admin, you can
+                                    still create a new one, but be aware.</div>
+                            #{/if}
+                            #{elseif !moreAdministrators}
+                                <div class="alert span5">&{'limits.users.admins.max', 
+                                    controllers.CompanyManagement.getLink()}</div>
+                            #{/elseif}
+                            
+                            #{if soleAdmin}
+                                %{
+                                    if (connectedUser.equals(user)) {
+                                        messageKey = "limits.users.admins.min.self";
+                                    }
+                                    else {
+                                        messageKey = "limits.users.admins.min.other";
+                                    }
+                                }%
+                            
+                                <div class="alert span5">&{messageKey}</div>
+                            #{/if}
+                        #{/else}
+                    #{/userProperty}
+                #{/userPropertyHeading}
+            #{/deadbolt.restrictedResource}
+
+            #{deadbolt.restrict roles:[['APP_ADMIN']]}
+                #{userPropertyHeading "company", label: "Company"}
+                    #{userProperty "company", displayUser: user, noDefault: true,
+                            displayIfNone: false, connectedUser: connectedUser}
+
+                        #{if fieldMode.equals(enums.FieldDisplayMode.VIEW)}
+                            <div class="control-group">${user?.company?.name}</div>
+                        #{/if}
+                        #{else}
+                            <input type="text" id="company" name="company" value="${user?.company?.name}" />
+
+                            <script type="text/javascript">
+                                $(function(){
+                                    var listAction = #{jsAction @Companies.getCompanyList() /};
+                                    $("#company").autocomplete({
+                                        source: listAction(),
+                                        focus: function( event, ui ) {
+                                            $( "#company" ).val( ui.item.name);
+                                            return false;
+                                        },
+                                        select: function( event, ui ) {
+                                            $( "#company" ).val( ui.item.name);
+                                            return false;
+                                        }
+                                    }).data("autocomplete")._renderItem = function (ul, item) {
+                                        return $("<li></li>")
+                                                .data("item.autocomplete", item)
+                                                .append("<a>" + item.name)
+                                                .appendTo(ul);
+                                    };
+                                });
+                            </script>
+                        #{/else}
+                    #{/userProperty}
+                #{/userPropertyHeading}
+            #{/deadbolt.restrict}
+            
+            #{if user?.status?.equals(enums.UserStatus.ACTIVE) || user?.status?.equals(enums.UserStatus.DEACTIVATED)}
+            
+                %{
+                    active = user?.status?.equals(enums.UserStatus.ACTIVE);
+                }%
+
+                *{ For the moment, we just don't display the option to 
+                 { inactivate yourself.  You could URL-hack doing this, but 
+                 { that seems acceptable. }*
+                #{if user != connectedUser}
+                    
+                    #{userPropertyHeading "status",
+                            label: "Active? <a href='#' class='help' rel='popover' data-content='" + play.i18n.Messages.get("help.hoverOver.activeUsers") + "' data-original-title='Active User'>?</a>"}
+
+                        #{userProperty "status", displayUser: user, 
+                              connectedUser: connectedUser, noDefault: true}
+
+                            #{if fieldMode.equals(enums.FieldDisplayMode.VIEW)}
+                                #{if active}
+                                    Yes
+                                #{/if}
+                                #{else}
+                                    No
+                                #{/else}
+                            #{/if}
+                            #{else}
+                                <label class="checkbox"><input type="checkbox" id="status" name="status" ${user?.status?.equals(enums.UserStatus.ACTIVE) ? 'checked' : ''}/> </label>
+                            #{/else}
+                        #{/userProperty}
+                    #{/userPropertyHeading}
+                #{/if}
+            #{/if}
+
+          <div class="control-group">
+            <label for="password" class="control-label">Reviewer Capabilities</label>
+            <div class="controls">
+              <ul>
+                  #{list items: user.reviewCategories, as:"category"}
+                    <li>${category.name}</li>
+                  #{/list}
+              </ul>
+            </div>
+          </div>
+
+            #{userPropertyHeading "reviewerAllowedOverrideCategories",
+            label: "Reviewer Allowed Category Overrides"}
+
+                #{userProperty "categoryOverrides", displayUser: user, inputName: "reviewerAllowedOverrideCategories",
+                connectedUser: connectedUser, noDefault: true}
+                    #{categories multiple: true, field:"reviewerAllowedOverrideCategories", value:reviewerAllowedOverrideCategories, helpText: "Comma-separated list of allowed reviewer overrides" /}
+                #{/userProperty}
+
+
+            #{/userPropertyHeading}
+
+            #{userPropertyHeading "reviewerDisallowedOverrideCategories",
+            label: "Reviewer Disallowed Category Overrides"}
+                #{userProperty "categoryOverrides", displayUser: user, inputName: "reviewerDisallowedOverrideCategories",
+                connectedUser: connectedUser, noDefault: true}
+                    #{categories multiple: true, field:"reviewerDisallowedOverrideCategories", value:reviewerDisallowedOverrideCategories, helpText: "Comma-separated list of disallowed reviewer overrides" /}
+                #{/userProperty}
+            #{/userPropertyHeading}
+
+          <div class="control-group">
+            <label for="password" class="control-label">Pro Interviewer Capabilities</label>
+            <div class="controls">
+              <ul>
+                  #{list items: user.proInterviewerCategories, as:"category"}
+                    <li>${category.name}</li>
+                  #{/list}
+              </ul>
+            </div>
+          </div>
+
+            #{userPropertyHeading "proInterviewerAllowedOverrideCategories",
+            label: "Pro Interviewer Allowed Category Overrides"}
+
+                #{userProperty "categoryOverrides", displayUser: user, inputName: "proInterviewerAllowedOverrideCategories",
+                connectedUser: connectedUser, noDefault: true}
+                    #{categories multiple: true, field:"proInterviewerAllowedOverrideCategories", value:proInterviewerAllowedOverrideCategories, helpText: "Comma-separated list of allowed pro interviewer overrides" /}
+                #{/userProperty}
+
+
+            #{/userPropertyHeading}
+
+            #{userPropertyHeading "proInterviewerDisallowedOverrideCategories",
+            label: "Pro Interviewer Disallowed Category Overrides"}
+                #{userProperty "categoryOverrides", displayUser: user, inputName: "proInterviewerDisallowedOverrideCategories",
+                connectedUser: connectedUser, noDefault: true}
+                    #{categories multiple: true, field:"proInterviewerDisallowedOverrideCategories", value:proInterviewerDisallowedOverrideCategories, helpText: "Comma-separated list of disallowed pro interviewer overrides" /}
+                #{/userProperty}
+            #{/userPropertyHeading}
+           
+            #{userPropertyHeading "superReviewer", 
+                    label: "Reviewer for All Categories"}
+            
+                #{userProperty "superReviewer", displayUser: user, 
+                        connectedUser: connectedUser, noDefault: true}
+                        
+                    #{if fieldMode.equals(enums.FieldDisplayMode.VIEW)}
+                        #{if user.superReviewer}
+                            Yes
+                        #{/if}
+                        #{else}
+                            No
+                        #{/else}
+                    #{/if}
+                    #{else}
+                        <label class="checkbox"><input type="checkbox" id="superReviewer" name="superReviewer" ${user?.superReviewer ? 'checked' : ''}/> </label>
+                    #{/else}
+                #{/userProperty}
+            #{/userPropertyHeading}
+
+            #{if !user.hasActiveProInterviewRequest() }
+                <a id="proInterviewerBtn" class="btn" href="/proInterviewers/apply" style="margin-left: 5px;">Apply for Pro Interviewer</a>
+            #{/if}
+
+            #{if !user.proInterviewerRequests.isEmpty() }
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Categories</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        #{list items:user.proInterviewerRequests, as:'proInterviewerRequest'}
+                            <tr>
+                                <td>
+                                    ${proInterviewerRequest.getCommaSeparatedCategoryNames()}
+                                </td>
+                                <td>
+                                    ${proInterviewerRequest.status}
+                                </td>
+                            </tr>
+                        #{/list}
+                    </tbody>
+                </table>
+            #{/if}
+
+*{            #{userPropertyHeading "hrCompliant", 
+                    label: "HR Compliant"}
+            
+                #{userProperty "hrCompliant", displayUser: user, 
+                        connectedUser: connectedUser, noDefault: true}
+                        
+                    #{if fieldMode.equals(enums.FieldDisplayMode.VIEW)}
+                        #{if user.hrCompliant}
+                            Yes
+                        #{/if}
+                        #{else}
+                            No
+                        #{/else}
+                    #{/if}
+                    #{else}
+                        <label class="checkbox"><input type="checkbox" id="hrCompliant" name="hrCompliant" ${user?.hrCompliant ? 'checked' : ''}/> </label>
+                    #{/else}
+                #{/userProperty}
+            #{/userPropertyHeading}
+     }*               
+            <div class="form-actions">
+                #{if user?.equals(connectedUser)}
+                    <a href="@{Application.home()}" id="cancelBtn" class="btn no-change-check">Cancel</a>
+                #{/if}
+                #{else}
+                    <a href="@{Users.cancelEdit()}" id="cancelBtn" class="btn no-change-check">Cancel</a>
+                #{/else}
+
+                <button id="saveBtn" class="btn btn-primary no-change-check" type="submit">Save</button>
+                #{deadbolt.restrict roles:[['APP_ADMIN'] , ['COMPANY_ADMIN']]}
+                #{if !connectedUser.id.equals(user.id) && user?.hasBeenSaved() && user?.isDeletable()}
+                    <a id="delete" href="#" data-target="#deleteConfirmation" data-toggle="modal" class="pull-right no-change-check"><i class="icon-trash"></i> Delete</a>
+                #{/if}
+                #{/deadbolt.restrict}
+            </div>
+        </fieldset>
+    #{/form}
+    </div>
+    
+    #{form @Users.uploadPicture(user.id) , id:'uploadPictureForm', class:'form-vertical', enctype:'multipart/form-data'}
+        #{userProperty "picture", displayUser: user, 
+                connectedUser: connectedUser, noDefault: true}
+            <div class="span3">
+                <h3 id="profilePictureHeader">Profile Picture</h3>
+                <div>
+                %{
+                    def pictureUrl = user.getPublicPictureUrl();
+                }%
+                    #{if pictureUrl}
+                        <img id="image" src="${pictureUrl}"/><br/>
+                    #{/if}
+                    #{if fieldMode.equals(enums.FieldDisplayMode.EDIT)}
+                        <div id="uploadPic">
+                            <label for="picture" class="control-label">&{'picture.upload'}</label>
+                            <input type="file" id="picture" class="input-file no-change-check" style="display:none" name="picture" />
+                            <span class="btn btn-info" onclick="$('input[id=picture]').click();"><i class="icon-white icon-upload"></i> Upload</span>
+                        </div>
+                        <div id="profilePic">
+                            <a href="@{Users.deletePicture(user.id)}" id="deleteImage"><i class="icon-trash"></i> Delete Picture</a>
+                        </div>
+                    #{/if}
+                </div>
+            </div>
+        #{/userProperty}
+    #{/form}
+</div>
+
+<div id="deleteConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Delete Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to delete this user?</p>
+    </div>
+    <div class="modal-footer">
+        <a id="cancelDelete" class="btn" data-dismiss="modal">Cancel</a>
+        <a id="confirmDelete" href="@{Users.delete(user?.id)}" class="btn btn-danger no-change-check"><i class="icon-trash icon-white"></i> Delete</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+
+    $(document).ready(function(){
+        var displayNameFieldAndLabel = $("#displayName, label[for='displayName']");
+        var displayNameRequired = $('#displayNameRequired').val() === 'true';
+        displayNameFieldAndLabel.toggleClass("required", displayNameRequired);
+
+        var fullNameFieldAndLabel = $("#fullName, label[for='fullName']");
+        var fullNameRequired = $('#fullNameRequired').val() === 'true';
+        fullNameFieldAndLabel.toggleClass("required", fullNameRequired);
+
+        %{
+            try {
+                userHasPicture = user.hasPicture();
+            } catch (Exception e)
+            {
+                amazonMalfunction = true;
+            }
+        }%
+
+        #{if amazonMalfunction}
+            $('#profilePictureHeader').hide();
+            $('#profilePic').hide();
+            $('#uploadPic').hide();
+        #{/if}
+        #{else}
+            #{if userHasPicture}
+                $('#uploadPic').hide();
+            #{/if}
+            #{else}
+                $('#profilePic').hide();
+            #{/else}
+        #{/else}
+
+        $('a.help')
+                .popover()
+                .click(function(e){
+                    e.preventDefault();
+                });
+
+        #{if !connectedUser.company}
+            toggleCompanyGroup();
+                    $('.userRole_button').change(function() {
+                toggleCompanyGroup();
+            });
+
+        #{/if}
+		
+		$('input[id=picture]').change(function() {
+        	$('#uploadPictureForm').submit();
+		});
+
+    });
+
+    function toggleCompanyGroup(){
+        var radioValue = $('input:radio[name=roles]:checked').val();
+        if( radioValue == 'QUESTION_ENTRY' || radioValue == 'COMPANY_ADMIN'){
+            $('#companyGroup').show();
+            if(radioValue == 'QUESTION_ENTRY'){
+                $('#companyLabel').removeClass('required');
+            } else {
+                $('#companyLabel').addClass('required');
+            }
+
+        } else{
+            $('#companyGroup').hide();
+            $('#company').val('');
+        }
+    }
+
+    // fix whitespace issue with user role
+    var $userRole = $('#rolesControls'),
+        userRoleVal = $.trim($userRole.html());
+
+    // fix the alignment issue with user role
+    $userRole.css('margin-top', '5px');
+
+    // replace user role value 'QUESTION_ENTRY' with 'Company User'
+    userRoleVal === 'QUESTION_ENTRY' ? userRoleVal = 'Company User' : "";
+    $userRole.html(userRoleVal);
+
+</script>

@@ -1,0 +1,29 @@
+*{ Renders the welcome email for company admin users.
+ {
+ { Arguments:
+ {   onlineVersionURL - A string containing the absolute URL to the online
+ {       version of the email.  If this is null, no such link will be displayed.
+ }*
+
+#{extends 'welcomeEmail.html' /}
+<a href="@@{Application.home}">
+    <img width="100%" src="http://content.suitedto.com/email-content/AdminEmailBody.png" style="text-align: left; padding: 15px;" />
+</a>
+<table border="0" cellpadding="10" cellspacing="0" width="100%" style="background-color:#F0F0F0;">
+    <tr><td>
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+                <td align="right"><h1>Need a hand?  Ask Kelley!</h1></td>
+                <td align="center">
+                    <table border="0" cellpadding="0" cellspacing="0">
+                        <tr><td>
+                            <p style="font-size:26px;">kelley.elder@sparcedge.com<br/>
+                                843.471.1429</p>
+                        </td></tr>
+                    </table>
+                </td>
+                <td align="left"><img src="http://content.suitedto.com/email-content/profile-kelley-transparent.png" alt="Profile Image"/></td>
+            </tr>
+        </table>
+    </td></tr>
+</table>

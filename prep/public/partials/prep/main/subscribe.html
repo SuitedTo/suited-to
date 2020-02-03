@@ -1,0 +1,36 @@
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <div class="myAccountWrap">
+
+                <h1 class="text-uppercase">Subscribe</h1>
+
+                <h2>Purchase Information:</h2>
+
+                <p ng-show="subscriptionCost > 0"><strong>{{subscriptionCost/100 | currency}}</strong> for 30 days!</p>
+
+                <div ng-include="'/public/partials/prep/main/discount.html'" onload="checkOnly()"></div>
+
+                <div ng-show="creditCardErrorMsg" id="creditCardErrorMsg" class="unstyled alert alert-error"> {{creditCardErrorMsg}} </div>
+                <form id="subscribeForm" name="subscribeForm" autocomplete="off">
+                    <div ng-show="subscriptionCost > 0">
+                        <input placeholder="Card Number" type="text" autocomplete="off" class="input-block-level" id="creditCardNumber" size="20" data-stripe="number"/>
+                        <input type="text" placeholder="MM" autocomplete="off" class="input-mini" maxlength="2" data-stripe="exp-month"/>
+                        <input type="text" placeholder="YYYY" autocomplete="off" class="input-mini" maxlength="4" data-stripe="exp-year"/>
+                        <input type="text" placeholder="CVC" autocomplete="off" class="input-mini pull-right" maxlength="4" data-stripe="cvc"/>
+                        <br />
+                    </div>
+
+                    <ul ng-show="errors" class="unstyled alert alert-error">
+                        <li ng-repeat="error in errors">{{ error.message }}</li>
+                    </ul>
+
+                    <div class="saveCancelWrap">
+                        <div class="cancel"><a href="/myAccount" class="btn btn-block" id="subscribeCancelBtn" data-loading-text="Submitting..." bs-loading-text="submitting">Cancel</a></div>
+                        <div class="save"><button ng-click="subscribe()" type="submit" class="btn btn-primary input-block-level" id="createCard" data-loading-text="Submitting..." bs-loading-text="submitting">Subscribe</button></div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

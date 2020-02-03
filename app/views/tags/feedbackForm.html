@@ -1,0 +1,29 @@
+*{ Renders the feedback form.
+ { Arguments:
+ {   _candidate: The candidate for whom we are providing feedback.
+ {   _controlClasses: String for the "classes" attribute of non-variable-width 
+ {         controls
+ {   _controlStyles: String for the "style" attribute of non-variable-width 
+ {         controls
+ {   _selected: The id of the initially-selected interview, prefixed by "a".  If
+ {            this parameter is omitted, -1, or has an id portion (i.e., without
+ {            the "a") of -1, "General" will be the initial selection.
+ {   _authorization: An optional TemporaryFeedbackAuthorization object, whose
+ {            nonce should be included in any feedback submissions
+ {   _nextStep: Optional.  The ordinal value of the enums.FeedbackSummary 
+ {            instance to which the "Next Step" field should default.
+ {   _feedback: Optional.  The text to which the "Additional Feedback" field
+ {            should default.
+ }*
+
+%{
+    if (!_nextStep) {
+        _nextStep = -1;
+    }
+
+    if (!_feedback) {
+        _feedback = "";
+    }
+
+    connectedUser = controllers.Security.connectedUser();
+}%

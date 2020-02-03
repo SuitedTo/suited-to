@@ -1,0 +1,198 @@
+
+.login .btn-primary {margin: 0;}
+.loginForm { margin: 30px auto; }
+.form-horizontal .form-actions {
+    padding-left: 20px;
+}
+
+/* tabs */
+.tabbable .nav {margin: 0; padding: 0;}
+.tab-content {padding: 50px; .border-radius(4px 0 4px 4px);}
+
+/* Change background color on login form */
+.tab-content {background: #fdfcfc url(../images/featured-light.png) 50% 50% no-repeat; border-color: #DDDDDD #DDDDDD #DDDDDD; border-style: solid; border-width: 1px;}
+.login .nav-tabs .active a, .nav-tabs .active a:hover {background-color: #fdfcfc; font-weight: bold;}
+.login .nav-tabs {border-bottom: none;}
+.login .nav-tabs li {float: right; margin-right: -2px;}
+.login .nav-tabs li a, .login.nav-pills li a {line-height: 24px; margin-right: 2px; padding-left: 28px; padding-right: 24px;}
+
+
+/* page content */
+/*.pageContent { padding-top: 20px; }
+*/
+/* footer */
+/*.footer { margin: 30px auto; overflow: hidden;}
+.footer p {font-size: 13px;}*/
+
+div.icons { 
+  float: right; 
+  margin: 10px 30px 30px 0; 
+  width: 140px; 
+  ul { 
+    list-style: none outside none; 
+    margin: 0; 
+    padding: 0; 
+    li { 
+      float: left; 
+      list-style: none outside none; 
+      padding: 0 4px; 
+      a { float: left; height: 39px; outline: medium none; text-indent: -9999px; width: 38px; }
+      a.facebook { background: url(../images/icons.png) no-repeat scroll 0 0 transparent; }
+      a.twitter { background: url(../images/icons.png) no-repeat scroll -45px 0 transparent; }
+      a.flickr { background: url(../images/icons.png) no-repeat scroll -90px 0 transparent; }
+    }
+  }
+}
+
+
+.buttonLikeLink {
+    background: none;
+    border: none;
+    color: @teal-main;
+    padding:0px;
+}
+
+.buttonLikeLink:hover {
+    text-decoration: underline;
+    }
+
+h2.extraRoom {
+    margin-bottom: 24px;
+}
+
+.radio.inline.top-align {
+    margin-top: 4px;
+    vertical-align: top;
+}
+.input-xxlarge {
+    width:95%;
+}
+
+
+
+
+@media (max-width: 768px) {
+  #getsat-widget-401, .gsfn-widget-tab { display: none !important; }
+}
+
+/* Candidate Details page */
+.socialProfile .remove {
+  margin-left: 160px;
+}
+@media (max-width: 480px) {
+  .socialProfile .remove {
+    margin-left: 0;
+  }
+}
+
+.text-core, .text-core .text-wrap { 
+  min-height: 22px !important;
+}
+
+#quick_link_wrap { width: 305px; }
+#quick_link_icon { margin: 0 0 10px 5px; }
+@media (max-width: 480px) {
+  #quick_link_wrap { width: 88%; }
+  #quick_link_text { width: 230px; }
+}
+
+#documentTable div[id^="candidateDocType"] { white-space: nowrap; }
+.uploadFileWrap { padding: 10px; border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; }
+
+.feedbackSection .btn { margin-bottom: 8px; }
+.feedbackTable-pdf-dnld-button-container { display: none; }
+
+#interviewListHeader { padding: 8px 15px; margin-bottom: 10px; border-bottom: 1px solid #ccc; font-weight: bold; }
+#interviewListAccordion .accordion-heading { background-color: #f6f6f6; position: relative; }
+#interviewListAccordion .accordion-group { margin-bottom: 6px; }
+#interviewListAccordion .accordion-inner { font-size: 0.93em; }
+.intvw-arrow, .intvw-date, .intvw-name, .intvw-interviewer, .intvw-state { display: inline-block; vertical-align: top; }
+.intvw-arrow { cursor: pointer; padding: 8px; position: absolute; top: 0; left: 0; }
+.intvw-date { width: 18%; padding-right: 1%; padding-left: 3%; }
+.intvw-name { width: 33%; padding-right: 1%; }
+.intvw-interviewer { width: 20%; padding-right: 1%; }
+.accordion-heading .intvw-state, #interviewListHeader .intvw-state { width: 19%; }
+.accordion-heading .intvw-state { font-size: 0.87em; }
+.intvw-state .iconWrap { background-color: gray; .border-radius(3px); padding: 1px 2px 3px; }
+.intvw-state .iconWrap.begin { }
+.intvw-state .iconWrap.inprogress { background-color: #C27373; }
+.intvw-state .iconWrap.completed { background-color: @teal-main; }
+#interviewListAccordion .form-actions { margin-bottom: 5px; }
+#interviewListAccordion .interviewStatus .dropdown-menu { right: 0; left: auto; }
+#interviewListAccordion .interviewStatus .statusDropdown { white-space: nowrap; }
+
+@media (max-width: 1199px) {
+  .intvw-date { width: 23%; }
+  .intvw-name { width: 35%; }
+  .intvw-interviewer { width: 23%; padding-right: 1%; }
+  .accordion-heading .intvw-state, #interviewListHeader .intvw-state { width: 8%; }
+  .accordion-heading .intvw-state .iconText { display: none; }
+}
+@media (min-width: 769px) {
+  #interviewListAccordion .accordion-inner .interviewer { display: none; }
+}
+@media (max-width: 768px) {
+  #interviewListAccordion .accordion-heading .accordion-toggle { padding: 8px 4px; }
+  .intvw-date { width: 26%; font-size: 0.93em; padding-left: 5%; }
+  .intvw-name { width: 54%; }
+  .intvw-interviewer { display: none; }
+  .accordion-heading .intvw-state, #interviewListHeader .intvw-state { width: 9%; }
+
+  .feedbackTable-pdf-button-container { display: none; }
+  .feedbackTable-pdf-dnld-button-container { display: inline; }
+}
+@media (max-width: 479px) {
+  .intvw-arrow { padding: 8px 3px; }
+  .intvw-date { font-size: 0.92em; }
+}
+
+// Modals
+#viewFeedback, #selectCategory.modal { width: 800px; max-height: 600px; margin-left: -400px; }
+#viewFeedback .feedbackTable-pdf-button-container button { margin-bottom: 10px; }
+#selectCategory.modal .modal-body { overflow: auto; overflow-x: hidden; }
+@media (max-width: 800px) {
+    #viewFeedback, #selectCategory.modal { width: auto; margin: 0; left: 10px; right: 10px; }
+}
+#quickViewFeedback { width: 900px; max-height: 650px; margin-left: -450px; }
+@media (max-width: 920px) {
+    #quickViewFeedback { width: auto; margin: 0; left: 10px; right: 10px; }
+}
+
+
+// Callouts
+
+.applicationWell {
+  border: 0;
+  color: #fff;
+  a { color: @teal-text; }
+  h2 { color: #fff; font-size: 22px; }
+  &.teal{
+    background-color: @teal-main;
+  }
+  &.darkteal{
+    background-color: lighten(spin(@teal-text, 10), 21%);
+  }
+  &.lightteal{
+    background-color: lighten(spin(@teal-light, 10), 21%);
+  }
+}
+
+.createQuestionCallouts {
+  .callout1 { padding-bottom: 20px; }
+  .callout2 { margin: -40px -20px 0 30px; padding-bottom: 20px; }
+  .callout3 { margin: -20px -10px 0 10px; }
+}
+@media (max-width: 768px) {
+  .createQuestionCallouts {
+    .callout1 { margin-right: 20px; }
+    .callout2 { margin: -40px 0 0 30px; }
+    .callout3 { margin: -20px 10px 0 10px; }
+  }
+}
+
+
+.score.badge { background: transparent; }
+
+
+.typeahead { z-index: 1060; }
+

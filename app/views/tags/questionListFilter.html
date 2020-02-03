@@ -1,0 +1,201 @@
+*{display question list filter}*
+
+#{set 'moreScripts'}
+    #{script 'jquery-textext.js' /}
+#{/set}
+
+    	<div class="accordion" id="questionListFilter">
+            <div class="accordion-group">
+    			<div class="accordion-heading">
+           			<a class="accordion-toggle" data-toggle="collapse" data-parent="#questionListFilter" href="#collapseFilter">
+              			Filter Questions
+           			</a>
+    			</div>
+    			<div id="collapseFilter" class="accordion-body collapse">
+                	<div class="accordion-inner">
+                		<fieldset>
+                	    <div class="row">
+							<div class="span3">
+								<div class="controls">
+                					<label class="control-label" for="questionId">ID</label>
+									<input id="questionId" name="questionId" type="text" autocomplete="off">
+								</div>
+							</div>
+    						<div class="span3">
+                				<div class="controls">
+                					<label class="control-label" for="createdBy">Created By</label>
+									<select id="createdBy" name="createdBy" size="1" class="input-large required">
+										<option value="NIL" selected="selected">Any</option>
+										<option value="$me">Me</option>
+										#{if _user.company != null}
+											<option value="$myCompany">My Company</option>
+										#{/if}
+										#{deadbolt.restrict roles:[['APP_ADMIN']]}
+                    						#{list items:models.Company.findAll(), as:'company'}
+                    						    #{if (_user.company == null) || ((_user.company != null) && (company.id != _user.company.id))}
+													<option value="$company.${company.id}">${company.name}</option>
+												#{/if}
+                        					#{/list}
+                    					#{/deadbolt.restrict}
+									</select>
+								</div>
+							</div>
+							<div class="span3">
+								<div class="controls">
+                					<label class="control-label" for="status">Review Status</label>
+									<select id="status" name="status" size="1" class="input-large required">
+										<option value="NIL" selected="selected">Any</option>
+										<option value="OUT_FOR_REVIEW">Out for review</option>
+										<option value="RETURNED_TO_SUBMITTER">Returned to submitter</option>
+										<option value="ACCEPTED">Accepted</option>
+										<option value="WITHDRAWN">Withdrawn</option>
+									</select>
+								</div>
+							</div>
+							<div class="span3">
+								<div class="controls">
+                					<label class="control-label" for="visibility">Visibility</label>
+									<select id="visibility" name="visibility" size="1" class="input-large required">
+										<option value="NIL" selected="selected">Any</option>
+										<option value="PUBLIC">Public</option>
+										<option value="PRIVATE">Private</option>
+									</select>
+								</div>
+							</div>
+							</div>
+							</fieldset>
+							<fieldset>
+								<div class=row>
+									<div class="span12">
+										<div class="controls">
+                							<label class="control-label" for="categories">Categories</label>
+											<input id="categories" name="categories" type="text" autocomplete="off">
+											<input type="hidden" id="categoryList" name="categoryList">
+										</div>
+									</div>
+								</div>								
+							</fieldset>
+						<div class="row">
+    						<div class="span6">
+    							<div class="control-group" id="customFilterGroup">
+                					<label class="control-label" for="customFilterName">Filter Name</label>
+                					<div class="controls">
+										<input id="customFilterName" name="customFilterName" type="text">
+									</div>
+								</div>
+							</div>
+							<div class="span6">
+    							<div class="controls">
+									<button id="filterButton" onclick="applyCustomFilter()" class="btn btn-primary">Apply Filter</button>
+								</div>
+							</div>
+						</div>						
+                	    </div>
+              	    </div>
+    		    </div>
+    	    </div>
+
+
+<script type="text/javascript">
+
+    function applyCustomFilter() {
+    
+    	//Collapse not working
+    	//$(".collapse").collapse();
+    	$('.accordion-toggle').click();
+    
+    	var result = new Array();
+        var createdBy = $('#createdBy').val();
+        if(createdBy != "NIL"){
+        	result.push("includeByCreator=" + createdBy);
+        }
+        
+        var status = $('#status').val();
+        if(status != "NIL"){
+        	result.push("includeBystatus=" + status);
+        }
+        
+        //var activity = $('#activity').val();
+        //if(activity != "NIL"){
+        //	result.push("includeByActivity=" + activity);
+        //}
+        
+        var visibility = $('#visibility').val();
+        if(visibility != "NIL"){
+        	var bool = "false";
+        	if(visibility == "PRIVATE"){
+        		bool = "true";
+        	}
+        	result.push("includeIsPrivate=" + bool);
+        }
+        
+        var id = $('#questionId').val();
+        if(id != "NIL"){
+        	result.push("includeById=" + id);
+        }
+        
+        var categories = $('#categoryList').val();
+        if(categories){
+        	var names = categories.split(",");
+        	var all = new Array();
+        	for(var i = 0; i < names.length; ++i){
+        		all.push(names[i]);
+        	}
+        	result.push("includeByCategoryName=" + all.join("|"));
+        }
+        
+        var filterName = $('#customFilterName').val();
+		
+		${_callback?_callback:""}(filterName, result.join(","));
+    }
+    
+    function updateCategoryList(textext){    	
+    	var categories = getCategories(textext);
+    	$('#categoryList').val(categories);
+    }
+    
+    function getCategories(textext){
+        var elements = textext.tags().tagElements();
+        var result = new Array();
+        for (var i = 0; i < elements.length; i++) {
+        	result.push(elements[i].firstChild.firstChild.innerHTML);
+        }
+        return result;
+    }
+    
+    $(function () {
+    	$('#categories').textext({
+            plugins : 'tags prompt focus autocomplete ajax',
+            prompt : 'Select Categories...',
+            ajax : {
+                url : "@{Categories.findCategoriesJSON}",
+                dataType : 'json',
+                cacheResults : false
+            }
+        }).bind('isTagAllowed', function(e, data){
+        	var categories = getCategories($(e.target).textext()[0]);
+        	for (var i = 0; i < categories.length; i++) {
+        		//prevent duplicates
+    			if(categories[i] == data.tag){
+    				data.result = false;
+    				return;
+    			}
+			}
+			
+    		data.result = true;
+		});
+		
+		$('#categories').bind('setFormData', function(e, data, isEmpty)
+		{
+			updateCategoryList($(e.target).textext()[0]);
+			
+		});
+    
+    });
+    
+ </script>
+    
+    
+    
+    
+    

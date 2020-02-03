@@ -1,0 +1,131 @@
+#{extends 'standardPage.html' /}
+#{set title:'Interview List' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+#{set tableId:'interviews' /}
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"Interviews" /}
+
+            <h1>Interview Templates</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+    #{resourceCount type:enums.AccountResource.INTERVIEWS}
+        You are SuitedTo admin.  You create interviews where the lion sleeps.
+    #{/resourceCount}
+        <p class="alert alert-info">An interview template is a great starting point for a new candidate interview,
+            and can help your company standardize your interview process across all of your candidates.
+            Looking for a list of Candidate Interviews? <a href="@{Interviews.candidates()}"><strong>Check here</strong></a>
+            to see all scheduled interviews.</p>
+    </div>
+</div>
+#{standardError /}
+
+<div class="row">
+    <div class="span12 questionListFilter">
+        #{tabbedFilterList}
+            #{tabbedFilterListItem "My Interview Templates", filters:"includeByCreator:\$me", helpText: play.i18n.Messages.get('help.interviewTab.myTemplates') /}
+        	#{if connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+                #{tabbedFilterListItem "All Interview Templates", filters:"", helpText: play.i18n.Messages.get('help.interviewTab.allTemplates') /}
+            #{/if}
+            #{else}
+                #{tabbedFilterListItem "Company Interview Templates", filters:"", helpText: play.i18n.Messages.get('help.interviewTab.companyTemplates') /}
+            #{/else}
+        #{/tabbedFilterList}
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+    	#{dataTable tableId}
+    		#{dataTableColumn "ID", sWidth:"4%", sClass:"dataCol_id"/}
+        	#{dataTableColumn "Interview Name", sWidth:"30%", sClass:"dataCol_name" /}
+        	#{dataTableColumn "Creator", sWidth:"10%", sClass:"dataCol_creator" /}
+        	#{dataTableColumn "Question Count", sWidth:"4%", sClass:"dataCol_numquestions" /}
+        	#{dataTableColumn "Time", sWidth:"4%", sClass:"dataCol_time" /}
+        	#{dataTableColumn "Categories", sWidth:"30%", sClass:"dataCol_categories" /}
+        	#{dataTableColumn "Created", sWidth:"14%", sClass:"dataCol_datecreated" /}
+		#{/dataTable}
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        #{accountAllows enums.AccountLimitedAction.CREATE_INTERVIEW}
+            <a id="addInterviewBtn" class="btn" href="@{Interviews.show(null, true)}">
+        #{/accountAllows}
+        #{else}
+            <a class="btn disabled" href="#">
+        #{/else}
+        <i class="icon-plus"></i> Add a New Interview Template</a>
+        #{accountAllows enums.AccountLimitedAction.CREATE_INTERVIEW}
+        #{/accountAllows}
+        #{else}
+            <br/><br/><div class="alert">You are using all your available interviews.</div>
+        #{/else}
+        
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+    
+    	//Ensure that the inprogress interview is removed from
+    	//cache even when the user arrives at this page by clicking the
+    	//browser's back button
+    	jQuery(window).bind("unload", function() {});
+    	jQuery(window).bind("load", function() {
+    		$.get("@{Interviews.reset()}");
+    	});
+    });
+    
+    var options = {
+    	fnRowCallback: function (nRow, aData, iDisplayIndex) {
+                $(nRow).attr('id', aData[0]);
+                var interviewId = aData[0];
+                var hrefValue = '<a href="@{Interviews.show()}/' + interviewId + '"/>';
+                $('td:eq(' + 1 + ')', nRow).wrapInner(hrefValue);
+                return nRow;
+            },
+          aaSorting: [
+                    [0, 'desc']
+                ],
+          sDom: "<'row'<'span6'l><'span6'f>><'tableWorkingSpace'rt><'row'<'span5'i><'span7'p>>",
+          oLanguage: {
+            	    sProcessing: #{jsString}#{processingDisplay /}#{/jsString},
+            	    sLoadingRecords: #{jsString}#{processingDisplay /}#{/jsString},
+            	    sEmptyTable: "No template interviews are available yet..."
+        	    }
+    }
+    
+    var table = Application.DataTable;
+    
+    table.init("#{get 'tableId' /}", "@{Tables.getReport()}", "interview.InterviewTable", options);
+    
+    var applyFilters = function(filters){
+    	table.load(filters, null);
+    }
+    Application.TabbedFilterManager.init({
+    	tabNameKey: "interviews.tab",
+    	applyFilters: applyFilters
+	});
+	
+</script>

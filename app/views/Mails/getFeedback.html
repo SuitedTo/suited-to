@@ -1,0 +1,22 @@
+#{extends 'email.html' /}
+### Reply above this line ###
+<tr>
+    <td>
+        <img src="http://content.suitedto.com/logo-standard.png" alt="SuitedTo Logo">
+    </td>
+</tr>
+<tr><td></td></tr>
+<tr>
+    <td>
+
+Hey #{if interviewer}${interviewer.fullName}#{/if}#{else}${email}#{/else},<br/><br/>
+
+${requestReason.raw()}<br/><br/>
+
+To submit feedback, you may:<br>
+- Reply to this email, leaving your feedback above the "Reply above this line" text<br>
+- Follow this link to provide feedback online:<br>
+@@{Feedbacks.create(candidate.id, regarding?.id, authorization.nonce)}<br/><br/>
+
+    </td>
+</tr>

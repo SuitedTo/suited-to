@@ -1,0 +1,42 @@
+#{extends 'blowyEmail.html' /}
+#{set title:'SuitedTo Question Accepted' /}
+<!-- // Begin Module: Standard Content \\ -->
+<table border="0" cellpadding="20" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div mc:edit="std_content01">
+                <h3 class="h3">Great news, Your question was accepted to the Public Pool!</h3>
+                <hr class="hr">
+
+                <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                    <tr>
+                        <td valign="top"></td>
+                        <td><h4 class="h4"> ${name},</h4>
+
+                            Congratulations! Your question was accepted to the public pool!  Now watch as people around the world use and score your question. <br><br>
+                            <a href="@@{Questions.view(question.id)}"><img src="http://content.suitedto.com/email-content/btn-takemethere.png"></a>
+                            <br><br>
+
+                            #{if streetCred}
+                                <h4 class="h4"> Your Street Cred is "${streetCred}"</h4>
+                            #{/if}
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td valign="top"></td>
+                        <td>
+                            Sincerely, <br>
+                            The SuitedTo TEAM
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
+<!-- // End Module: Standard Content \\ -->
+

@@ -1,0 +1,114 @@
+#dataDisplayControls { 
+  padding: 10px 10px 5px 10px;
+  margin-bottom: 15px;
+//  background-color: #f6f6f6;
+  .border-radius(5px);
+  .clearfix();
+  text-align: right;
+}
+
+.dataDisplayCtrl_search {
+  float: left;
+  margin-bottom: 5px;
+
+  input { margin: 0; }
+}
+.dataDisplayCtrl_display {
+  display: inline-block;
+  margin-left: 10px;
+  margin-bottom: 5px;
+
+  .btn-toolbar { margin: 0; }
+}
+.dataDisplayCtrl_length {
+  display: inline-block;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding-top: 2px;
+  padding-left: 10px;
+  border-left: 1px solid #ccc;
+
+  select { margin: 0; display: inline-block; width: inherit; }
+}
+.dataDisplayCtrl_filter {
+  display: inline-block;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding-top: 2px;
+  padding-left: 10px;
+  border-left: 1px solid #ccc;
+
+  select { margin: 0; display: inline-block; width: inherit; }
+}
+.dataDisplayCtrl_companyOnly { 
+  display: inline-block;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  padding-top: 2px;
+  padding-right: 5px;
+  padding-left: 10px;
+  border-left: 1px solid #ccc;
+  label { white-space: nowrap; }
+}
+
+.dataDisplayResults {
+  position: relative;
+  min-height: 300px;
+}
+.dataDisplayCtrl_paginate {
+  padding: 10px 10px 10px 10px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+//  background-color: #f6f6f6;
+  .border-radius(5px);
+  .clearfix();
+  text-align: right;
+
+  .pagination { margin: 0; }
+  .paginationLeft { margin-top: 2px; }
+
+  .pageNumber {
+    vertical-align: middle;
+  }
+  .goto {
+    vertical-align: middle;
+
+    select { 
+      display: inline-block;
+      width: 75px;
+      margin: 0 5px 0 0; 
+    }
+  }
+}
+
+
+//
+// Responsive: Tablet to desktop
+// --------------------------------------------------
+@media (min-width: 768px) and (max-width: 979px) {
+
+}
+
+
+//
+// Responsive: Landscape phone to desktop/tablet
+// --------------------------------------------------
+@media (max-width: 767px) {
+
+  #dataDisplayControls {
+    text-align: left;
+  }
+  .dataDisplayCtrl_search { 
+    float: none;
+    input { width: 93%; display: inline-block; }
+  }
+  .dataDisplayCtrl_display {
+    display: none;
+  }
+  .dataDisplayCtrl_filter { 
+    margin-left: 10px;
+    padding-left: 10px;
+    border-left: 1px solid #ccc;
+  }
+
+}

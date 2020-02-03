@@ -1,0 +1,127 @@
+#{extends 'standardPage.html' /}
+#{set title:'User List' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row">
+    <div class="span12">
+    <div class="page-header">
+        #{subNav section:"Community", page:"Manage Users" /}
+
+        <h1>Manage Users</h1>
+
+    </div>
+
+        #{resourceCount type:enums.AccountResource.USERS}
+        
+            Verily, thou art SuitedTo admin.  You do what you do.
+        #{/resourceCount}
+        
+    #{if confirmationEmail}
+        <div class="alert alert-success">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+            <strong>Thank You!</strong> an email invitation has been sent to ${confirmationEmail}
+        </div>
+    #{/if}
+    #{elseif userCount}
+        <div class="alert alert-success">
+            <a class="close" data-dismiss="alert" href="#">×</a>
+        <strong>Congratulations!</strong> You just successfully invited ${userCount} new users to your company's account.
+        </div>
+    #{/elseif}
+
+    #{if userErrors}
+        #{list userErrors, as: 'error'}
+            <div class="alert alert-error">
+                <a class="close" data-dismiss="alert" href="#">×</a>
+                Could not send invitation to ${error}.
+            </div>
+        #{/list}
+    #{/if}
+    </div>
+</div>
+<div class="row ">
+    <div class="span12">
+        <table id="users" class="table table-striped">
+            <thead>
+            <tr>
+                <th>Email Address (login)</th>
+                <th>Name</th>
+                <th>Display Name</th>
+                <th>Status</th>
+                <th>Date Created</th>
+                <th>Role</th>
+                <th>Company</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        
+        %{
+            canInvite = enums.AccountLimitedAction.CREATE_USER.canPerform(
+                    (models.AccountHolder)connectedUser);
+        }%
+        
+        <a id="inviteBtn" class="btn #{if !canInvite}disabled#{/if}" href="#{if canInvite}@{Users.invitation}#{/if}#{else}##{/else}"><i class="icon-plus"></i> Invite a New User</a>
+        #{deadbolt.restrictedResource resourceKeys:["Users.massInvite"]}
+            <a id="massInviteBtn" class="btn #{if !canInvite}disabled#{/if}" href="#{if canInvite}@{Users.massInvite}#{/if}#{else}##{/else}"><i class="icon-plus"></i> Add Multiple Users</a>
+        #{/deadbolt.restrictedResource}
+        #{if !canInvite}
+            <br/><br/><div class="alert">&{'limits.users.max'}</div>
+        #{/if}
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        #{ajaxTable "users", source: "user.UserTable", objectTableName: '_oTable'}
+            "sDom":"<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "aaSorting":[
+                [0, 'desc']
+            ],
+            "fnRowCallback":function (nRow, aData, iDisplayIndex) {
+                var id = aData[8];
+                var hrefValue = '<a href="@{Users.show()}/' + id + '"/>';
+                $('td:eq(0)', nRow).wrapInner(hrefValue);
+
+                return nRow;
+            },
+            "aoColumnDefs":[
+%{ //hide the company column for company admins, they already know what company they belong to }%
+#{if !connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+                {"bVisible": false, aTargets:[6]}
+#{/if}
+            ],
+            "aoColumns":[
+                {sWidth:"20%", sClass:"dataCol_emailaddress"},
+                {sWidth:"15%", sClass:"dataCol_name"},
+                {sWidth:"15%", sClass:"dataCol_displayName"},
+                {sWidth:"10%", sClass:"dataCol_status"},
+                {sWidth:"10%", sClass:"dataCol_datecreated"},
+                {sWidth:"15%", sClass:"dataCol_role"},
+                {sWidth:"15%", sClass:"dataCol_company", iDataSort: 6},
+                {bVisible: false},
+                {bVisible: false}
+            ]
+        #{/ajaxTable}
+    });
+
+    $.extend($.fn.dataTableExt.oStdClasses, {
+        "sSortAsc":"header headerSortDown",
+        "sSortDesc":"header headerSortUp",
+        "sSortable":"header sorting"
+    });
+</script>

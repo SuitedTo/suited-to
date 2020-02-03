@@ -1,0 +1,12 @@
+*{
+ {
+ { Parameters:
+ {   _arg: The name of the tab.
+ {   _helpText: Help text for pop over.
+ {   _filters: The filters.
+ {
+ }*
+
+
+
+<li class="filterListItem"><a href="#" data-name="${_arg}" data-source="${_filters}">${_arg}<span class="help" rel="popover" data-content="${_helpText}" data-original-title="${_arg}">?</span></a></li>

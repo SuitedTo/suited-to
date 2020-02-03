@@ -1,0 +1,63 @@
+#{extends 'standardPage.html' /}
+#{set title:'Prep Jobs' /}
+#{set 'moreScripts'}
+#{/set}
+
+#{set tableId:'prepjobs' /}
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Prepado Jobs</h1>
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="span12">
+        <table id="prepJobsTable" class="table table-striped">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Primary Name</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<br>
+<a href="@@{PrepAdmin.showPrepJob()}" class="">
+    <button id="addPrepJobBtn" class="btn btn-large btn-primary"><i class="icon-briefcase icon-white"></i> Add New Prep Job, You Dirty Hippie</button>
+</a>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        #{ajaxTable "prepJobsTable", source:"prepjob.PrepJobTable", objectTableName: '_oTable'}
+            "sDom":"<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+                    "aaSorting":[
+                [0, 'desc']
+            ],
+                    "fnRowCallback":function (nRow, aData, iDisplayIndex) {
+                var id = aData[0];
+                var hrefValue = '<a href="@{PrepAdmin.showPrepJob()}/' + id + '"/>';
+                $('td:eq(1)', nRow).wrapInner(hrefValue);
+
+                return nRow;
+            },
+            "aoColumns":[
+                {sWidth:"20%", sClass:"dataCol_Id"},
+                {sWidth:"15%", sClass:"dataCol_PrimaryName"},
+            ]
+        #{/ajaxTable}
+    });
+
+    $.extend($.fn.dataTableExt.oStdClasses, {
+        "sSortAsc":"header headerSortDown",
+        "sSortDesc":"header headerSortUp",
+        "sSortable":"header sorting"
+    });
+</script>

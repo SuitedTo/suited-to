@@ -1,0 +1,86 @@
+# you describe your data using the YAML notation here
+# and then load them using Fixtures.load("data.yml")
+Company(sparc):
+    name: Test Company
+
+Category(java):
+    name: Java
+    status: PUBLIC
+
+User(appAdmin):
+    email: aa@aa.com
+    password: secret
+    fullName: App Admin
+    roles: {APP_ADMIN}
+    status: ACTIVE
+
+User(sparcAdmin):
+    email: sa@sa.com
+    password: secret
+    fullName: SPARC Admin
+    roles: {COMPANY_ADMIN}
+    company: sparc
+    status: ACTIVE
+
+User(javaReviewer):
+    email: jr@jr.com
+    password: secret
+    fullName: SPARC Admin
+    roles: {COMPANY_ADMIN}
+    company: sparc
+    status: ACTIVE
+    reviewCategories: java
+
+User(superReviewer):
+    email: sr@sr.com
+    password: secret
+    fullName: SPARC Admin
+    roles: {COMPANY_ADMIN}
+    company: sparc
+    status: ACTIVE
+    superReviewer: true
+
+User(nonReviewer):
+    email: nr@nr.com
+    password: secret
+    fullName: SPARC Admin
+    roles: {COMPANY_ADMIN}
+    company: sparc
+    status: ACTIVE
+
+User(bob):
+    email: bob@gmail.com
+    password: secret
+    fullName: Bob
+    company: sparc
+    status: ACTIVE
+
+Question(testQuestion1):
+  text: testQuestion1
+  time: MEDIUM
+  difficulty: MEDIUM
+  user: bob
+  status: ACCEPTED
+
+Question(testQuestion2):
+  text: testQuestion2
+  time: MEDIUM
+  difficulty: MEDIUM
+  user: bob
+  status: ACCEPTED
+
+Interview(testInterview1):
+  name: A Test Interview
+  user: bob
+
+InterviewQuestion(testInterviewQuestion1):
+  sortOrder: 1
+  interview: testInterview1
+  question: testQuestion1
+
+InterviewQuestion(testInterviewQuestion2):
+  sortOrder: 2
+  interview: testInterview1
+  question: testQuestion2
+
+

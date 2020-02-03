@@ -1,0 +1,67 @@
+*{ This tag is used in conjunction with userProperty and constructs an 
+ { appropriate HTML field if some contained call to userProperty displays in
+ { EDIT or VIEW mode.  If all contained userProperty templates display in HIDE
+ { mode, or if there are no userProperty templates, this template will render
+ { nothing.
+ {
+ {   _arg: A prefix for div names and ids in this field.
+ {   _required: Optional.  If set to true, the label of this field will be
+ {         instrumented to indicate it is required, so long as at least one
+ {         contained userProperty renders in edit mode.
+ {   _controlGroupClasses: Optional.  A String of any additional classes, 
+ {         separated by spaces, to be added to the control-group div in addition
+ {         to "control-group".  Defaults to the empty string.
+ {   _label: Optional.  The human-readable label for the input.  Defaults to
+ {         _arg.
+ }*
+
+%{
+    if (!_arg) {
+        throw new RuntimeException("arg is required.");
+    }
+
+    if (_required == null) {
+        _required = false;
+    }
+    
+    if (!_controlGroupClasses) {
+        _controlGroupClasses = "";
+    }
+    
+    if (!_label) {
+        _label = _arg;
+    }
+    
+    groupName = _arg + "Group";
+    labelName = _arg + "Label";
+    controlsName = _arg + "Controls";
+}%
+ 
+#{set __propertyDisplayed: false /}
+#{set __editDisplayed: false /}
+
+<div class="control-group ${_controlGroupClasses}" name="${groupName}" 
+        id="${groupName}">
+    
+    <label id="${labelName}" name="${labelName}" class="control-label">
+        ${_label.raw()}
+    </label>
+    <div class="controls" id="${controlsName}" name="${controlsName}">
+        #{doBody /}
+    </div>
+</div>
+
+#{if !__propertyDisplayed}
+    <script type="text/javascript">
+        $(function () {
+            $("#${groupName}").remove();
+        });
+    </script>
+#{/if}
+#{elseif __editDisplayed}
+    <script type="text/javascript">
+        $("#${controlsName}").addClass("required");
+        $("#${labelName}").attr(
+                "for", $("#${controlsName} :input").attr("id"));
+    </script>
+#{/elseif}

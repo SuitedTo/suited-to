@@ -1,0 +1,234 @@
+*{ Displays a table containing feedback about `_candidate`.
+ {
+ { Also will insert a PDF-generation button into divs of class 'feedbackTable-pdf-button-container'.
+ { If the quickViewer tag is also included in the page, then clicking the anchor will display
+ { the quickViewer dialog.  Otherwise, the PDF will just be downloaded.  This approach of binding
+ { to the class of an anchor outside this tag was chosen to allow more freedom in the placement of the
+ { anchor while still allowing this tag to encapsulate the behavior of the anchor.
+ {
+ { Parameters:
+ {   _candidate: The candidate about which to display feedback.  May not be 
+ {         null.
+ {   _connectedUser: The currently connected user.
+ }*
+
+#{set 'moreScripts'}
+    #{get 'moreScripts' /}
+    #{script 'jquery.dataTables.js' /}
+    #{script 'paging.js' /}
+    #{script 'jquery.tablednd.0.7.min.js' /}
+    #{script 'app-json-request.js' /}
+#{/set}
+
+#{set dataSource:@Feedbacks.feedbackTableData(_candidate?.id) /}
+
+<div id="errorAlert"></div>
+
+<table id="feedbackItems" class="table">
+    <thead><tr>
+        <th>Timestamp</th>
+        <th></th>
+    	<th>When</th> 	
+        <th></th>
+    </tr></thead>
+    <tbody>
+        
+    </tbody>
+</table>
+
+<div id="deleteFeedbackConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Delete Feedback Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to delete this feedback?</p>
+    </div>
+    <div class="modal-footer">
+        <a id="cancelFeedbackDeleteBtn" class="btn" data-dismiss="modal">Cancel</a>
+        <a id="confirmFeedbackDeleteBtn" onclick="confirmDelete();" data-dismiss="modal" class="btn btn-danger no-change-check"><i class="icon-trash icon-white"></i> Delete</a>
+    </div>
+</div>
+
+#{applicationApi /}
+
+<script type="text/javascript">
+    
+    $.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, 
+                fnCallback, bStandingRedraw ) {
+                    
+        if ( typeof sNewSource != 'undefined' && sNewSource != null )
+        {
+            oSettings.sAjaxSource = sNewSource;
+        }
+        this.oApi._fnProcessingDisplay( oSettings, true );
+        var that = this;
+        var iStart = oSettings._iDisplayStart;
+        var aData = [];
+
+        this.oApi._fnServerParams( oSettings, aData );
+
+        oSettings.fnServerData( oSettings.sAjaxSource, aData, function(json) {
+            /* Clear the old information from the table */
+            that.oApi._fnClearTable( oSettings );
+
+            /* Got the data - add it to the table */
+            var aData =  (oSettings.sAjaxDataProp !== "") ?
+                that.oApi._fnGetObjectDataFn( oSettings.sAjaxDataProp )( json ) : json;
+
+            for ( var i=0 ; i<aData.length ; i++ )
+            {
+                that.oApi._fnAddData( oSettings, aData[i] );
+            }
+            
+            //hide the PDF button if no feedbacks remain in the table
+            if (aData.length == 0) {
+            	$('div.feedbackTable-pdf-button-container').each(function() {
+            		$(this).hide();
+            	});
+            }
+            
+            //this hack appends a hash to the embedded url each time an item is deleted in order
+            //to bypass the viewer's caching mechanism
+            $('div.feedbackTable-pdf-button-container input').each(function() {
+            	$(this).attr('value', $(this).attr('value') + '#');
+            });
+
+            oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+            that.fnDraw();
+
+            if ( typeof bStandingRedraw != 'undefined' && bStandingRedraw === true )
+            {
+                oSettings._iDisplayStart = iStart;
+                that.fnDraw( false );
+            }
+
+            that.oApi._fnProcessingDisplay( oSettings, false );
+
+            /* Callback user function - for event handlers etc */
+            if ( typeof fnCallback == 'function' && fnCallback != null )
+            {
+                fnCallback( oSettings );
+            }
+        }, oSettings );
+    };
+    
+    var removeID;
+    function confirmDelete() {
+        removeFeedback(removeID);
+    }
+    
+    function removeFeedback(feedbackId) {
+        deleteFeedback(feedbackId, function(result) {
+            $('#viewFeedback').modal('show');
+            if (result["error"]) {
+                $("#errorAlert").html("<div class='alert alert-error'>" + 
+                    result["error"] + "</div>");
+            }
+            else {
+                $("#errorAlert").html("<div class='alert alert-success'>Feedback removed!</div>");
+                $('#feedbackItems').dataTable().fnReloadAjax();
+            }
+        });
+    }
+    
+    $(function () {
+        
+        var colIndices = {when: 0, who: 1, interview: 2, recommendation: 3};
+
+        oTable = $('#feedbackItems').dataTable({
+            "sPaginationType": "bootstrap",
+            "bProcessing": true,
+            "oLanguage": {"sProcessing":     
+                              #{jsString}#{processingDisplay /}#{/jsString},
+                          "sLoadingRecords":
+                              #{jsString}#{processingDisplay /}#{/jsString},
+
+            #{if (_connectedUser.company == null) || (_connectedUser.company.feedbackDisplay)
+            	|| (_connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN))}
+                          "sEmptyTable":    "There is no feedback on this " +
+                                             "candidate yet.",
+            #{/if}
+            #{else}
+                          "sEmptyTable":    "You haven't given feedback on this candidate yet." +
+                                             " What are your thoughts?",
+            #{/else}
+                          "sZeroRecords": "Your search did not return any results."},
+            "sAjaxSource": "${dataSource}",
+            "sDom": "<'row'<'span3'l><'span4'f>><'tableWorkingSpace'rt>" +
+                    "<'row'<'span3'i><'span4'p>>",
+            "aoColumns": [
+                {mDataProp: "timestamp", bSearchable: false, bVisible: false},
+                {sWidth: "6%", mDataProp: null, sDefaultContent: '', bSortable: false, sClass: "removeCell"},
+                {sWidth: "15%", mDataProp: "since", "iDataSort": 0}, 
+                {sWidth: "79%", mDataProp: "feedback", bSortable: false}
+            ],
+            "fnRowCallback": function(nRow, aData, iDisplayIndex, 
+                        iDisplayIndexFull) {                
+                
+                #{if _connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN) ||
+                        _connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+                    
+                    var admin = true;
+                #{/if}
+                #{else}
+                    var admin = false;
+                #{/else}
+                
+                var loggedUserID = "${_connectedUser.email}";
+                loggedUserID = loggedUserID.toLowerCase();
+                var sourceEmail = aData["source"].toLowerCase();
+                if (admin || loggedUserID === sourceEmail) {
+                    var feedbackId = aData["feedbackId"];
+                    
+                    if ($("a", nRow).length === 0) {
+                        $(".removeCell", nRow).append("<a href=\"#\" "+
+                            "id = \"removeFeedback" + feedbackId +"\"" +
+                            "onclick=\"removeID = " + feedbackId + ";confirmDeleteFeedback();\"" +
+                            "data-toggle=\"modal\"><i class=\"icon-trash\" title=\"Remove\"></i></a>");
+                    }
+                }
+
+                return nRow;
+            }
+            
+        });
+        
+        $('#deleteFeedbackConfirmation').modal({show: false});
+    });
+    
+    function confirmDeleteFeedback(){
+        $('#viewFeedback').modal('hide');
+    	$('#deleteFeedbackConfirmation').modal('show');
+    }
+    
+    $(document).ready(function() {
+    	
+    	$('.feedbackTable-pdf-button-container').each(function() {
+    		#{if (_candidate?.feedbackList?.size() > 0 && (_connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN) || _connectedUser.hasRole(enums.RoleValue.APP_ADMIN)))}
+    			
+	    		$('<a></a>')
+	    			.addClass('quick-view-trigger')
+                    .addClass('btn')
+	    			.attr("href", "@{Feedbacks.getFeedbackPdf(_candidate?.id,true,true)}")
+	    			.attr("type", "application/pdf")
+                    .attr("data-target", "#quickViewFeedback")
+                    //.attr("data-toggle", "modal")
+	    			.append('<i class="icon-file"></i> View as PDF')
+	    			.appendTo(this);
+	    		
+    		#{/if}
+    	});
+        #{if (_candidate?.feedbackList?.size() > 0 && (_connectedUser.hasRole(enums.RoleValue.COMPANY_ADMIN) || _connectedUser.hasRole(enums.RoleValue.APP_ADMIN)))}
+            
+            $('<a class="btn"></a>')
+                .attr("href", "@{Feedbacks.getFeedbackPdf(_candidate?.id,false,false)}")
+                .attr("type", "application/pdf")
+                .append('<i class="icon-file"></i> Download PDF')
+                .appendTo($('.feedbackTable-pdf-dnld-button-container'));
+            
+        #{/if}
+    	
+    });
+    
+</script>

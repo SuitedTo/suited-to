@@ -1,0 +1,10 @@
+*{display phone number fields, prepopulated with optional phoneNumber parameter, as well as an index argument to modify input names}*
+<div class="controls email repeatable">
+    <select name="emailType${_index}" id="emailType${_index}" size="1" class="input-small">
+    #{list items:enums.EmailType.values(), as:'type'}
+        <option value="${type.name()}" ${type.equals(_email?.emailType) ? "selected=selected" : ""}>${type.toString()}</option>
+    #{/list}
+    </select>
+    <input type="text" class="input-medium" id="emailAddress${_index}" name="emailAddress${_index}" value="${_email?.emailAddress}">
+    <a id="emailRemove${_index}" class="remove" href="#"><i class="icon-remove"></i> remove</a>
+</div>

@@ -1,0 +1,4 @@
+self: play -> ebean 0.1
+
+require:
+    - play

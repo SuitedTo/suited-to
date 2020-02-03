@@ -1,0 +1,119 @@
+/* Question Rating Styles */
+.rate-block {
+    display: block;
+    width: 100%
+    float: left;
+    
+    .rateBtn {
+        width:50px;
+        float:right;
+        padding-left: 15px;
+    }
+}
+.rate {
+    display: block;
+    margin: 5px 0;
+    width: 49px;
+    height: 41px;
+    background-image: url('../images/vertPosNegSpriteNew.png');
+    background-repeat: no-repeat;
+    background-size: 200%;
+    overflow: hidden;
+    cursor: pointer;
+    text-indent: -9999em;
+    font-size: 1px;
+}
+
+.rate-up.rate-off{
+    //background-position: -49px 0px;
+    background-position: 100% 0px;
+}
+
+.rate-down.rate-off{
+    //background-position: -49px -41px;
+    background-position: 100% 100%;
+}
+
+.rate-up.rate-on{
+    background-position: 0px 0px;
+}
+
+.rate-down.rate-on{
+    //background-position: 0px -41px;
+    background-position: 0px 100%;
+}
+.rate-up:hover {
+    background-position: 0px 0px;
+}
+.rate-down:hover {
+    //background-position: 0px -41px;
+    background-position: 0px 100%;
+}
+
+h2.score{
+    font-family: @sans-serif-heading-bold;
+    margin-top: 20px;
+    text-align: right;
+    font-size: 3.7em;
+    display: block;
+    float: left;
+    width: 100px;
+
+}
+.score-positive {
+    color: @teal-main;
+}
+.score-negative {
+    color: #d8af3f;
+}
+
+
+
+@media (min-width: 1200px) {
+
+}
+
+
+
+//
+// Responsive: Phone to Large desktop
+// --------------------------------------------------
+@media (max-width: 1199px) {
+
+    h2.score { width: 90px; font-size: 2.8em; }
+    .rate-block .rateBtn { width: 39px; padding-left: 10px; }
+    .rate { width: 39px; height: 33px; }
+
+}
+
+//
+// Responsive: Tablet to desktop
+// --------------------------------------------------
+@media (min-width: 768px) and (max-width: 979px) {
+
+    //.rate-block { width: 85px; }
+    h2.score { width: 60px; font-size: 2.0em; }
+    .rate-block .rateBtn { width: 36px; padding-left: 7px; }
+    .rate { width: 35px; height: 29px; }
+}
+
+
+
+//
+// Responsive: Landscape phone to desktop/tablet
+// --------------------------------------------------
+@media (max-width: 767px) {
+
+    h2.score { width: 64px; font-size: 2em; }
+    .rate-block { width: 115px; margin-right: 20px; float: right; margin-bottom: 10px; margin-left: 20px; }
+    .rate { width: 35px; height: 29px; }
+}
+
+
+
+//
+// Responsive: Phone
+// --------------------------------------------------
+@media (max-width: 479px) {
+
+}

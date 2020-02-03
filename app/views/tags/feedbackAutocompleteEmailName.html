@@ -1,0 +1,232 @@
+%{
+field = _field; //the name and id of the input element
+}%
+<div id="${field}ErrorDiv" class="alert alert-error" style="display: none;">
+</div>
+
+<div id="${field}-wrap">
+<textarea id="${field}" name="${field}" class="autocompleteTextField no-change-check" rows="1"></textarea>
+</div>
+
+
+<style>
+
+    .text-core .text-wrap .text-tags .text-tag .text-button { height: 18px; font-family: inherit; font-size: 13px; background: #D4F1D3; border: 1px solid #76C273;
+    }
+    .text-core .text-wrap .text-tags .text-tag { word-break: break-all;}
+    .text-core .text-wrap .text-tags .text-tag .text-button { min-height: 18px; height: auto; }
+    .text-core .text-wrap .text-prompt { font-family: inherit; font-size: 13px; }
+    .text-core .text-wrap .text-dropdown { font-family: inherit; font-size: 13px; }
+    .text-core .text-wrap textarea.autocompleteTextField { width: 400px;
+    display: inline-block;
+    width: 400px;
+    padding: 4px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 18px;
+    color: #555;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    }
+    @media (max-width: 480px) {
+    .text-core .text-wrap textarea.autocompleteTextField { width: 250px; }
+    }
+
+</style>
+
+<script type="text/javascript">
+    // remove multiple, leading or trailing spaces 
+    function trimWhitespace(str) {
+        s = str; 
+        s = s.replace(/(^\s*)|(\s*$)/gi,"");
+        s = s.replace(/[ ]{2,}/gi," "); 
+        s = s.replace(/\n /,"\n"); return s;
+    }
+
+    /** Calculates the position of a new tag **/
+    $.fn.textext.TextExtTags.prototype.onPreInvalidate = function(){
+        var self = this,
+            lastTag = self.tagElements().last(),
+            pos = lastTag.position()
+            ;
+
+    if(lastTag.length > 0)
+        pos.left += lastTag.innerWidth();
+    else
+        pos = self._originalPadding;
+
+    self._paddingBox = pos;
+
+    var newTop = parseInt(pos.top,10)+lastTag.outerHeight();
+
+    self.input().css({
+        paddingLeft : self._originalPadding.left,
+        paddingTop : newTop+"px"
+    });
+    }
+
+    errorHasBeenDisplayed = false;
+    $('#${field}').textext({
+        plugins : 'autocomplete ajax tags suggest prompt',
+        prompt : 'Start typing a name or email address.',
+        ext: {
+            autocomplete: {
+                onSetSuggestions: function(e, data) {
+                    /** Don't display any suggestions for users that have already been tagged **/
+                    x = (jQuery.parseJSON($("input[type='hidden'][name='${field}']").val()));
+                    redundantIndices = new Array();
+                    for( i = 0; i < data.result.length; i++) {
+                        for( j = 0; j < x.length; j++) {
+                            if(data.result[i].label.localeCompare(x[j].label) == 0) {
+                                redundantIndices.push(i);
+                            }
+                        }
+                    }
+
+                    if(redundantIndices.length > 0) {
+                    nonRedundantResult = new Array();
+                    index = redundantIndices.shift();
+                    for(i = 0; i < data.result.length; i++) {
+                        if(i == index) {
+                            index = redundantIndices.shift();
+                        }
+                        else {
+                            nonRedundantResult.push(data.result[i]);
+                        }
+                    }
+                    data.result = nonRedundantResult;
+
+                    }
+
+                    $.fn.textext.TextExtAutocomplete.prototype.onSetSuggestions.apply(this, arguments);
+                }
+            },
+            itemManager: {
+                stringToItem: function(str)
+                {
+                    return { label: str };
+                },
+
+                itemToString: function(item)
+                {
+                    return item.label;
+                },
+
+                compareItems: function(item1, item2)
+                {
+                    if(item1 == null || item2 == null) {
+                        return false;
+                    }
+                    return item1.label == item2.label;
+                }
+            },
+
+            tags: {
+                addTags: function(tags)
+                {
+                    $.fn.textext.TextExtTags.prototype.addTags.apply(this, arguments);
+                },
+                isTagAllowed: function(tag)
+                {
+                    label = tag.label;
+                    isAllowed = false;
+
+                    /** Is this tag coming from an autocomplete suggestion? **/
+                    suggestions = this._core._plugins.autocomplete._suggestions;
+
+                    if(typeof suggestions != 'undefined' && suggestions.length > 0) {
+                    for( i = 0; i < suggestions.length; i++) {
+                        suggestion = suggestions[i];
+                        if( tag.label.localeCompare(suggestion.label) == 0) {
+                            isAllowed = true;
+                            break;
+                        }
+                    }
+                    }
+                    else {
+                    /**The tag isn't coming from a suggestion, so it had better be an email address.**/
+                    var pattern = new RegExp(/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i);
+                    tagLabelTrimmed = trimWhitespace(label);
+                    isAllowed = pattern.test(trimWhitespace(label));
+
+                        if(!isAllowed) {
+
+                            $("#${field}ErrorDiv").text("Oops! \"" + label + "\" is not a valid email address.");
+                            $("#${field}ErrorDiv").removeAttr("style");
+                            errorHasBeenDisplayed = false;
+                        }
+                        else {
+                            tag.label = tagLabelTrimmed;
+                        }
+
+                    }   
+                    return isAllowed;
+                    }
+            }
+        },
+        ajax : {
+            url : '@@{Users.getUsersForUserCompanyByPartialEmailOrPartialName()}',
+            dataType : 'json',
+            cacheResults : false,
+            'loadingDelay' : 0.5,
+            'typeDelay' : 0.1
+        }
+    })
+    .bind('keyup', function(e)
+    {
+        if(errorHasBeenDisplayed) {
+            $("#${field}ErrorDiv").attr("style", "display: none;");
+        }
+        else {
+            errorHasBeenDisplayed = true;
+        }
+
+        /** If the user has pressed a comma or semicolon, trigger 
+            enterKeyPress. enterKeyPress is the event used by textext
+            to begin the process of creating a tag **/
+
+        if (e.keyCode == 186 ) {
+            semicolonIndex = $(this).val().search(";");
+            str = $(this).val().slice(0,semicolonIndex);
+            $(this).val(str).trigger('enterKeyPress').val('');
+        }
+        else if (e.keyCode == 188) {
+            commaIndex = $(this).val().search(",");
+            str = $(this).val().slice(0,commaIndex);
+            $(this).val(str).trigger('enterKeyPress').val('');
+        }
+    })
+    .bind('keydown', function(e)
+    {
+        /** Similar to what's going on in keyup, but looking for the tab key
+            instead.  This code had to be placed inside of keydown to override tab's default functionality of cycling through a page's inputs. **/
+        if (e.keyCode == 9) {
+            e.preventDefault();
+            $(this).trigger('enterKeyPress').val('');
+        }
+    })
+    ;
+
+    /** Add the no-change-check class so that this input field does not
+        trigger the "This page has unsaved changes" dialog **/
+    $("input[name=${field}]").attr('class', 'no-change-check');
+
+    $('#solicitFeedback').on('shown', function () {
+
+    var input = $('#${field}'),
+    wrap = $('#${field}').parent(),
+    container = $('#${field}').parent().parent(),
+    width = input.outerWidth(),
+    height = input.outerHeight()
+    ;
+
+    input.width(width);
+    wrap.width(width).height(height);
+    container.height(height);
+    });
+</script>

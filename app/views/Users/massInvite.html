@@ -1,0 +1,102 @@
+#{extends 'standardPage.html' /}
+#{set title:'User List' /}
+#{set 'moreScripts'}
+    #{script 'changes-alert.js' /}
+    #{script 'jquery.form.js'/}
+    #{script 'jquery.validate.min.js'/}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <h1>Invite New Users</h1>
+        <p>An email invitation will be sent to the new user and once they create a password, they will be added to your company's account!</p>
+    </div>
+</div>
+
+#{standardError /}
+
+#{form @Users.sendMassInvitation(), id:'userForm', class:'form-horizontal', autocomplete:"off"}
+<input type="hidden" name="mode" value="invite"/>
+<div class="row ">
+    <div class="span12">
+        <fieldset>
+            <div class="control-group">
+                <label for="emails" class="required control-label">Emails</label>
+                <div class="controls">
+                    <textarea name="emails" id="emails" class="span5 required" rows="7" placeholder="Enter email addresses separated by a comma, semi-colon, or line break">${emails}</textarea>
+                </div>
+            </div>
+            #{if !connectedUser?.company}
+                <div class="control-group" id="companyGroup">
+                    <label id="companyNameLabel" for="companyName" class="control-label">Company</label>
+                    <div class="controls">
+                        <input type="text" data-provide="typeahead" id="companyName" name="companyName" value="${user?.company?.name}">
+                    </div>
+                </div>
+            #{/if}
+
+        </fieldset>
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+        #{if connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+            INVITE ALL THE USERS, for you are SuitedTo admin.
+        #{/if}
+        #{else}
+            %{
+                company = connectedUser.company;
+            }%
+
+            #{if company.accountType.getMax(enums.AccountResource.USERS) != null}
+                %{
+                    invitable = company.accountType.getMax(enums.AccountResource.USERS) -
+                            company.getUsers().size();
+
+                    if (invitable == 1) {
+                        plural = "";
+                    }
+                    else {
+                        plural = "s";
+                    }
+                }%
+                Based on your current account settings, you can invite up to <strong>${invitable}</strong> user${plural}.
+            #{/if}
+        #{/else}<br/><br/>
+    </div>
+</div>
+<div class="row form-actions">
+    <div class="span10">
+        <a href="@{Users.cancelEdit()}"><button type="button" class="btn no-change-check">Cancel</button></a>
+        <button class="btn btn-primary no-change-check checkUserData" type="submit" data-action="invitation"><i class="icon-envelope icon-white"></i> Send the invitation emails</button>
+    </div>
+</div>
+#{/form}
+
+<script type="text/javascript">
+
+    $('#companyName').typeahead({
+        source: function(query, process) {
+            //console.log(query)
+            var listAction = #{jsAction @Companies.getCompanyList(':query') /}
+            $.ajax({
+                url:listAction({query: query}),
+                dataType: 'json',
+                success:function (data) {
+                    var names = [];
+                    $.map(data, function(val, i){
+                        //console.log(val.name, i)
+                        names.push(val.name);
+                    });
+                    process(names);
+                }
+            })
+        }
+    });
+
+
+
+</script>

@@ -1,0 +1,741 @@
+#{if showNav}
+    #{extends 'standardPage.html' /}
+#{/if}
+#{else}
+    #{extends 'standardPageNoNav.html' /}
+#{/else}
+%{
+def title = play.i18n.Messages.get('companyManagement.title.' + mode)
+}%
+#{set title:title /}
+#{set 'moreScripts'}
+    #{script 'changes-alert.js' /}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'jquery-ui-1.9.0.custom.min.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+%{
+cf = play.Play.configuration
+}%
+
+<div class="row">
+    <div class="span12">
+        <h1>${title}</h1>
+    </div>
+</div>
+
+#{if play.i18n.Messages.get('companyManagement.message.' + mode) }
+<div class="row">
+    <div class="span12">
+        <div class="alert alert-error">&{'companyManagement.message.' + mode}</div>
+    </div>
+</div>
+#{/if}
+
+#{standardError /}
+
+#{form @CompanyManagement.save() , id:'companyForm', class:'form-vertical', autocomplete:"off"}
+#{if company?.id}
+<input type="hidden" id="company" name="company.id" value="${company.id}"/>
+<input type="hidden" id="nameRequired" value="${company.nameRequired()}"/>
+#{/if}
+<input type='hidden' name='stripeToken' id="stripeToken" value="${stripeToken}"/>
+<input type='hidden' name='usePaymentInfoOnFile' id="usePaymentInfoOnFile" value="false"/>
+<input type="hidden" name="mode" id="mode" value="${mode}"/>
+<div class="row">
+<div class="span9 form-horizontal">
+
+    <fieldset id="companyBasicInfo">
+        <h3>Company Information: </h3>
+        <!-- Name -->
+        <div class="control-group">
+            <label for="companyName" class="control-label required">Company Name</label>
+            <div class="controls">
+                <input type="text" id="companyName" name="company.name" class="input-large required" value="${company?.name}"/>
+            </div>
+        </div>
+        <!-- Address -->
+        <div class="control-group">
+            <label for="company.address" class="control-label">Company Address</label>
+            <div class="controls">
+                <textarea class="input-large" id="company.address" name="company.address" rows="2">${company?.address}</textarea>
+            </div>
+        </div>
+        <!-- Phone -->
+        <div class="control-group">
+            <label class="control-label">Phone</label>
+            <div class="controls">
+                <input type="text" name="phoneNumber" id="phoneNumber" value="${company?.contactPhone?.phoneNumberValue}" class="input-large"/>
+            </div>
+        </div>
+        <!-- Email -->
+        <div class="control-group">
+            <label class="control-label">Company Contact Email</label>
+            <div id="emailControl" class="controls">
+                <input type="text" id="company.contactEmail" name="company.contactEmail" class="input-large" value="${company?.contactEmail}"/>
+            </div>
+        </div>
+    </fieldset>
+
+    <hr/>
+
+#{if !controllers.CompanyManagement.fieldHidden(controllers.CompanyManagement.FormField.SETTINGS, mode, company)}
+    <fieldset id="companySettings">
+        <h3>Company Settings: </h3>
+        <!-- Feedback Options -->
+        <div class="control-group">
+            <label class="control-label">Feedback Options<a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.feedbackOptions'}" data-original-title="Feedback Options">?</a></label>
+            <div class="controls">
+                <label class="radio inline">
+                    <input type="radio" name= "company.feedbackDisplay" value="false" checked="checked"
+                           #{if !company || !company.feedbackDisplay}checked="checked"#{/if}
+                            />
+                    <span>Hide Feedback</span>
+                </label>
+                <label class="radio inline">
+                    <input type="radio" name="company.feedbackDisplay" value="true"
+                           #{if company && company.feedbackDisplay}checked="checked"#{/if}/>
+                    <span>Display Feedback</span>
+                </label>
+            </div>
+        </div>
+        
+        <!-- Candidate Job Statuses -->
+        #{if company.hasBeenSaved()}
+        	<div class="control-group" >
+            	<label class="control-label">Candidate Job Statuses</label>
+            	<div class="controls">
+            		<table id="candidateStatusesTable" class="table-condensed">
+            		#{list items:controllers.CompanyJobStatuses.getStatusesForCompany(company), as:'companyJobStatus'}
+                        <tr id="companyJobStatus_${companyJobStatus.id}">
+                        	<td id="companyJobStatusName_${companyJobStatus.id}">${companyJobStatus.name}</td>
+                        	<td><a class="remove-link" href="javascript:return false;" onClick="deleteCompanyJobStatus(${companyJobStatus.id})"><i class="icon-trash"></i></a></td>
+                        	<td><a class="edit-link" href="javascript:return false;" onClick="editCompanyJobStatus(${companyJobStatus.id})"><i class="icon-edit"></i></a></td>
+                        	<td><input id="renameCompanyJobStatus_${companyJobStatus.id}" type="text" onkeyup="validateRename(${companyJobStatus.id})" class="input-large editCompanyJobStatus editCompanyJobStatus_${companyJobStatus.id}"/></td>
+            				<td><a href="javascript:return false;" id="renameCompanyJobStatusBtn_${companyJobStatus.id}" class="editCompanyJobStatus editCompanyJobStatus_${companyJobStatus.id} btn no-change-check" onClick="renameCompanyJobStatus(${companyJobStatus.id})">Rename</a></td>
+                        </tr>
+                    #{/list}
+                    </table>
+            	</div>
+            	<label class="control-label">Add New Status <img src="/public/images/list-add.png" width="20px" height="20px"/> </label>
+            	<div class="controls">
+            		<input id="newCompanyJobStatus" type="text" onkeyup="validateAdd()" class="input-large"/>
+            		<a href="javascript:return false;" id="addCompanyJobStatusBtn" disabled="disabled" class="btn no-change-check" onClick="addCompanyJobStatus()">Add</a>
+                </div>
+        	</div>
+        #{/if}
+        
+
+    #{if connectedUser} #{deadbolt.restrict roles:[['APP_ADMIN']]}
+        <!-- Taleo Integration -->
+        <div class="control-group ">
+            <label class="control-label">Taleo Integration <img src="/public/images/taleo.jpg" alt=""/>  </label>
+            <div class="controls">
+                <label class="radio inline">
+                    <input type="radio" name= "company.taleoIntegration" value="false" checked="checked"
+                           #{if !company || !company.taleoIntegration}checked="checked"#{/if}
+                            />
+                    <span>Off</span>
+                </label>
+                <label class="radio inline">
+                    <input type="radio" name="company.taleoIntegration" value="true"
+                           #{if company && company.taleoIntegration}checked="checked"#{/if}/>
+                    <span>On</span>
+                </label>
+            </div>
+        </div>
+         <!-- Account Type Lock-->
+        <div class="control-group">
+
+            <div class="controls">
+                <label class="checkbox" for="company.accountTypeLock">
+                    <input type="checkbox" id="company.accountTypeLock" name="company.accountTypeLock" #{if company?.accountTypeLock}checked="checked"#{/if}/>
+                    <input type="hidden" name="company.accountTypeLock" value="false" />*{hidden input to help controller detect an unchecked checkbox. See: http://stackoverflow.com/questions/8795480/pojo-jpa-bindings-and-checkboxes}*
+                    Prevent this company from making changes to their account type <i class="icon-lock"></i>
+                </label>
+            </div>
+        </div>
+        <p class="alert alert-warn"><strong>A Quick Note on Company Setup:</strong> Setting up a company as a SuitedTo admin gives you a lot more flexibility than company self registration. Use any combination of trial period and coupon codes to set up a sweet deal for a customer. Our payment system does require that if payment is due at the time of registration a credit card must be entered. So if you don't enter a credit card here you'll need to set either a trial period or use a 100% off coupon code</p>
+    #{/deadbolt.restrict}#{/if}
+    </fieldset>
+#{/if}
+#{if !controllers.CompanyManagement.fieldHidden(controllers.CompanyManagement.FormField.ACCOUNT_TYPE, mode, company)}
+    <fieldset id="accountType">
+        <h3>Account Type: </h3>
+        <div class="control-group" >
+
+            <div class="controls" >
+                <div class="row-fluid">
+                    <div class="span6">
+                        <label class="radio inline">
+                            <input id="standardRadio" type="radio" name="company.accountType" value="STANDARD"
+                                   #{if enums.AccountType.STANDARD.equals(company.accountType)}checked="checked"#{/if}/>
+                            <span><strong>Standard</strong> - ${enums.AccountType.STANDARD.price.formatCurrency('USD')} per month</span>
+                            <ul>
+                                <li>Starts with a 14 day free trial</li>
+                                <li>Store 25 private questions</li>
+                                <li>Track candidates &amp; feedback</li>
+                                <li>Maintain 15 active interview templates</li>
+                                <li>Up to 40 users</li>
+                            </ul>
+                        </label>
+                    </div>
+
+                    <div class="span6">
+                        <label class="radio inline">
+                            <input id="enterpriseRadio" type="radio" name="company.accountType" value="ENTERPRISE"
+                                   #{if enums.AccountType.ENTERPRISE.equals(company.accountType)}checked="checked"#{/if}/>
+                            <span><strong>Enterprise</strong> - ${enums.AccountType.ENTERPRISE.price.formatCurrency('USD')} per month</span>
+                            <ul>
+                                <li>Standard features plus</li>
+                                <li>Unlimited private questions</li>
+                                <li>Unlimited active interview templates</li>
+                                <li>Up to 500 users</li>
+                            </ul>
+                        </label>
+                    </div>
+                </div>
+                <div id="accountDowngradeStandard" class="hide alert fade in">
+                    <strong>It's ok. You can downgrade your account and still enjoy many of the benefits of
+                        SuitedTo.</strong><br/>
+                    Before you save anything please review the following changes that will occur to your company's
+                    account once you hit the Save button.
+                    <ul>
+                        #{if interviewCount > 15}
+                            <li>All but your most recently created 15 interviews will be deleted from the system.
+                            </li>
+                        #{/if}
+                        #{if currentUserCount > 40}
+                            <li>SuitedTo Standard account allows up to 40 active or invited users. Your company
+                                has ${currentUserCount}
+                                active or invited users. Because we have no way of knowing which ones you actually
+                                want to keep, all users in your company
+                                except you will be deactivated. You can reactivate up to 40 users through the Users
+                                menu
+                            </li>
+                        #{/if}
+                        <li>If your company has private questions, all but the highest rated 25 private questions
+                            associated with your company will be withdrawn.
+                        </li>
+                    </ul>
+
+                </div>
+                <div id="accountUpgrade" class=" hide alert alert-info fade in">
+                    <strong>Alright, let's do this!</strong> You'll be able to enjoy all the new benefits of your
+                    upgraded account type just as soon as you hit the save button at the bottom of this page. Any
+                    additional costs for the current billing cycle will be prorated and reflected in your next
+                    monthly bill.
+                </div>
+            </div>
+        </div>
+    #{if connectedUser} #{deadbolt.restrict roles:[['APP_ADMIN']]}
+        <!-- Trial Expiration -->
+        <div class="control-group">
+            <label class="control-label">Trial Expiration<a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.trialExpiration'}" data-original-title="Trial Expiration">?</a></label>
+            <div class="controls">
+                <input type="text" id="trialExpiration" name="trialExpiration" class="span2" value="${company.trialExpiration?.format("MM/dd/yyyy")}">
+            </div>
+        </div>
+
+        <!-- Coupon Code -->
+
+        <div class="control-group">
+            <label class="control-label">Coupon Code<a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.couponCode'}" data-original-title="Coupon Code">?</a></label>
+            <div class="controls">
+                <select id="couponCode" name="couponCode" class="span2" ${company.hasBeenSaved() ? "disabled" : ""}>
+                    <option value=""></option>
+                    #{list availableCoupons, as:'coupon'}
+                        <option value="${coupon.getId()}" #{if couponCode?.equals(coupon.getId())}selected="selected"#{/if}>${coupon.getId()}</option>
+                    #{/list}
+                </select>
+            </div>
+        </div>
+
+    #{/deadbolt.restrict}#{/if}
+    </fieldset>
+#{/if}
+#{else}
+    <input type="hidden" name="company.accountType" id="hiddenAccountType" value="${company.accountType}"
+#{/else}
+
+    <fieldset id="paymentInfo">
+
+
+        #{if company?.hasBeenSaved() && !company?.trialExpired && !enums.AccountType.ENTERPRISE.equals(company?.accountType) && !company?.lastFourCardDigits}
+        <div id="early-payment-alert" class="alert alert-info hide">
+            Can't get enough of SuitedTo? Become a permanent member today! You can
+            put credit card information on file early so you wont be bothered at the
+            expiration of your free trial.  Your credit card will not be charged until
+            the end of your 14-day free trial.<br />
+            <a id="enrollLaterLink" href="#"><strong>I do not wish to register at this time.</strong></a>
+            <a id="enrollNowLink" href="#"><strong>Sign me up now!</strong></a>
+        </div>
+        #{/if}
+
+        <div class="paymentInfoFreeTrial hide"><p>Optional during free trial. <a href="#" class="showCreditCard">Add credit card info.</a></p></div>
+        <div class="paymentInfoFreeTrialHide hide"><p><a href="#" class="hideCreditCard">I do not wish to add a credit card at this time.</a></p></div>
+
+        <div id="paymentInfoFields">
+
+        <h3>Payment Information: </h3>
+
+        <div class="alert-error alert hide" id="payment-errors"></div>
+
+        <div class="control-group">
+            <label class="control-label required">Credit Card Number</label>
+            <div class="controls">
+                <input id="creditCard" type="text" class="input-large card-number" value="#{if card}************${card?.getLast4()}#{/if}"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label required">Security Code</label>
+            <div class="controls">
+                <input id="securityCode" type="text" class="input-mini card-cvc" size="4" value="#{if card}***#{/if}"/> <span class="help-inline"><small class="muted">(or "CVC" or "CVV")</small></span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label required">Expiration Date</label>
+            <div class="controls">
+                <input id="expirationMonth" type="text" size="2" class="input-mini card-expiry-month" value="${card?.getExpMonth()}" placeholder="mm"/>
+                <span> / </span>
+                <input id="expirationYear" type="text" size="4" class="input-mini card-expiry-year" value="${card?.getExpYear()}" placeholder="yyyy"/> <span class="help-inline"><small class="muted">(mm/yyyy)</small></span>
+            </div>
+        </div>
+
+        </div>
+    </fieldset>
+
+    <div class="form-actions">
+            <a href="@{Application.home()}" id="cancelBtn" class="btn no-change-check">Cancel</a>
+            <button id="saveBtn" class="submit-button btn btn-primary no-change-check" type="submit">Save</button>
+        <div class="pull-right">
+        #{if connectedUser}#{deadbolt.restrict roles:[['APP_ADMIN']]}
+            <a id="delete" href="#" data-target="#deleteConfirmation" data-toggle="modal" class="no-change-check">
+                <i class="icon-trash"></i> Delete Company
+            </a>
+            &nbsp;|&nbsp;
+        #{/deadbolt.restrict}#{/if}
+            <a id="deactivate" href="#" data-target="#deactivateConfirmation" data-toggle="modal"class="no-change-check">
+                Deactivate Account
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<div class="span3">
+    #{if connectedUser} #{deadbolt.restrict roles:[['APP_ADMIN']]}
+        <h3>Company Statistics</h3>
+        <table class="table table-bordered table-striped table-condensed">
+            <thead><th colspan="2">Question Stats</th></thead>
+            <tr><td>Total<a href="#" class="help" rel="popover" data-placement="bottom" data-content="&{'help.hoverOver.totalQuestions'}" data-original-title="Total">?</a></td><td>${totalQuestionCount}</td></tr>
+            <tr><td>Public/Accepted <a href="#" class="help" rel="popover" data-placement="bottom" data-content="&{'help.hoverOver.publicQuestions'}" data-original-title="Public/Accepted">?</a></td><td>${publicQuestionCount}</td></tr>
+            <tr><td>Private</td><td>${privateQuestionCount}</td></tr>
+            <thead><th colspan="2">User Stats</th></thead>
+            <tr><td>Total Users</td><td>${userCount}</td></tr>
+            <tr><td>Admin Users</td><td>${adminUserCount}</td></tr>
+            <tr><td>Qualified Reviewers <a href="#" class="help" rel="popover" data-placement="bottom" data-content="&{'help.hoverOver.reviewer'}" data-original-title="Qualified Reviewers">?</a></td><td>${reviewerCount}</td></tr>
+            <tr><td>Contributing Users <a href="#" class="help" rel="popover" data-placement="bottom" data-content="&{'help.hoverOver.contributingUser'}" data-original-title="Contributing Users">?</a></td><td>${contributingUserCount}</td></tr>
+            <thead><th colspan="2">Other Stats</th></thead>
+            <tr><td>Candidates</td><td>${candidateCount}</td></tr>
+            <tr><td>Interviews</td><td>${interviewCount}</td></tr>
+        </table>
+    #{/deadbolt.restrict} #{/if}
+</div>
+</div>
+
+#{/form}
+
+<div id="deactivateConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Confirmation</h3>
+    </div>
+
+    <div class="modal-body">
+        <p>Are you sure you want to deactivate your company's account with SuitedTo.  This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+        <a class="btn" data-dismiss="modal">Cancel</a>
+        <a href="@{CompanyManagement.deactivate(company?.id)}" class="btn btn-danger no-change-check"><i class="icon-trash icon-white"></i> Yes, Deactivate</a>
+    </div>
+</div>
+
+<div id="deleteConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Confirmation</h3>
+    </div>
+
+    <div class="modal-body">
+        <p>You are about to delete this company, like really delete it, all its users, all the questions that the user ever created.
+            All you have to do is hit the little button with the fire on it below but just be really extra sure.  You can't undo this and
+            if you accidentally delete the wrong company all hell could break loose.</p>
+    </div>
+    <div class="modal-footer">
+        <a id="cancelDeleteBtn" class="btn" data-dismiss="modal">Cancel</a>
+        <a id="confirmDeleteBtn" href="@{Companies.delete(company?.id)}" class="btn btn-danger no-change-check"><i class="icon-fire icon-white"></i> Delete</a>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="https://js.stripe.com/v1/"></script>
+
+<script type="text/javascript">
+var trialExpired = ${company?.isTrialExpired() ? company.isTrialExpired() : false},
+        compId = '${company?.id}',
+        existingCompany = $("#company").val(),
+        initialAccountType = "${company?.accountType?.name()}",
+        currentCC = {
+            num: $('#creditCard').val(),
+            cvv: $('#securityCode').val(),
+            mm: $('#expirationMonth').val(),
+            yy: $('#expirationYear').val()
+        },
+        trialExpirationModified = false,
+        trialDays = ${models.Company.FREE_TRIAL_LENGTH_DAYS},
+        adminUser = ${connectedUser ? connectedUser.hasRole(enums.RoleValue.APP_ADMIN) : false};
+
+//frequently used JQuery wrapped DOM elements
+var earlyPayment = {
+            alert : $("#early-payment-alert"),
+            enrollNowLink : $("#enrollNowLink"),
+            enrollLaterLink : $('#enrollLaterLink')
+        },
+        paymentFieldSet = $('#paymentInfoFields'),
+        accountUpgradeAlert = $("#accountUpgrade"),
+        accountDowngradeAlert = $("#accountDowngradeStandard"),
+        companyNameFieldAndLabel = $("#companyName, label[for='companyName']");
+
+
+
+if (typeof Stripe !== 'undefined') {
+    Stripe.setPublishableKey("${cf.get("stripe.publishable_key")}");
+}
+
+function stripeResponseHandler(status, response) {
+    if (response.error) {
+
+        // show the errors on the form
+        $("#payment-errors").show();
+        $("#payment-errors").text(response.error.message);
+        $(".submit-button").removeAttr("disabled");
+    } else {
+        var form$ = $("#companyForm");
+        // token contains id, last4, and card type
+        var token = response['id'];
+        // insert the token into the form so it gets submitted to the server
+        $("#stripeToken").val(token);
+        // and submit
+        form$.get(0).submit();
+    }
+}
+
+function showPaymentForm(){
+    var selectedAccountType = $("input:radio[name='company.accountType']:checked, #hiddenAccountType"),
+            enterpriseAccount = selectedAccountType.val() === 'ENTERPRISE',
+            cardLast4 = '${card?.getLast4()}',
+            selectedCouponCode = $("#couponCode").val(),
+            selectedHundredPercentCoupon = selectedCouponCode && selectedCouponCode.indexOf("100") != -1;
+    if(adminUser){
+        return true;
+    } else {
+        return (enterpriseAccount || trialExpired || cardLast4) && !selectedHundredPercentCoupon;
+    }
+}
+
+function paymentUpdateRequired() {
+
+    //determine if a user has a free account
+    var selectedAccountType = $("input:radio[name='company.accountType']:checked, #hiddenAccountType"),
+            standardAccount = selectedAccountType.val() === 'STANDARD',
+            enterpriseAccount = selectedAccountType.val() === 'ENTERPRISE',
+            selectedCouponCode = $("#couponCode").val(),
+            appliedCouponCode = '${couponCode}',
+            cardLast4 = '${card?.getLast4()}',
+            isNewCard = $('#creditCard').val() !== currentCC.num,
+            isNewCardCVV = $('#securityCode').val() !== currentCC.cvv,
+            isNewCardMM = $('#expirationMonth').val() !== currentCC.mm,
+            isNewCardYY = $('#expirationYear').val() !== currentCC.yy,
+            selectedHundredPercentCoupon = selectedCouponCode && selectedCouponCode.indexOf("100") != -1,
+            selectedOtherCoupon = selectedCouponCode === "" || (selectedCouponCode && selectedCouponCode.indexOf("100") === -1),
+            appliedHundredPercentCoupon = appliedCouponCode && appliedCouponCode.indexOf("100") != -1,
+            isUpgrade = $('#mode').val() === 'UPGRADE';
+
+//        determine whether this company is entitled to the free trial
+//        if the company is just signing up, there is no payment necessary
+//        else if the company is using the standard account and has exceeded 14 days,
+//        the user will be directed to the company management page for payment
+
+
+    var acctChanged = !(initialAccountType == selectedAccountType.val())
+
+    var printData = {
+        "initialAccountType": initialAccountType,
+        "selectedAccountType": selectedAccountType,
+        "acctChanged": acctChanged,
+        "standardAccount": standardAccount,
+        "enterpriseAccount": enterpriseAccount,
+        "compId": compId,
+        "trialExpired": trialExpired,
+        "couponCode": selectedCouponCode,
+        "cardLast4": cardLast4,
+        "isNewCard": isNewCard
+    }
+//    console.log(printData);
+
+    if(adminUser){
+        return false;
+    } else if (acctChanged || isUpgrade){
+        return true;
+    } else if (selectedHundredPercentCoupon || (appliedHundredPercentCoupon && !(selectedOtherCoupon))) {
+        //console.log('No: ','Case 1 - 100 Percent Coupon Selected in drop down OR not admin view with applied 100 Percent Coupon');
+        return false;
+    } else if ( !(isNewCard || isNewCardCVV || isNewCardMM || isNewCardYY) ) {
+        //console.log('No: ','Case 2 - Credit Card Info has NOT changed');
+        return false;
+    } else {
+        //console.log('Yes: ','Case 3 - All Other Scenarios, including no credit card on file');
+        return true;
+    }
+
+}
+
+function showEarlyPaymentAlert() {
+    var selectedAccountType = $("input:radio[name='company.accountType']:checked");
+    return existingCompany && !trialExpired &&
+            selectedAccountType.val() !== 'ENTERPRISE' && !currentCC.num
+}
+
+function resetEarlyPaymentAlert() {
+    if (showEarlyPaymentAlert()) {
+        earlyPayment.alert.show();
+        earlyPayment.enrollNowLink.show();
+        earlyPayment.enrollLaterLink.hide();
+    } else {
+        earlyPayment.alert.hide();
+    }
+}
+
+function handleEarlyPaymentAlertLinkClick(e){
+    var link = $(this);
+    e.preventDefault();
+    link.hide();
+    link.siblings('a').show();
+    paymentFieldSet.toggle(this.id === 'enrollNowLink');
+}
+
+function handleAccountTypeChange(){
+    if (existingCompany) {
+        var selectedAccountType = $("input:radio[name='company.accountType']:checked");
+        var currentVal = selectedAccountType.val();
+        console.log(currentVal);
+        if (currentVal != initialAccountType) {
+            //check for upgrades
+            var upgrading = (currentVal === 'ENTERPRISE');
+            accountUpgradeAlert.toggle(upgrading);
+            accountDowngradeAlert.toggle(!upgrading);
+        } else {
+            accountUpgradeAlert.hide();
+            accountDowngradeAlert.hide();
+        }
+    }
+
+    setDefaultTrialEndDateIfNecessary();
+    resetEarlyPaymentAlert();
+    paymentFieldSet.toggle(showPaymentForm());
+}
+
+function setDefaultTrialEndDateIfNecessary(){
+    var trialExpirationField = $('#trialExpiration:visible');
+    if(trialExpirationField && !trialExpirationModified){
+        var selectedAccountType = $("input:radio[name='company.accountType']:checked");
+        if(selectedAccountType.val() === 'ENTERPRISE'){
+            $('#trialExpiration').val('');
+        } else {
+            var trialExpiration = new Date();
+            trialExpiration.setDate(trialExpiration.getDate() + trialDays);
+            $('#trialExpiration').datepicker('setDate', trialExpiration);
+        }
+    }
+}
+
+function handleCouponCodeChange(){
+    paymentFieldSet.toggle(showPaymentForm());
+}
+
+function validateAdd(id){
+	var newName = $('#newCompanyJobStatus').val();
+	if(newName.length === 0){
+		$('#addCompanyJobStatusBtn').attr("disabled", "disabled");
+	} else {
+		$('#addCompanyJobStatusBtn').removeAttr("disabled");
+	}
+}
+
+function addCompanyJobStatus(){
+	var name = $('#newCompanyJobStatus').val();
+	if(name.length === 0){
+		return;
+	}
+	$('#newCompanyJobStatus').val('')
+	$('#addCompanyJobStatusBtn').attr("disabled", "disabled");
+	$.ajax({url:"@{CompanyJobStatuses.create()}",
+        data: { companyId: "${company.id}", name: name },
+        type: 'POST',
+        dataType: 'json',
+		success:function(result){
+			var id = result.id;
+			var row =
+			'<tr id="companyJobStatus_' + id + '">' +
+            '<td id="companyJobStatusName_' + id + '">' + name + '</td>' +
+            '<td><a class="remove-link" href="javascript:return false;" onClick="deleteCompanyJobStatus(' + id + ')"><i class="icon-trash"></i></a></td>' +
+            '<td><a class="edit-link" href="javascript:return false;" onClick="editCompanyJobStatus(' + id + ')"><i class="icon-edit"></i></a></td>' +
+            '<td><input id="renameCompanyJobStatus_' + id + '" type="text" onkeyup="validateRename(' + id + ')" class="input-large editCompanyJobStatus editCompanyJobStatus_' + id + '"/></td>' +
+            '<td><a href="javascript:return false;" id="renameCompanyJobStatusBtn_' + id + '" class="editCompanyJobStatus editCompanyJobStatus_' + id + ' btn no-change-check" onClick="renameCompanyJobStatus(' + id + ')">Rename</a></td>' +
+            '</tr>';
+    		$('#candidateStatusesTable tr:last').after(row);
+            $('#renameCompanyJobStatus_' + id).hide();
+            $('#renameCompanyJobStatusBtn_' + id).hide();
+  		},
+  		error: function(error){
+  		console.log(error);
+  		}
+  	});
+}
+
+function editCompanyJobStatus(id){
+	$('.editCompanyJobStatus_' + id).toggle();
+	$('#renameCompanyJobStatus_' + id).val($('#companyJobStatusName_' + id).html());
+	validateRename(id);
+}
+
+function validateRename(id){
+	var newName = $('#renameCompanyJobStatus_' + id).val();
+	if(newName.length === 0){
+		$('#renameCompanyJobStatusBtn_' + id).attr("disabled", "disabled");
+	} else {
+		$('#renameCompanyJobStatusBtn_' + id).removeAttr("disabled");
+	}
+}
+
+function renameCompanyJobStatus(id){
+	var newName = $('#renameCompanyJobStatus_' + id).val();
+	if(newName.length === 0){
+		return;
+	}
+	$('.editCompanyJobStatus_' + id).hide();
+	$.ajax({url:"@{CompanyJobStatuses.update()}",
+        data: { id: id, name: newName },
+        type: 'PUT',
+        dataType: 'json',
+		success:function(result){
+			$('#companyJobStatusName_' + id).html(newName);
+  		},
+  		error: function(error){
+  			console.log(error);
+  		}
+  	});
+}
+
+function deleteCompanyJobStatus(id){
+	$.ajax({url:"@{CompanyJobStatuses.delete()}/" + id,
+        type: 'DELETE',
+		success:function(result){
+    		$("#" + "companyJobStatus_" + id).remove();
+  		},
+  		error: function(error){
+  			if(error.status == 409){
+  				alert('You cannot remove this status because it is still assigned to candidates. Please remove all candidate associations and try again.');
+  			} else {
+  				console.log(error.message);
+  			}
+  		}
+  	});
+}
+
+$(document).ready(function () {
+    $('#trialExpiration').datepicker({
+        minDate: 1,
+        'onSelect': function(){
+            trialExpirationModified = true;
+        }
+    });
+
+    //if the user modifies the trialExpiration field we won't attempt to set the default expiration
+    $('#trialExpiration').on('input', function(){
+        trialExpirationModified = true;
+    });
+
+	$('.editCompanyJobStatus').hide();
+	
+    $("#companyForm").validate({
+        errorClass: "alert",
+        highlight: function (element) {
+            $(element).closest('.control-group').addClass("error");
+        },
+        unhighlight: function (element) {
+            $(element).closest('.control-group').removeClass("error");
+        },
+        errorPlacement: function (error, element) {
+            error.insertAfter(element);
+        },
+        submitHandler: function (form) {
+            if (paymentUpdateRequired()) {
+                var cardNum = $(".card-number").val();
+                if (cardNum.indexOf("************") == -1) {
+                    // disable the submit button to prevent repeated clicks
+                    $('.submit-button').attr("disabled", "disabled");
+
+                    $("#payment-errors").hide();
+                    
+                    Stripe.createToken({
+                        number: cardNum,
+                        cvc: $('.card-cvc').val(),
+                        exp_month: $('.card-expiry-month').val(),
+                        exp_year: $('.card-expiry-year').val()
+                    }, function (status, response) {
+                        if (response.error) {
+                            // show the errors on the form
+                            $("#payment-errors").show();
+                            $("#payment-errors").text(response.error.message);
+                            $(".submit-button").removeAttr("disabled");
+                            //return false;
+                        } else {
+                            // token contains id, last4, and card type
+                            var token = response['id'];
+                            // insert the token into the form so it gets submitted to the server
+                            $("#stripeToken").val(token);
+                            // and submit
+                            form.submit();
+                            //return true;
+                        }
+                    });
+                    // prevent the form from submitting with the default action
+                    //return false;
+                }
+                else {
+                    $("#usePaymentInfoOnFile").val("true");
+                    form.submit();
+                }
+            } else {
+                form.submit();
+            }
+        }
+    });
+
+    paymentFieldSet.toggle(showPaymentForm());
+
+    resetEarlyPaymentAlert();
+
+    //handle clicks for either of the enrollNow and enrollLater links on the earlypayment alert
+    $('#early-payment-alert > a').click(handleEarlyPaymentAlertLinkClick);
+
+    $("input[name='company.accountType']").change(handleAccountTypeChange);
+
+    $("#couponCode").change(handleCouponCodeChange);
+
+});
+</script>

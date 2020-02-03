@@ -1,0 +1,82 @@
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <div class="myAccountWrap" ng-controller="myAccountController">
+
+                <h1 class="text-uppercase">My Account</h1>
+
+                    <h3>Account Information:</h3>
+                <p class="externalAuthProvider" ng-show="user.externalAuthProvider">This account is tied to
+                    <span ng-show="user.externalAuthProvider == 'GOOGLE'" ng-cloak><i class="icon-google-plus-sign"></i></span>
+                    <span ng-show="user.externalAuthProvider == 'FACEBOOK'" ng-cloak><i class="icon-facebook-sign"></i></span>
+                </p>
+                <form name="myAccountForm" id="myAccountForm" dirty-check="isDirty">
+
+                    <input placeholder="Name" name="name" type="text" ng-model="user.firstName" class="input-block-level" id="myAccountName" >
+                    <div ng-show="nameErrorMsg" id="nameErrorMsg" class="unstyled alert alert-error"> {{nameErrorMsg}} </div>
+                    <input placeholder="Email" name="email" type="text" ng-model="user.email" class="input-block-level" id="myAccountEmail" >
+                    <div ng-show="emailErrorMsg" id="emailErrorMsg" class="unstyled alert alert-error"> {{emailErrorMsg}} </div>
+                    <input placeholder="New Password" name="password" type="password" ng-model="user.password" class="input-block-level" id="myAccountPassword">
+                    <div ng-show="passwordErrorMsg" id="passwordErrorMsg" class="unstyled alert alert-error"> {{passwordErrorMsg}} </div>
+                    <input placeholder="Confirm Password" type="password" ng-model="user.confirm" class="input-block-level" id="myAccountConfirmPassword">
+
+                    <ul ng-show="errors" class="unstyled alert alert-error">
+                        <li ng-repeat="error in errors">{{error.message}}</li>
+                    </ul>
+
+                    <div class="saveCancelWrap">
+                        <div class="cancel"><a href="/dashboard" class="btn btn-block" id="myAccountCancelBtn">Cancel</a></div>
+                        <div class="save"><button ng-click="saveAccount(user)" type="submit" class="btn btn-primary input-block-level" id="myAccountSaveBtn" data-loading-text="Saving..." bs-loading-text="saving">Save</button></div>
+                    </div>
+
+                    <br/>
+
+                    <div ng-show="user && user.isSubscriber && (user.subscriptionType == 'RECURRING')">
+                        <h3>Payment Method:</h3>
+                        <p >Card on file: <strong>{{creditCard.type}} {{creditCard.number}}</strong></p>
+                        <div class="stopUpdatePaymentWrap">
+                            <div class="cancel"><a href="/dashboard" class="btn btn-block" id="cardUpdateCancelBtn">Cancel</a></div>
+                            <div class="save"><a id="updateCardBtn" href="/card" class="btn btn-primary input-block-level">Update Payment Method</a></div>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <h3 ng-show="user">Subscription Information:</h3>
+                    <ul ng-show="subscriptionErrors" class="unstyled alert alert-error">
+                        <li ng-repeat="error in subscriptionErrors">{{error.message}}</li>
+                    </ul>
+                    <div ng-show="user && user.isSubscriber && (user.subscriptionType == 'RECURRING')">
+                        <p>Monthly recurring Prepado subscription.</p>
+                        <p ng-show="user.subscriptionCost == 0"><strong>Your subscription is free!</strong></p>
+                        <p ng-show="user.subscriptionCost > 0"><strong>{{user.subscriptionCost/100 | currency}}</strong> charged every 30 days</p>
+                        <p ng-show="user.subscriptionCost > 0">Next payment due on: <strong>{{user.chargeDate | localDateFormat}}</strong></p>
+                        <div ng-show="user.subscriptionCost > 0" ng-include="'/public/partials/prep/main/discount.html'"></div>
+                    </div>
+                    <div ng-show="user && user.isSubscriber && (user.subscriptionType == 'BASIC')">
+                        <p>Your card will not be charged again</p>
+                        <p ng-show="user.subscriptionExpirationDate">Your subscription is scheduled to expire on <strong>{{user.subscriptionExpirationDate | localDateFormat}}</strong></p>
+                    </div>
+                    <div ng-show="user && !user.isSubscriber">
+                        <p>So here's the deal. With a Prepado membership, you get:</p>
+                        <ul>
+                            <li>Unlimited practice interviews!</li>
+                            <li>Access to thousands of interview questions!</li>
+                            <li>A complete archive of your responses!</li>
+                            <li>The ability to share with reviewers of your choice!</li>
+                        </ul>
+                        <p>What are you waiting for?!  Sign up now by clicking the "Subscribe" button!</p>
+                    </div>
+
+                    <div ng-show="user" class="stopUpdatePaymentWrap">
+                        <div class="cancel"><a href="/dashboard" class="btn btn-block" id="subscriptionUpdateCancelBtn" data-loading-text="Submitting..." bs-loading-text="submitting">Cancel</a></div>
+                        <div class="save" ng-show="user && user.isSubscriber && (user.subscriptionType == 'RECURRING')"><a id="stopPaymentBtn" ng-click="stopSubscriptionWithPrompt()" data-loading-text="Submitting..." bs-loading-text="submitting"class="btn btn-primary input-block-level">Stop Subscription</a></div>
+                        <div class="save" ng-show="user && !user.isSubscriber"><a id="myAccountSubscribeBtn" href="/subscribe" class="btn btn-primary input-block-level">Subscribe</a></div>
+                        <div class="save" ng-show="user && user.isSubscriber && (user.subscriptionType == 'BASIC')"><a id="renewAutomaticallyBtn" ng-click="renewAutomatically()" data-loading-text="Submitting..." bs-loading-text="submitting" class="btn btn-primary input-block-level">Renew Automatically</a></div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

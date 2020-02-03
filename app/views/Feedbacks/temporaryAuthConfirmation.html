@@ -1,0 +1,27 @@
+#{extends 'standardPage.html' /}
+#{set title:'Feedback' /}
+#{set 'moreScripts'}
+    #{script 'jquery-ui-1.8.20.custom.min.js' /}
+    #{script 'jquery.jeditable.mini.js' /}
+    #{script 'bootstrap-alert.js' /}
+    #{script 'jquery.form.js'/}
+    #{script 'changes-alert.js'/}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+#{standardError /}
+
+#{if errorMessage}
+<div class="alert alert-error">
+${errorMessage}
+</div>
+#{/if}
+
+#{if feedbackAdded}
+<div class="alert alert-success">
+    <a class="close" data-dismiss="alert" href="#">×</a>
+    Feedback added!
+</div>
+#{/if}

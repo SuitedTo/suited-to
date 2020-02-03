@@ -1,0 +1,83 @@
+*{ Displays part 1 of the company registration page.
+ {
+ { Parameters:
+ {   accountType - Enums.AccountType indicating what type of account the form
+ {         defaults to setting up.  null for no default.
+ {   contactEmail - String indicating the email of the contact user.  null for
+ {         no email yet.
+ }*
+
+#{extends 'standardPageNoNav.html' /}
+ 
+#{set title: "Signing up for SuitedTo is fast." /}
+#{set 'moreScripts'}
+    #{script 'changes-alert.js' /}
+    #{script 'jquery.validate.min.js'/}
+    #{script 'password_strength.min.js' /}
+#{/set}
+#{set 'moreStyles'}
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <h1>${title}</h1>
+        <h3 class="extraRoom">Access thousands of interview questions in our streamlined, easy-to-use interview software.  You are moments away from #{if accountType.equals(enums.AccountType.STANDARD)}14 free days of #{/if}interview bliss. </h3>
+    </div>
+</div>
+
+#{standardError/}
+
+#{form @companyRegistration2(), id:'registrationForm', class:'form-vertical', autocomplete:"off"}
+<input type="hidden" id="company.accountType" name="company.accountType" value="${accountType}"/>
+
+<div class="loginWrapper">
+<div class="row-fluid">
+    <div class="span6"><div class="well">
+        <legend>Sign up using your email!</legend>
+        <div class="control-group">
+            <label for="company.contactEmail" class="control-label required hide">Email *</label>
+            <div id="emailControl" class="controls">
+                <input type="text" id="company.contactEmail" name="company.contactEmail" class="input-block-level" value="${contactEmail}" placeholder="${labelPrefix} Email *"/>
+            </div>
+        </div>
+        <fieldset id="passwordFields">
+            <div class="control-group">
+            <label for="password" class="control-label required hide">Password</label>
+                <div class="controls">
+                    <input type="password" id="password" name="password" class="input-block-level" value="${password}" placeholder="Password *"/>
+                    <span class="score badge pull-right"></span>
+                    <p class="help-block"><span class="muted"><small>Must be between 6 and 20 characters</small></span></p>
+                </div>
+            </div>
+            <label for="confirmPassword" class="control-label required hide">Confirm Password</label>
+            <div class="control-group">
+                <div class="controls">
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="input-block-level" value="${confirmPassword}" placeholder="Confirm Password *"/>
+                </div>
+            </div>
+        </fieldset>
+        <button id="submitBtn" class="submit-button btn btn-primary btn-large no-change-check" type="submit">Sign Up</button>
+    </div></div>
+    
+    <div class="span1">
+        <div class="loginOrDivider">OR</div>
+        <div class="loginHrDivider"></div>
+    </div>
+    
+    <div class="span5"><div class="well">
+        <legend>Sign up using Google</legend>
+        <p class="muted">You can sign up for SuitedTo using your Google Account!</p>
+        <div class="control-group" id="openId">
+            %{ def callback = java.net.URLEncoder.encode("?company.accountType=${accountType}", "utf8") }%
+            <a id="openIDButton" class="btn btn-block" href="@@{Registration.useOpenIdForRegistration()}?callback=@@{companyRegistration2}${callback}"><img src="/public/images/google-ico-32x32.png" alt="Google"> Log in with Google</a>
+        </div>
+    </div></div>
+</div>
+</div><!-- end .loginWrapper -->
+#{/form}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    }
+</script>

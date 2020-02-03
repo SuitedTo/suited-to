@@ -1,0 +1,10 @@
+*{display state dropdown with optional state (string) argument preselected}*
+<div class="controls state repeatable">
+    <select name="state" id="state-${_state}" size="1" class="input-small">
+        <option value=""></option>
+    #{list items:enums.US_State.values(), as:'state'}
+        <option value="${state.toString()}" ${state.equals(_state) ? "selected=selected" : ""}>${state.toString()}</option>
+    #{/list}
+    </select>
+    
+</div>

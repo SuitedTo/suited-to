@@ -1,0 +1,214 @@
+/**
+ * Prepado - Helpers
+ *
+ */
+
+
+/* ==========================================================================
+   Chrome Frame prompt
+   ========================================================================== */
+
+.chromeframe {
+  margin: 0.2em 0;
+  background: #ccc;
+  color: #000;
+  padding: 0.2em 0;
+}
+
+
+
+/* ==========================================================================
+   Fixes
+   ========================================================================== */
+
+iframe[id*="oauth2relay"] {
+  top: -1px;
+}
+
+
+
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+
+/*
+ * Hide from both screenreaders and browsers: h5bp.com/u
+ */
+
+.hidden {
+  display: none !important;
+  visibility: hidden;
+}
+
+/*
+ * Hide only visually, but have it available for screenreaders: h5bp.com/v
+ */
+
+.visuallyhidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+/*
+ * Extends the .visuallyhidden class to allow the element to be focusable
+ * when navigated to via the keyboard: h5bp.com/p
+ */
+
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+  clip: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  width: auto;
+}
+
+/*
+ * Hide visually and from screenreaders, but maintain layout
+ */
+
+.invisible {
+  visibility: hidden;
+}
+
+
+/* ==========================================================================
+   Custom Mixins
+   ========================================================================== */
+
+/*
+ * Bootstrap grid
+ */
+#custom {
+  .grid(@gridColumnWidth, @gridGutterWidth){   //Generate our custom grid
+    //Define styles for our custom grid (same as normal, but added width=auto version
+    .span (@columns) when(isNumber(@gridColumnWidth)){
+      width: (@gridColumnWidth * @columns) + (@gridGutterWidth * (@columns - 1));
+      float: left;
+      margin-left: @gridGutterWidth;
+    }
+    .span (@columns) when(@gridColumnWidth = auto){
+      float: none;
+      display: block;
+      width: auto;
+      margin: 0;
+    }
+    .row() {
+      margin-left: @gridGutterWidth * -1;
+      .clearfix();
+    }
+    .row() when(@gridColumnWidth = auto){
+      margin-left: 0;
+    }
+    .offset (@columns) {
+      margin-left: (@gridColumnWidth * @columns) + (@gridGutterWidth * (@columns - 1)) + (@gridGutterWidth * 2);
+    }
+  }
+  .row-fluid() {
+    width: 100%;
+    .clearfix();
+
+    .span (@columns) {
+      width: (@fluidGridColumnWidth * @columns) + (@fluidGridGutterWidth * (@columns - 1));
+      *width: (@fluidGridColumnWidth * @columns) + (@fluidGridGutterWidth * (@columns - 1)) - (.5 / @gridRowWidth * 100 * 1%);
+      display: block;
+      float: left;
+      margin-left: @fluidGridGutterWidth;
+      *margin-left: @fluidGridGutterWidth - (.5 / @gridRowWidth * 100 * 1%);
+    }
+    .first() {
+      margin-left: 0;
+    }
+  }
+
+  .grid-mobile(){
+    .row(){
+    // Undo negative margin on rows and thumbnails
+      margin-left: 0;
+    }
+  }
+  // Fluid rows
+  .row-fluid-mobile() {
+    width: 100%;
+
+    .span (@columns){
+      float: none;
+      display: block;
+      width: 100%;
+      margin-left: 0;
+      .box-sizing(border-box);
+    }
+    .first() {
+      margin-left: 0;
+    }
+  }
+}
+
+
+
+/*
+ * Background Patterns
+ */
+
+.bgBluePattern {
+  background-color: @prepBlue;
+  background-image: url('@{prepImagePath}bgPatternBlue.jpg');
+  background-repeat: repeat;
+}
+.bgRedPattern {
+  background-color: @prepRed;
+  background-image: url('@{prepImagePath}bgPatternRed.png');
+  background-repeat: repeat;
+}
+
+
+
+/*
+ * Buttons
+ */
+
+.btnBlueGrain {
+  .buttonBackground(@prepBlue, @prepBlue, @textColor: @prepRed, @textShadow: 0 -1px 0 rgba(0,0,0,.25));
+  background-image: url('@{prepImagePath}bgPatternBlue.jpg');
+  background-repeat: repeat;
+  border: 0 none;
+  .border-radius(0);
+  font-family: @serifFontFamily;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+  &:hover {
+    .buttonBackground(@prepBlue, @prepBlue, @textColor: @prepRed, @textShadow: 0 -1px 0 rgba(0,0,0,.25));
+  }
+}
+
+.btnRedGrain {
+  .buttonBackground(@prepRed, @prepRed, @textColor: #fff, @textShadow: 0 -1px 0 rgba(0,0,0,.25));
+  background-image: url('@{prepImagePath}bgPatternRed.png');
+  background-repeat: repeat;
+  border: 0 none;
+  .border-radius(0);
+  font-family: @serifFontFamily;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 5px 20px;
+  &:hover {
+    .buttonBackground(@prepBlue, @prepBlue, @textColor: @prepRed, @textShadow: 0 -1px 0 rgba(0,0,0,.25));
+  }
+}
+
+.btnTransparent {
+  background: none;
+  border: 0 none;
+  .border-radius(0);
+  .box-shadow(none);
+}

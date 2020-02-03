@@ -1,0 +1,104 @@
+#{extends 'standardPage.html' /}
+#{set title:'Feedback for ' + candidate.name /}
+#{set 'moreScripts'}
+    #{script 'jquery.form.js'/}
+    #{script 'changes-alert.js'/}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+
+<div class="row">
+    <div class="span12">
+        <h1>#{get 'title' /}</h1>
+    #{if fromLiveInterview}
+        <p class="alert alert-success"><strong>Congratulations!</strong> you've finished the interview. How about providing some feedback. Not quite ready? <a href="@{Candidates.show(candidate.id)}">Return to Candidate</a> </p>
+    #{/if}
+    </div>
+</div>
+
+#{standardError /}
+
+<form id="feedbackForm" action="@@{Feedbacks.save()}" method="POST" class="form-horizontal" autocomplete="off">
+    <input type="hidden" name="feedback.candidate.id" value="${candidate.id}"/>
+    <input type="hidden" name="fromLiveInterview" value="${fromLiveInterview}"/>
+    <input type="hidden" name="nonce" value="${nonce}">
+
+    <div class="row">
+        <div class="span6">
+            <fieldset>
+            #{if fromLiveInterview}
+                <input id="preselectedInterview" type="hidden" name="feedback.activeInterview.id" value="${liveInterview.id}"/>
+            #{/if}
+            #{else}
+                <div class="control-group">
+                    <label for="liveInterviewId" class="control-label">For this interview</label>
+                    <div class="controls">
+                        <select id="interview" name="feedback.activeInterview.id" class="input-xlarge">
+                            <option value="">General</option>
+                            #{list items:candidate.getActiveInterviewsPastStarted(), as:'availableInterview'}
+                                <option value="${availableInterview.id}" #{if availableInterview == liveInterview}selected="selected"#{/if}>${availableInterview.name}</option>
+                            #{/list}
+                        </select>
+                    </div>
+                </div>
+            #{/else}
+                <div class="control-group">
+                    <label for="summary" class="control-label required">Next Step</label>
+                    <div class="controls">
+                        <select id="summary" name="summaryChoice">
+                            <option value="">(Select one)</option>
+                        #{list items:enums.FeedbackSummary.values(), as:'summaryOption'}
+                            <option value="${summaryOption.name()}" #{if summaryOption == feedback?.summaryChoice}selected#{/if}>${summaryOption.toString()}</option>
+                        #{/list}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="comments" class="control-label required">Additional Feedback</label>
+                    <div class="controls" >
+                        <textarea class="input-xxlarge" rows="15" id="comments" name="feedback.comments">${feedback?.comments}</textarea>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="row form-actions">
+                <div class="controls">
+                    <a id="cancelBtn" href="@{Candidates.show(candidate.id)}"><button type="button" class="btn no-change-check">Cancel</button></a>
+                    <button id="submitBtn" class="btn btn-primary no-change-check" type="submit">Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="span6 hide" id="ratingAndNotes">
+            #{interviewRatingAndNotes/}
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        //initial population of rating and notes, populateInterviewRatingAndNotes function is defined in interviewRatingAndNotes template
+        var interviewId = $('#interview').val() || $('#preselectedInterview').val();
+        var success = function(){
+            $('#ratingAndNotes').show();
+        };
+        var failure = function(){
+            $('#ratingAndNotes').hide();
+        };
+        populateInterviewRatingAndNotes(interviewId, success, failure);
+
+        //register change event handler
+        $('#interview').change( function(event){
+            var selectedInterviewId = event.target.value;
+            populateInterviewRatingAndNotes(selectedInterviewId, success, failure);
+        });
+
+
+
+    });
+
+
+</script>

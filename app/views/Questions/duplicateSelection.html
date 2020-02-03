@@ -1,0 +1,39 @@
+#{extends 'standardPage.html' /}
+#{set title:'Add Question' /}
+#{set 'moreScripts'}
+
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+
+<div class="row">
+    <div class="span16">
+        <h2>Find Duplicate Question</h2>
+        <p>Please select the question that is duplicated by "${question.text}"</p>
+    </div>
+</div>
+
+%{
+	java.util.List<String> excludes = new java.util.ArrayList<String>();
+	for(models.Question dup : duplicates){
+		excludes.add( + dup.id );
+	}
+	String filterString = "excludeById:" + org.apache.commons.lang.StringUtils.join(excludes, "|");
+}%
+
+<div class="row">
+    <div class="span16">
+        #{questionTable textHrefCallback: 'setDuplicate', 
+                filters: filterString + ",excludeByActiveStatus:false" /}
+    </div>
+</div>
+
+<script type="text/javascript">
+	function setDuplicate(id){
+		window.location.href = '@{Questions.setDuplicate()}?questionId=' + id + '&duplicateId=${question.id}';
+	}
+
+
+</script>

@@ -1,0 +1,89 @@
+#{extends 'standardPage.html' /}
+#{set title:'Upgrade Account' /}
+#{set 'moreScripts'}
+
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="registrationWrapper">
+
+#{if upgradeOptions.size() == 1}
+<div class="row-fluid">
+    <div class="span12">
+        <div class="page-header">
+            <h1 class="center-text">Upgrade Account</h1>
+        </div>
+        <p class="page-description center-text">Ooohhh, looks like you are ready for an upgrade!  <br />With an Enterprise account, your company will have:</p>
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span6 offset3">
+        <a href="@{Application.processUpgrade(upgradeOptions[0])}" class="btn regBtn contributor" id="registerAsEnterpriseBtn">
+            <h3>Enterprise</h3>
+            <ul>
+                <li>Standard features plus</li>
+                <li>Unlimited private questions</li>
+                <li>Unlimited active interviews</li>
+                <li>Up to 500 users</li>
+                <li class="highlight"><strong>$200/month</strong></li>
+            </ul>
+            <span class="btn btn-large btn-primary btn-block">Upgrade To Enterprise</span>
+        </a>
+    </div>
+</div>
+
+
+#{/if}
+
+#{else}
+<div class="row-fluid">
+    <div class="span12">
+        <div class="page-header">
+            <h1 class="center-text">Upgrade Account</h1>
+        </div>
+        <p class="page-description center-text">Ready to get your company involved?  Choose the plan that’s best for you, or contact us for more information!</p>
+    </div>
+</div>
+<div class="row-fluid">
+
+    #{list items:upgradeOptions, as:'accountType'}
+        <div class="span6">
+        #{if accountType == enums.AccountType.STANDARD}
+            <a href="@{Application.processUpgrade(accountType)}" class="btn regBtn contributor" id="registerAsStandardBtn">
+                <h3>Standard</h3>
+                <ul>
+                    <li>Store 25 private questions</li>
+                    <li>Track candidates & feedback</li>
+                    <li>Maintain 15 active interviews</li>
+                    <li>Up to 40 users</li>
+                    <li class="highlight">14-day free trial | <strong>$50/month after</strong></li>
+                </ul>
+                <span class="btn btn-large btn-primary btn-block">&{accountType.name() + '.upgradeMessage'} &raquo;</span>
+            </a>
+        #{/if}
+        #{else}
+            <a href="@{Application.processUpgrade(accountType)}" class="btn regBtn company" id="registerAsEnterpriseBtn">
+                <h3>Enterprise</h3>
+                <ul>
+                    <li>Standard features plus</li>
+                    <li>Unlimited private questions</li>
+                    <li>Unlimited active interviews</li>
+                    <li>Up to 500 users</li>
+                    <li class="highlight"><strong>$200/month</strong></li>
+                </ul>
+                <span class="btn btn-large btn-primary btn-block">&{accountType.name() + '.upgradeMessage'} &raquo;</span>
+            </a>
+        #{/else}
+        </div>
+    #{/list}
+
+</div>
+
+#{/else}
+
+</div>
+
+
+

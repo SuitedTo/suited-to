@@ -1,0 +1,11 @@
+import models.Question
+
+global models.query.EntityMatchHandler handler
+
+rule "Inactive Questions"
+dialect "mvel"
+when
+	$question : Question( active == false )
+then
+	handler.handleMatch ( $question );
+end

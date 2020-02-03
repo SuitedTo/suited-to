@@ -1,0 +1,36 @@
+<div class="container" ng-controller="loginCtrl">
+    <div class="row">
+        <div class="span12">
+            <div class="loginWrap">
+
+                <h1 class="text-uppercase">Login</h1>
+
+                <ul ng-show="errors" class="unstyled alert alert-error">
+                    <li ng-repeat="error in errors">{{error.message}}</li>
+                </ul>
+                <div ng-show="req" class="unstyled alert alert-error">Please log in before accessing that resource.</div>
+
+                <p ng-show="global.connectedUser.authenticated">You're already logged in as user id #: {{global.connectedUser.id}}</p>
+
+                <div ng-hide="global.connectedUser.authenticated">
+                    <ul class="loginProvidersList">
+                        <li><a ng-click="facebookLogin()" class="btn btn-block" id="loginWithFacebook"><i class="icon-facebook-sign"></i> Login with Facebook</a></li>
+                        <li><a ng-click="googleLogin()" class="btn btn-block" id="loginWithGoogle"><i class="icon-google-plus-sign"></i> Login with Google</a></li>
+                    </ul>
+                    <span class="loginOr">– OR –</span>
+                    <form class="loginForm">
+                        <input placeholder="Email" type="text" ng-model="user.email" class="input-block-level" id="loginEmail">
+                        <br>
+                        <input placeholder="Password" type="password" ng-model="user.password" class="input-block-level" id="loginPassword">
+                        <br>
+                        <button ng-click="login(user)" class="btn btn-primary input-block-level" id="loginFormSubmitBtn">Submit</button>
+                    </form>
+                    <div ng-hide="forgotPasswordRequest">
+                        <span class="help-block"><a href="#" ng-click="showForgotPassword()">Forgot Password?</a></span><br>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

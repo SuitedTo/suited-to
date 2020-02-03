@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>#{get 'title' /}</title>
+    <meta charset="${_response_encoding}">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    #{stylesheet 'bootstrap.css' /}
+    #{stylesheet 'application.css' /}
+    #{get 'moreStyles' /}
+<link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+<script>
+var Application = window.Application || {};
+Application.Config = Application.Config || (function() {
+    var config = {
+        controller : "${request.controller}",
+        path : {
+            templates : '/public/templates/',
+            reports : '@{Tables.getreport()}',
+            actions : {
+                "action_checkUserData": #{jsAction @Application.checkUserData(':intendedAction')/}
+            }
+        }
+    };
+    return config;
+})()
+</script>
+    #{script 'jquery-1.8.2.min.js' /}
+    #{script 'bootstrap.min.js' /}
+    #{script 'modal-responsive-fix.min.js' /}
+    #{script 'app.js' /}
+
+    #{script 'jquery.form.js' /}
+    #{script 'jquery.placeholder.min.js' /}
+
+    #{get 'moreScripts' /}
+
+%{
+def trackingCode = play.Play.configuration.get('google.trackingCode');
+def hasGoogleAnalyticsCode = trackingCode != '${GOOGLE_ANALYTICS_TRACKING_CODE}'
+}%
+#{if hasGoogleAnalyticsCode}
+    <script type="text/javascript">
+        function isSubdomain(url){
+            if (url.match(new RegExp(/\.[a-z]{2,3}\.[a-z]{2}$/i))) {
+                  url = url.replace(new RegExp(/\.[a-z]{2,3}\.[a-z]{2}$/i),"");
+            } else if (url.match(new RegExp(/\.[a-z]{2,4}$/i))) {
+                  url = url.replace(new RegExp(/\.[a-z]{2,4}$/i),"");
+            }
+            subDomain = (url.match(new RegExp(/\./g))) ? true : false;
+            return(subDomain);
+        }
+        var siteDomain = window.location.hostname;
+        if(isSubdomain(siteDomain) === true){
+            siteDomain = siteDomain.replace(/.+?\./, '')
+        }
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', '${trackingCode}']);
+        _gaq.push(['_setDomainName', siteDomain]);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+
+    </script>
+#{/if}
+</head>
+<body>
+<!--[if IE]>
+    <script type="text/javascript"
+     src="//ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+
+    <script>
+        // The conditional ensures that this code will only execute in IE,
+        // Therefore we can use the IE-specific attachEvent without worry
+        if($.browser.version < "9.0") {
+            window.attachEvent("onload", function() {
+                CFInstall.check({
+                    mode: "overlay"
+                });
+            });
+        }
+    </script>
+<![endif]-->
+
+
+#{doLayout /}
+
+
+
+    %{ displayFeedback = java.lang.System.getenv("DISPLAY_FEEDBACK_WIDGET")}%
+    #{if displayFeedback == 'true'}
+    <div id="getsat-widget-401"></div>
+    <script type="text/javascript" src="//assets.zendesk.com/external/zenbox/v2.6/zenbox.js"></script>
+    <style type="text/css" media="screen, projection">
+        @import url(//assets.zendesk.com/external/zenbox/v2.6/zenbox.css);
+    </style>
+    <script type="text/javascript">
+        if (typeof(Zenbox) !== "undefined") {
+            Zenbox.init({
+                dropboxID:   "20214308",
+                url:         "https://suitedto.zendesk.com",
+                tabTooltip:  "Ask Us",
+                tabImageURL: "https://assets.zendesk.com/external/zenbox/images/tab_ask_us_right.png",
+                tabColor:    "#85c2ca",
+                tabPosition: "Right"
+            });
+        }
+    </script>
+    #{/if}
+
+#{switcheroo /}
+#{app-info /}
+#{checkUserData/}
+</body>
+</html>

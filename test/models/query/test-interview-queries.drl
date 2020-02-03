@@ -1,0 +1,22 @@
+import models.Interview
+import models.Company
+import enums.RoleValue
+
+global models.query.EntityMatchHandler handler
+global models.User user
+
+rule "Accessible Interviews - APP_ADMIN"
+dialect "mvel"
+when
+    $interview : Interview( active == true) && eval(user.hasRole(RoleValue.APP_ADMIN))
+then
+handler.handleMatch ( $interview );
+end
+
+rule "Accessible Interviews - NON_ADMIN"
+dialect "mvel"
+when
+    $interview : Interview( active == true, $creator : user, $creator.company != null) && eval($creator.company == user.company)
+then
+handler.handleMatch ( $interview );
+end

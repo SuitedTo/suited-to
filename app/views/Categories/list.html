@@ -1,0 +1,302 @@
+#{extends 'standardPage.html' /}
+#{set title:'Category List' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row">
+    <div class="span12">
+#{if categoryBeingMarkedAsDuplicate}
+        <h1>Pick the category that <strong>${categoryBeingMarkedAsDuplicate.name}</strong> is a duplicate of.</h1>
+#{/if}
+#{else}
+        #{subNav section:"Categories" /}
+
+        <h1>Category List</h1>
+        <p>This is a list of all your categories, Enjoy!</p>
+#{/else}
+</div>
+</div>
+<div class="row">
+    <div class="span12">
+        <table id="categories" class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Date Created</th>
+                <th># Questions</th>
+                <th>Company</th>
+            #{if !categoryBeingMarkedAsDuplicate}
+                <th>Status</th>
+                <th>Externally Available</th>
+                <th>Duplicate</th>
+            #{/if}
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        #{deadbolt.restrict roles:[['APP_ADMIN']]}
+            #{if !categoryBeingMarkedAsDuplicate}
+                <a id="addCategoryBtn" class="btn btn-primary" href="@{Categories.show}"><i class="icon-plus icon-white"></i> Add a New Category</a>
+            #{/if}
+        #{/deadbolt.restrict}
+    </div>
+</div>
+
+<div id="statusChangeConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Change Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure that <span id="type">status</span> for <span id="category-name">name</span> should be made <span id="new-status">name</span>?</p>
+    </div>
+    <div class="modal-footer">
+        <a class="btn" data-dismiss="modal" onclick="$('#categories').dataTable().fnDraw();">Cancel</a>
+        <a id="change-button" href="#" onclick=";" class="btn btn-primary no-change-check"><i class="icon-plane icon-white"></i>Transmogrify</a>
+    </div>
+</div>
+
+<div id="duplicateConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to close the <strong>${categoryBeingMarkedAsDuplicate?.name}</strong> category and update all
+            questions in that category to <strong><span id="duplicate">placeholder</span></strong>?</p>
+    </div>
+    <div class="modal-footer">
+        <a id="confirmLink" href="@{Categories.consolidateCategories(categoryBeingMarkedAsDuplicate?.id)}" class="btn btn-warning"><i class="icon-fire icon-white"></i> Yeah, go for it!</a>
+        <a data-dismiss="modal" class="btn ">Cancel</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    #{deadbolt.restrict roles:[['APP_ADMIN']]}
+        var instrumentRowForStatusChange = (function() {
+            var validMappings = $.parseJSON('${validChanges.raw()}');
+            
+            return function(htmlRow) {
+                var rowChanger = $('.category-status', htmlRow);
+                var curStatus = rowChanger.html();
+                var validDestinationStatuses = validMappings[curStatus];
+                
+                var options = "";
+                var selectOptions = {};
+                var destination;
+                for (var index in validDestinationStatuses) {
+                    destination = validDestinationStatuses[index];
+                    
+                    options += "<option";
+                    
+                    if (destination === curStatus) {
+                        options += " selected='selected'";
+                    }
+                    
+                    options += ">"
+                    
+                    options += destination + "</option>";
+                }
+                
+                rowChanger.html("<select class='category-status-changer input-small'>" +
+                    options + "</select>")
+                rowChanger = $('.category-status-changer', htmlRow);
+                
+                rowChanger.change(function () {
+                    var idParts = this.id.split('-');
+
+                    var categoryName = $('.category-name', htmlRow).html();
+                    var categoryID = $('.category-id', htmlRow).html();
+
+                    $('#category-name').html(categoryName);
+                    $('#new-status').html(this.value);
+                    $('#type').html('status');
+                    $('#change-button').attr('onclick', 
+                        "changeCategoryStatus(" + categoryID + ", '" + 
+                            this.value + "');");
+                    $('#statusChangeConfirmation').modal('show');
+                });
+            }
+        })();
+        
+        function changeCategoryStatus(categoryId, newStatusName) {
+            var changeAction = #{jsAction 
+                @Categories.changeCategoryStatus(':categoryId', ':newStatusName') /};
+
+            $.get(changeAction(
+                {categoryId:categoryId, newStatusName:newStatusName}), 
+                function(data) {
+                    $('#categories').dataTable().fnDraw();
+                });
+
+            $('#statusChangeConfirmation').modal('hide');
+        }
+
+    #{/deadbolt.restrict}
+    
+    $(function () {
+
+        var categoriesDataTable = $('#categories').dataTable({
+            "sDom":"<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
+            "sPaginationType":"bootstrap",
+            "bServerSide":true,
+            #{if categoryBeingMarkedAsDuplicate != null}
+            "sAjaxSource":"@{Categories.categoryTableData()}?filters=excludeById:${categoryBeingMarkedAsDuplicate?.id}",
+            #{/if}
+            #{else}
+            "sAjaxSource":"@{Categories.categoryTableData()}",
+            #{/else}
+            "aaSorting":[
+                [0, 'desc']
+            ],
+            "oLanguage": {"sZeroRecords": "No Categories Found"},
+            "fnRowCallback":function (nRow, aData, iDisplayIndex) {
+                var id = aData[0], hrefValue;
+                #{if !categoryBeingMarkedAsDuplicate}
+                    hrefValue = '<a href="@{Categories.show()}/' + id + '"/>';
+                    $('td:eq(1)', nRow).wrapInner(hrefValue);
+                    hrefValue = '<a class="btn btn-primary" href="@{Categories.list()}?categoryBeingMarkedAsDuplicateId=' + id + '">Mark as Duplicate</a>';
+                    $('td:eq(7)', nRow).html(hrefValue);
+                #{/if}
+                #{else}
+                    hrefValue = '<a class="duplicateLink" data-id="' + aData[0] + '" data-name="' + aData[1] + '" href="#foo" data-toggle="#duplicateConfirmation"/>';
+                    $('td:eq(1)', nRow).wrapInner(hrefValue);
+                #{/else}
+            
+                #{deadbolt.restrict roles:[['APP_ADMIN']]}
+                    instrumentRowForStatusChange(nRow);
+                    
+                    var id = aData[0];
+                    var isAvailable = aData[6];
+                
+                	var options = "";
+                	var selectOptions = ["Yes","No"];
+                	var select = [isAvailable,!isAvailable];
+                	var destination;
+                	for (var i = 0; i < selectOptions.length; ++i) {
+                    
+                    	options += "<option";
+                    
+                    	if (select[i]) {
+                        	options += " selected='selected'";
+                    	}
+                    
+                    	options += ">"
+                    
+                    	options += selectOptions[i] + "</option>";
+                	}
+                
+                	var selection = $('td:eq(' + 6 + ')', nRow);
+                	selection.change(function (evt) {
+                    	var val = evt.target.value.toLowerCase();
+                    	if(val === 'yes'){
+                    
+                    		var action = #{jsAction @Categories.externalizeCategory(':categoryId') /};
+
+        					$.post(action({categoryId:id}));
+        				
+                    	} else {
+                    
+                    		var action = #{jsAction @Categories.internalizeCategory(':categoryId') /};
+
+        					$.post(action({categoryId:id}));
+                    	
+                    	}
+                	});
+                
+                	selection.html("<select class='input-small'>" + options + "</select>");
+                
+                
+                #{/deadbolt.restrict}
+
+                return nRow;
+            },
+            "aoColumns":[
+                {sWidth:"10%", sClass:"category-id dataCol_id"},
+                {sWidth:"25%", sClass:"category-name dataCol_name"},
+                {sWidth:"10%", sClass:"dataCol_datecreated"},
+                {sWidth:"5%", sClass:"dataCol_numquestions"},
+                {sWidth:"15%", sClass:"dataCol_company"},
+            #{if !categoryBeingMarkedAsDuplicate}
+                {sWidth:"10%", sClass:"category-status dataCol_status"},
+                {sWidth:"10%"},
+                {sWidth:"15%"}
+            #{/if}
+            ],
+            fnInitComplete: function(oSettings, json) {
+                // Search field highlighting
+                if($(".dataTables_filter label input").length !== 0){
+                    if($(".dataTables_filter label input").val().length > 0){
+                        $(".dataTables_filter label input").addClass("search-match");
+                    }
+                    $(".dataTables_filter label input").keyup(function () {
+                        if($(this).val().length > 0){
+                            $(this).addClass("search-match");
+                        }else{
+                            $(this).removeClass("search-match");
+                        }
+                    });
+                }
+                // Add clear search button and function
+                $('.dataTables_filter label').append(' <a href="#" id="clearSearch"><i class="icon-remove-sign"></i></a>');
+                $('#clearSearch').on('click',function(e){
+                    e.preventDefault();
+                    $('.dataTables_filter label input').val('').removeClass('search-match').keyup();
+                });
+            }
+
+        });
+
+        var doResize;
+        function resizeDataTable(){
+            categoriesDataTable.css('width','').fnAdjustColumnSizing();
+        }
+        $(window).resize(function() {
+            clearTimeout(doResize);
+            doResize = setTimeout(function() {
+                resizeDataTable();
+            }, 250);
+        });
+
+        $('#duplicateConfirmation').modal({
+            show: false
+        })
+        
+        $('#statusChangeConfirmation').modal({
+            show: false
+        })
+
+        $(document).on("click", ".duplicateLink", function () {
+            var categoryName = $(this).data('name');
+            var categoryToKeepId = $(this).data('id');
+            $("#confirmLink").attr('href', function(i, h) {
+                return h + (h.indexOf('?') != -1 ?
+                        "&categoryToKeepId=" + categoryToKeepId :
+                        "?categoryToKeepId=" + categoryToKeepId);
+            });
+            $(".modal-body #duplicate").html(categoryName);
+            $('#duplicateConfirmation').modal('show');
+        });
+
+    });
+
+    $.extend($.fn.dataTableExt.oStdClasses, {
+        "sSortAsc":"header headerSortDown",
+        "sSortDesc":"header headerSortUp",
+        "sSortable":"header sorting"
+    });
+
+</script>

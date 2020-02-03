@@ -1,0 +1,293 @@
+# You can specialize this file for each language.
+# For example, for French create a messages.fr file
+#
+test=test
+
+enums.CandidateDocType.RESUME=Resume
+enums.CandidateDocType.PORTFOLIO=Portfolio
+enums.CandidateDocType.PROJECT=Project
+enums.CandidateDocType.OTHER=Other
+
+
+enums.Timing.SHORT=Short
+enums.Timing.MEDIUM=Medium
+enums.Timing.LONG=Long
+
+enums.Difficulty.EASY=Easy
+enums.Difficulty.MEDIUM=Medium
+enums.Difficulty.HARD=Hard
+
+enums.CandidateStatus.NEW=New
+enums.CandidateStatus.ACTIVE=Active
+enums.CandidateStatus.HIRED=Hired
+enums.CandidateStatus.REJECTED=Rejected
+
+enums.PhoneType.HOME=Home
+enums.PhoneType.WORK=Work
+enums.PhoneType.MOBILE=Mobile
+enums.PhoneType.OTHER=Other
+
+enums.EmailType.HOME=Home
+enums.EmailType.WORK=Work
+enums.EmailType.OTHER=Other
+
+enums.QuestionRating.EXCELLENT=Excellent
+enums.QuestionRating.VERY_GOOD=Very Good
+enums.QuestionRating.GOOD=Good
+enums.QuestionRating.FAIR=Fair
+enums.QuestionRating.POOR=Poor
+
+
+STANDARD=Standard
+ENTERPRISE=Enterprise
+INDIVIDUAL=Individual
+UNLIMITED=Unlimited
+
+STANDARD.upgradeMessage=Start Your Free Trial
+ENTERPRISE.upgradeMessage=Sign Up For Enterprise
+
+enums.RoleValue.APP_ADMIN=Application Administrator
+enums.RoleValue.COMPANY_ADMIN=Company Administrator
+enums.RoleValue.QUESTION_ENTRY=Standard User
+enums.RoleValue.CONTRIBUTOR=Contributor
+enums.RoleValue.PREP=Prep User
+
+enums.CompanyAccountStatus.ACTIVE=Active
+enums.CompanyAccountStatus.DISABLED=Disabled
+
+enums.ExternalLinkType.FACEBOOK=Facebook
+enums.ExternalLinkType.LINKEDIN=LinkedIn
+enums.ExternalLinkType.TWITTER=Twitter
+enums.ExternalLinkType.G_PLUS=Google+
+enums.ExternalLinkType.OTHER=Other
+
+enums.UserStatus.ACTIVE=Active
+enums.UserStatus.PENDING=Invited
+enums.UserStatus.DEACTIVATED=Deactivated
+enums.UserStatus.INVITATION_WITHDRAWN=Invitation Withdrawn
+
+enums.ActiveInterviewState.NOT_STARTED=Not Started
+enums.ActiveInterviewState.STARTED=Started
+enums.ActiveInterviewState.FINISHED=Finished
+
+enums.QuestionStatus.OUT_FOR_REVIEW=Submitted
+enums.QuestionStatus.ACCEPTED=Accepted
+enums.QuestionStatus.RETURNED_TO_SUBMITTER=Returned
+enums.QuestionStatus.WITHDRAWN=Withdrawn
+enums.QuestionStatus.PRIVATE=Private
+enums.QuestionStatus.QUICK=Quick
+enums.QuestionStatus.AWAITING_CATEGORY=Awaiting Category
+enums.QuestionStatus.AWAITING_COMPLETION=Awaiting Completion
+
+enums.ProInterviewerRequestStatus.SUBMITTED=Submitted
+enums.ProInterviewerRequestStatus.ACCEPTED=Accepted
+enums.ProInterviewerRequestStatus.DECLINED=Declined
+
+question.text=Question Text
+questions.upload.error=Unable to upload spreadsheet
+questions.upload=Upload a spreadsheet that contains questions
+picture.upload.error=Unable to upload picture
+picture.upload=Upload a profile picture
+file.upload.error=Unable to upload file
+interviewName=Interview Name
+lengthOfInterview=Length of Interview
+interview.invalid=Interview has no questions
+
+candidateName=Candidate Name
+
+fullName=Full Name
+email=Email
+password=Password
+username=Email Address
+confirmPassword=Confirm Password
+userRole=User Role
+user.company.notFound=The Company Name must exactly match an existing company
+email.notUnique=Hey! This email address is already being used by a registered user.  You might want to choose another one or log in with that email address now.
+openID.notUnique=It looks like this Gmail or Google Apps account is already assigned to a registered user. You can go ahead and log in with that account now.
+company.notPresentForCompanyAdmin=Please choose a company when creating a user with the role of Company Administrator..
+password.confirmation.doNotMatch=The Password and Confirm Password must match.
+password.expired=Your password has expired. Please change it.
+password.temporary=Temporary Password
+new.password=New Password
+categories.nonExistantCategory=One or more of the categories specified does not exist.
+
+validation.password= &{%2$s} must contain between %3$d and %4$d characters
+validation.image= &{%2$s} may be no larger than %3$dKB, no wider than %4$dpx, and no higher than %5$dpx.
+validation.image.type= &{%2$s} is not a valid image. Supported formats are png, jpeg, gif and tiff.
+validation.file= &{%2$s} may be no larger than %3$dMB and the format must be supported.
+validation.required=%s is required
+validation.invalid=%s is not valid
+validation.min=%s must be greater than %s
+validation.minSize=%s must be at least %s characters
+validation.maxSize=%s may not be more than %s characters
+validation.email=Please enter a valid email address.
+validation.phone=Please enter a valid phone number.
+validation.companyName.required.moreThanOneUser=Company Name is required when there is more than one user in the company.
+validation.displayName.required=Display Name is required when you have submitted at least one public question.
+validation.fullName.required=Full Name is required when there is more than one user in the company.
+
+secure.stayLogged=Keep me logged in
+secure.newPassword=New Password
+secure.confirmNewPassword=Confirm New Password
+secure.passwordChanged=Your password has been changed
+secure.forgot=Forgot my password
+secure.user.validate=Validate User
+secure.questions.missing=Please ask your company administrator for help.
+secure.answers.invalid=Unable to validate. Please check your answers.
+secure.error.user.missing=A user name is required
+secure.error.user.invalid=The given user name is not valid
+secure.error.cannot.reset.unconfirmed.user=That user account is unconfirmed.  Please accept your invitation by clicking the link in the confirmation email.  If you did not receive a confirmation email, ask your company administrator to send a new one.
+secure.reset.notification=Your password needs to be changed
+secure.reset.instructions=A temporary password has been emailed to you.
+secure.question.request=Please select a security question and provide an answer.
+
+registration.error.loggedInSignup=You are currently logged in. Simply log out if you want to sign a new company up for SuitedTo.
+
+jobTitle=Job Title
+
+rate.up.title=(+) I love this question, rate it up!
+rate.down.title=(-) Not my favorite question, rate it down.
+
+models.Category$CategoryStatus$1.NEW=New
+models.Category$CategoryStatus$3.BETA=Beta
+models.Category$CategoryStatus$4.PRIVATE=Private
+models.Category$CategoryStatus$2.PUBLIC=Public
+
+userToImpersonate.required=Fool! You can't switch to %s because that username/email doesn't exist in the system.
+
+
+companyManagement.title.UPGRADE=Upgrade Account
+companyManagement.title.STANDARD=Manage Company Information
+companyManagement.title.ADMIN=Manage Company Information
+companyManagement.title.TRIAL_EXPIRED=Manage Company Information
+companyManagement.title.PAYMENT=Manage Company Information
+
+
+companyManagement.message.UPGRADE=
+companyManagement.message.STANDARD=
+companyManagement.message.ADMIN=
+companyManagement.message.TRIAL_EXPIRED=We're glad you've enjoyed your free trial. Please enter your payment information to continue taking advantage of all that SuitedTo has to offer!
+companyManagement.message.PAYMENT=Please update your payment information to continue to take advantage of all SuitedTo has to offer!
+
+
+companyName=Company Name
+company.name=Company Name
+question=Question
+answer=An answer to the security question
+agreeTOS=Checking "I agree to the Terms of Service"
+zipCode=Zip Code
+expirationDate=Expiration Date
+company.contactName=Contact Name
+company.contactEmail=Contact Email
+user.email=User email
+username.notUnique=Sorry. That display name is already taken.
+
+interview.deleteWithFutureInterviews=<strong>Heads up!</strong> There are candidates scheduled to be given this interview.  If you delete it, any future interviews will be unscheduled.  Future interviews that have associated feedback will be maintained.
+
+feedback.summary.HIRE=Make an offer!
+feedback.summary.MAYBE_HIRE=Maybe a fit, let's talk it out
+feedback.summary.MORE_INTERVIEWS=More interviews
+feedback.summary.NO_HIRE=Don't hire
+
+feedback.summaryChoice=Next Step
+summaryChoice=Next Step
+feedback.comments=Additional Feedback
+feedback.error.noCandidateID=No such candidate.
+feedback.error.mustHaveCompany=You must belong to a company to provide feedback.
+feedback.error.mustBeConnected=You must be logged in to provide feedback.
+feedback.error.noCandidateInterviewID=No such candidate interview.
+feedback.error.candidateFeedbackHidden=Feedback has been disabled for this candidate.
+feedback.error.authorizationExpired=This feedback request has expired.  Please ask you company administrator to send you another request.
+feedback.error.otherUserLogged=Can't add feedback with a different user logged in.  Please log out and try again.
+feedback.error.noPost=It seems your e-mail client isn't supported.  Please use the link in the feedback email to provide feedback.  Sorry for the trouble!
+help.hoverOver.feedbackOptions=Checking <strong>hide feedback</strong> will prevent company users from seeing any candidate feedback, so only company admins have access to it.  <strong>Displaying feedback</strong> allows every company user to see candidate feedback.
+help.hoverOver.strength=This is a question's strength. A higher number = more times the question was used in interviews.
+help.hoverOver.category=This is the category that the question is associated with and the total number of questions there are within that category.
+help.hoverOver.possibleAnswers=These are answers that the candidate might respond with.  Some questions could have multiple answers, so every possible answer might not be covered.
+help.hoverOver.possiblePrepAnswers=These are Prepado specific answers that the candidate might respond with.  Some questions could have multiple answers, so every possible answer might not be covered.
+help.hoverOver.tips=If the candidate is having trouble understanding the question, give them a tip to help them out.
+help.hoverOver.comments=Comments can cover any additional information an interviewer needs to successfully ask the question and understand the response.
+help.hoverOver.companyNotes=These notes are specific to your company and only members of your company can see them
+help.hoverOver.inviteMessage=Add a personal message to send to the new user!
+help.hoverOver.activeUsers=Active users can log in to SuitedTo at any time.  Inactive users cannot log into SuitedTo until they are active again.
+help.hoverOver.totalQuestions=The total number of active questions in the system. This includes both public and private questions as well as questions that are still in the review process.
+help.hoverOver.publicQuestions=The number of questions that any non-reviewer user would be able to see.
+help.hoverOver.reviewer=Users who are either designated as super-reviewers or who have review privileges for at least one category.
+help.hoverOver.contributingUser=Users who have created at least one question that has been accepted to the public question pool.
+help.hoverOver.trialExpiration=The company will have free access during their Trial Period. The Trial Period must be at least one day in the future. Use this setting to grant temporary Free access. Use Coupon Codes if you want to give a discount for the entire duration of the company's membership.
+help.hoverOver.couponCode=You must manage coupon codes for existing companies through the Stripe Dashboard. Changes to customer discounts made in the Stripe system are automatically updated here.
+
+help.questionTab.allQuestions=This is a list of all the public questions and private questions from your company in the database.
+help.questionTab.needsReview=You are a reviewer!  These are questions that have been submitted to the public pool and need to be reviewed.
+help.questionTab.myQuestions=These are all of the questions that you have created.
+help.questionTab.companyPrivateQuestions=These questions are private to your company- no one outside the company can see or use them!
+help.questionTab.outForReviewCompany=These questions have been submitted by members of your company and are out for review.
+help.questionTab.outForReviewYou=These are any of your questions that are out for review for the public pool.
+help.questionTab.awaitingCompletion=These are questions that have been submitted to the public pool but need to be completed. Add an expert answer and receive credit for the question.
+
+help.interviewTab.myTemplates=These are all of the interview templates that you have created.
+help.interviewTab.companyTemplates=This is a list of all interview templates created in your company.
+help.interviewTab.allTemplates=This is a list of all interview templates.
+help.interviewTab.myCandidateInterviews=These are all of the candidate interviews that you have conducted or been assigned to.
+help.interviewTab.companyCandidateInterviews=This is a list of all upcoming candidate interviews in your company.
+help.interviewTab.allCandidateInterviews=This is a list of all upcoming candidate interviews.
+
+limits.candidates.free=<strong>Hey!</strong> Candidates are a great way to keep track of your potential hires as well as feedback from your interviewers.  Unfortunately, it's a feature not available to free accounts.
+limits.candidates.free.upgrade=You can upgrade your account <a href="%s">here</a>.
+limits.questions.private.max=Your private questions are max'd out.
+limits.questions.private.none=Free accounts cannot make questions private.
+limits.questions.private.more=<a href="%s">Click here</a> to get more private questions.
+limits.questions.private.get=<a href="%s">Click here</a> to get private questions.
+limits.candidates.cannot_create=This account cannot create any more candidates.
+limits.interviews.cannot_create=This account cannot create any more interviews.
+limits.questions.cannot_create=This account cannot create any more private questions.
+limits.users.cannot_create=This account cannot create that many users.
+limits.users.max=Your user count is max'd out.
+limits.users.admins.max=Your company administrators are max'd out.  <a href="%s">Click here</a> to get more company administrators.
+limits.users.admins.min.self=You are this company's only administrator.  To change your account type, first promote another user to an administrator.
+limits.users.admins.min.other=This user is this company's only administrator.  To change this user's account type, first promote another user to an administrator.
+limits.users.get=<a href="%s">Click here</a> to get more users.
+
+candidate.interview.invalid.date=Badly formatted date: %s
+candidate.feedback.globally.hidden.admin=Candidate feedback is being hidden from company users and is only visible to company administrators.  Company users can only see feedback they provided themselves.  You can change these settings <b><a href="%s">here</a></b>.
+candidate.feedback.globally.hidden.user=The table below shows only your own feedback.
+candidate.feedback.disabled=This table is completely hidden from non-administrative users.
+candidate.feedback.globally.visible.admin=All users can see this feedback. You can change these settings <b><a href="%s">here</a></b>.
+candidate.feedback.globally.visible.user=All users can see this feedback.
+candidate.feedback.globally.visible.no.company=All users can see this feedback.  Disable feedback for this candidate to hide it.  (This candidate is associated with no company, so you can't disable it at the company level.)
+
+#labels for the default action that a user should take based on the given ActiveInterviewState
+activeInterview.status.defaultAction.NOT_STARTED=Start
+activeInterview.status.defaultAction.STARTED=Finish
+activeInterview.status.defaultAction.FINISHED=Leave Feedback
+
+#labels for the status of the given ActiveInterviewState
+activeInterview.status.label.NOT_STARTED=Not Started
+activeInterview.status.label.STARTED=In Progress
+activeInterview.status.label.FINISHED=Finished
+
+invitation.already.logged.in=Another user is already logged in.  <a href="%s">Log out</a> and try again.
+
+newsfeed.message.QUESTION_WORKFLOW.user=Congratulations! Your Question <a href="%s">%s</a> was accepted into the public question pool.
+newsfeed.message.QUESTION_WORKFLOW.company=%s's question <a href="%s">%s</a> was accepted into the public question pool.
+newsfeed.message.QUESTION_WORKFLOW.all=%s's question <a href="%s">%s</a> was accepted into the public question pool.
+newsfeed.standardShareMessage.QUESTION_WORKFLOW=My question is now in the SuitedTo public pool!
+newsfeed.twitterShareMessage.QUESTION_WORKFLOW=My question is now in the @SuitedTo public pool!
+
+newsfeed.message.BADGE.user=You received the %s badge!
+newsfeed.message.BADGE.company=%s received the %s badge!
+newsfeed.message.BADGE.all=%s received the %s badge!
+newsfeed.standardShareMessage.BADGE=I just received the %s badge in SuitedTo!
+newsfeed.twitterShareMessage.BADGE=I just received the %s badge in @SuitedTo!
+
+newsfeed.message.REVIEWER.user=You are now a reviewer for %s!
+newsfeed.message.REVIEWER.company=%s is now a reviewer for %s!
+newsfeed.message.REVIEWER.all=%s is now a reviewer for %s!
+newsfeed.standardShareMessage.REVIEWER=I am now a reviewer for %s in SuitedTo!
+newsfeed.twitterShareMessage.REVIEWER=I am now a reviewer for %s in @SuitedTo!
+
+newsfeed.message.TOP_CATEGORIES.all=These are the top %s categories this week: %s
+newsfeed.message.WEEKLY_QUESTIONS.all=%s new questions were added to SuitedTo in the last week.
+
+newsfeed.share.badge.dejavu.user=I earned the Deja Vu badge in #SuitedTo!
+

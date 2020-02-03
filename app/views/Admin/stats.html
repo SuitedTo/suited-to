@@ -1,0 +1,28 @@
+#{extends 'standardPage.html' /}
+#{set title:'SuitedTo Stats' /}
+#{set 'moreScripts'}
+#{/set}
+<h1>SuitedTo Stats</h1>
+<div class="row">
+<div class="span4">
+
+<table class="table table-bordered table-striped table-condensed">
+    <thead><th colspan="2">Company Stats</th></thead>
+    <tr><td>Total</td><td>${companyCount}</td></tr>
+    <tr><td>Free</td><td>${freeCompanyCount}</td></tr>
+    <tr><td>Standard</td><td>${standardCompanyCount}</td></tr>
+    <tr><td>Enterprise</td><td>${enterpriseCompanyCount}</td></tr>
+    <thead><th colspan="2">Question Stats</th></thead>
+    <tr><td>Total <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.totalQuestions'}" data-original-title="Total">?</a></td><td>${totalQuestionCount}</td></tr>
+    <tr><td>Public/Accepted <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.publicQuestions'}" data-original-title="Public/Accepted">?</a></td><td>${publicQuestionCount}</td></tr>
+    <tr><td>Private</td><td>${privateQuestionCount}</td></tr>
+    <thead><th colspan="2">User Stats</th></thead>
+    <tr><td>Total Users</td><td>${activeUserCount}</td></tr>
+    <tr><td>Qualified Reviewers <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.reviewer'}" data-original-title="Qualified Reviewers">?</a></td><td>${reviewerCount}</td></tr>
+    <tr><td>Contributing Users <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.contributingUser'}" data-original-title="Contributing Users">?</a></td><td>${contributingUserCount}</td></tr>
+    <thead><th colspan="2">Other Stats</th></thead>
+    <tr><td>Interviews</td><td>${interviewCount}</td></tr>
+    <tr><td>Categories</td><td>${categoryCount}</td></tr>
+</table>
+</div>
+</div>

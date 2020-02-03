@@ -1,0 +1,33 @@
+#{extends 'standardPageNoNav.html' /}
+#{set title: 'Reset Password' /}
+<div class="row">
+    <div class="span12">
+
+    </div>
+</div>
+
+#{form @Security.resetPassword(), id: 'validate', class:'form-horizontal', autocomplete:'off'}
+    #{if result}
+    <div id="message" class="alert alert-success fade in">
+        <strong>Thank you.</strong> An email has been sent to ${flash.username} with a temporary password and
+        additional instructions. The temporary password will expire in 24 hours.
+    </div>
+    #{/if}
+    #{else}
+    <div id="instructions" class="row">
+        <div class="span12">
+            <h1>Reset Password</h1>
+
+            <p>Click the button below to reset your password. An email will be sent to ${flash.username} with
+                instructions to complete the password reset process.</p>
+
+
+            <p id="validate-field">
+                <input type="submit" class="btn btn-large btn-primary" id="validate" value="Reset Password"/>
+                <input type="hidden" name="userName" value="${flash.username}">
+                <input type="hidden" id="context" value="${flash.context}">
+            </p>
+        </div>
+    </div>
+    #{/else}
+#{/form}

@@ -1,0 +1,10 @@
+*{display phone number fields, prepopulated with optional phoneNumber parameter, as well as an index argument to modify input names}*
+<div class="controls phone repeatable">
+    <select name="phoneNumberType${_index}" id="phoneNumberType${_index}" size="1" class="input-small">
+        #{list items:enums.PhoneType.values(), as:'type'}
+            <option value="${type.name()}" ${type.equals(_number?.phoneNumberType) ? "selected=selected" : ""}>${type.toString()}</option>
+        #{/list}
+    </select>
+    <input type="text" class="input-medium" id="phoneNumberValue${_index}" name="phoneNumberValue${_index}" value="${_number?.phoneNumberValue}">
+    <a id="phoneNumberRemove${_index}" class="remove" href="#"><i class="icon-remove"></i> remove</a>
+</div>

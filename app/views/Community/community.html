@@ -1,0 +1,65 @@
+#{extends 'standardPage.html' /}
+#{set title:'User List' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+    #{script 'handlebars-1.0.rc.1.min.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"Community", user:user  /}
+
+            <h1>Community Users</h1>
+        </div>
+    </div>
+</div>
+
+<div id="communityList">
+
+    #{if user}
+        #{deadbolt.restrict roles:[['APP_ADMIN']]}
+            <p>Hello Admins! Look at DataTables. Now look back at me. Now back at DataTables. Now back at me. Sadly DataTables isn't me. If only it was as sexy as my DataDisplay.</p>
+        #{/deadbolt.restrict}
+    #{/if}
+
+    <div class="row">
+        <div class="span12">
+            <div id="dataDisplayControls">
+                <div class="dataDisplayCtrl_search"></div>
+                <div class="dataDisplayCtrl_display"></div>
+                <div class="dataDisplayCtrl_filter">
+                    <label>Sort by: <select size="1" id="dataDisplayCtrl_filter_select" aria-controls="#communityList" class="span2 inline">
+                        <option value="2">Street Cred</option>
+                        <option value="1">Display Name</option>
+                    </select></label>
+                </div>
+                #{if user?.company}
+                <div class="dataDisplayCtrl_companyOnly">
+                    <label for="communityListCompanyOnly" class="checkbox"><input type="checkbox" name="communityListCompanyOnly" id="communityListCompanyOnly" data-compid="$true" > Show Only My Company</label>
+                </div>
+                #{/if}
+                <div class="dataDisplayCtrl_length"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row dataDisplayResults">
+        <div id="loadingResults">#{processingDisplay /}</div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <div class="dataDisplayCtrl_paginate"></div>
+        </div>
+    </div>
+
+</div><!-- end #communityList -->
+
+<script>
+    Application.Community.init();
+</script>

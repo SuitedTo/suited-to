@@ -1,0 +1,177 @@
+%{ pageClass = 'profile'; }%
+%{ title = displayName ? "${displayName}'s Profile" : "Profile" }%
+#{set title:title /}
+#{extends 'standardPage.html' /}
+#{set 'moreScripts'}
+    #{script 'handlebars-1.0.rc.1.min.js' /}
+#{/set}
+
+
+<div class="profileHeader"><div class="container">
+
+    <div class="row-fluid">
+        <div class="span2 topLeftCol">
+
+            <div class="userPhotoWrap"><div class="userPhoto">
+                #{if photoUrl}
+                <img src="${photoUrl}" alt="${displayName}'s photo" />
+                #{/if}
+                #{else}
+                <img src="/public/images/blowyProfile-150x150.png" alt="${displayName}'s photo">
+                #{/else}
+            </div></div>
+
+        </div>
+        <div class="span10 topMidCol">
+
+            <h2 id="userDisplayName" class="userDisplayName" data-userid="${userId}">${displayName}</h2>
+            <div class="userStatus">
+                #{if isReviewer == true}
+                    <span class="isReviewer">Reviewer</span>
+                #{/if} 
+                #{if proInterviewer == true}
+                    <span class="isProInterviewer">ProInterviewer</span>
+                    #{if available == true}
+                        <span class="isAvailable">(Available)</span>
+                    #{/if}
+                #{/if}
+            </div>
+
+            <div class="userUrl">@@{Community.profile()}/${userId}</div>
+
+        </div>
+    </div>
+
+</div></div><!-- end .profileMain -->
+
+<div class="profileMain"><div class="container">
+    <div class="row-fluid">
+
+        <div class="span2 leftColWrap">
+
+            <div class="userStats">
+                *{#{if privacyLockdown == false}}*
+                <div class="stat streetCred">
+                    <span class="val">${streetCred}</span>
+                    <span class="lbl">Street <br />Cred</span>
+                </div>
+                *{#{/if}}*
+                #{if isSubmittedQuestionListPublic == true}
+                <div class="stat publicQs">
+                    <span class="val">${publicQuestionsCount}</span>
+                    <span class="lbl">Public <br />Qs</span>
+                </div>
+                #{/if}
+                #{if isBadgeCollectionPublic == true}
+                <div class="stat badgesEarned">
+                    <span class="val">${badgesCount}</span>
+                    <span class="lbl">Badges <br />Earned</span>
+                </div>
+                #{/if}
+                #{if isCategorySetPublic == true}
+                <div class="stat categories" data-url="@{Community.getTopCategoriesForCommunityUser}" data-maxvalue="${Integer.MAX_VALUE}">
+                    <span class="lbl">Categories </span><br />
+                    <span class="vals">#{if publicQuestionsCount > 0}${topCategories}#{/if}#{else}<span class="badge">No categories yet.</span>#{/else}</span>
+                </div>
+                #{/if}
+            </div>
+
+        </div>
+        <div class="span6 midColWrap">
+
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#tabActivity" data-toggle="tab">Activity</a></li>
+                #{if isSubmittedQuestionListPublic == true}
+                <li><a href="#tabQuestions" data-toggle="tab">Questions</a></li>
+                #{/if}
+                #{if isReviewdQuestionListPublic == true}
+                <li><a href="#tabReviewedQuestions" data-toggle="tab">Reviewed Questions</a></li>
+                #{/if}
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane active" id="tabActivity" data-url="@{NewsFeedHelper.getNewsFeed}">
+                    <div id="feedItemList" class="feedItemList"></div>
+                    <div class="moreFeed">
+                        <div id="loadingMoreFeed"><img style="padding: 3px; border-radius: 5px; height: 20px; width: 20px;" src="@{'public/images/ajax-loader.gif'}"/> Loading...</div>
+                        <a href="#" id="showMoreFeed" class="hide">- Show More -</a>
+                    </div>
+                </div>
+                #{if isSubmittedQuestionListPublic == true}
+                <div class="tab-pane" id="tabQuestions" data-url="@{Community.getTopAcceptedQuestionsForCommunityUser}">
+                    <ul class="questionList">
+
+                    </ul>
+                </div>
+                #{/if}
+                #{if isReviewdQuestionListPublic == true}
+                <div class="tab-pane" id="tabReviewedQuestions" data-url="@{Community.getTopReviewerQuestionsForCommunityUser}">
+                    <ul class="questionList">
+
+                    </ul>
+                </div>
+                #{/if}
+            </div>
+
+        </div>
+        <div class="span4 rightColWrap">
+
+            <div class="rightCol">
+
+                #{if isReviewer == true}
+                <div class="reviewerStatus">
+                    <h3>Reviewer Status</h3>
+
+                    <div class="innerWrap clearfix">
+                        <div class="reviewed">
+                            <span class="val">${reviewedQuestionsCount}</span> &nbsp;
+                            <span class="lbl">questions reviewed</span>
+                        </div>
+                        #{if isCategorySetPublic == true}
+                        <hr />
+                        <div class="reviewCategories" data-url="@{Community.getTopReviewCategoriesForCommunityUser}" data-maxvalue="${Integer.MAX_VALUE}">
+                            <span class="lbl">Has reviewed questions in:</span> <br />
+                            <span class="vals">#{if reviewedQuestionsCount > 0 }${reviewCategories}#{/if}#{else}<span class="badge">No review categories yet.</span>#{/else}</span>
+                        </div>
+                        #{/if}
+                    </div>
+
+                </div>
+                #{/if}
+
+                #{if isBadgeCollectionPublic == true}
+                <div class="userBadges">
+                    <h3>Badges Earned</h3>
+
+                    <div class="innerWrap clearfix">
+                        <div class="earnedBadges">
+                            #{list items: badges, as:"badge"}
+                                #{userBadge badgeInfo:badge.getInfo(), orientation:'vertical'/}
+
+                            #{/list}
+                            #{if badgesCount == 0}
+                                <p class="noBadgesYet">No badges yet.</p>
+                            #{/if}
+                        </div>
+                    </div>
+
+                </div>
+                #{/if}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+</div></div><!-- end .profileMain -->
+
+<script>
+    Application.pageData = Application.pageData || {
+        userId : ${userId},
+        maxValue: ${Integer.MAX_VALUE}
+    };
+    Application.Profile.init();
+</script>

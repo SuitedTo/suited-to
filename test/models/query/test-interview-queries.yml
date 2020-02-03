@@ -1,0 +1,54 @@
+Company(oneCompany):
+  name: oneCompany
+
+Company(anotherCompany):
+  name: anotherCompany
+
+Category(oneCategory):
+  name: oneCategory
+
+User(appAdmin):
+  name: aa@aa.com
+  password: secret
+  fullName: aa
+  roles: [APP_ADMIN]
+
+User(oneCompanyUser):
+  name: ocu@ocu.com
+  password: secret
+  fullName: ocu
+  reviewCategories: [oneCategory]
+  company: oneCompany
+
+User(anotherCompanyUser):
+  name: acu@acu.com
+  password: secret
+  fullName: acu
+  reviewCategories: [oneCategory]
+  company: anotherCompany
+
+User(userWithoutCompany):
+  name: uwc@uwc.com
+  password: secret
+  fullName: uwc
+  reviewCategories: [oneCategory]
+
+Interview(activeInterviewOneCompany):
+  name: i1
+  active: true
+  user: oneCompanyUser
+
+Interview(activeInterviewAnotherCompany):
+  name: i1
+  active: true
+  user: anotherCompanyUser
+
+Interview(activeInterviewNoCompany):
+  name: i2
+  active: true
+  user: userWithoutCompany
+
+Interview(inActiveInterview):
+  name: i3
+  active: false
+  user: oneCompanyUser

@@ -1,0 +1,180 @@
+*{
+  Parameters:
+    user - Not null.  The user for whom to display/edit preferences.
+}*
+
+#{extends 'standardPage.html' /}
+#{set title:"Account Preferences" /}
+#{set 'moreScripts'}
+    #{script 'jquery-ui-1.9.0.custom.min.js' /}
+    #{script 'changes-alert.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"My Account" /}
+
+            <h1>My Preferences</h1>
+
+        </div>
+    </div>
+</div>
+
+#{standardError /}
+
+#{form @updatePreferences(user.id), id:'updatePreferencesForm', class:'form-horizontal'}
+<div class="row">
+
+    <div id="col1" class="span6">
+        <div class="well">
+            <fieldset>
+                <legend>Email Settings</legend>
+                <p>When should we send you emails?</p>
+                <label for="emailQuestionStatusChange" class="checkbox">
+                    <input id="emailQuestionStatusChange" type="checkbox"/>
+                    When my questions' status changes
+                </label>
+                <label for="emailCategoryStatusChange" class="checkbox">
+                    <input id="emailCategoryStatusChange" type="checkbox"/>
+                    When my category's status changes
+                </label>
+                #{if user.hasRole(enums.RoleValue.APP_ADMIN) || user.company}
+                    <label for="emailCandidateFeedbackConfirmation" class="checkbox">
+                        <input id="emailCandidateFeedbackConfirmation" type="checkbox"/>
+                        When I leave candidate feedback via email
+                    </label>
+                    <label for="emailStopInterview" class="checkbox">
+                        <input id="emailStopInterview" type="checkbox"/>
+                        When I may have forgotten to stop an interview I conducted
+                    </label>
+                    <label for="emailFeedbackRequired" class="checkbox">
+                        <input id="emailFeedbackRequired" type="checkbox"/>
+                        When my feedback is needed on an interview I conducted
+                    </label>
+                #{/if}
+                #{if user.isReviewer()}
+                    <p>
+                        When I have questions to review send me:
+                        <select>
+                            <option>a daily email digest</option>
+                            <option>a weekly email digest</option>
+                            <option>no emails</option>
+                        </select>
+                    </p>
+                #{/if}
+            </fieldset>
+        </div>
+        <div class="well">
+            <fieldset>
+                <legend>Social Settings</legend>
+                <p>Manage your social network connections</p>
+                #{socialConnect redirectUrl: @Users.preferences(user.id)/}
+            </fieldset>
+        </div>
+    </div>
+    <div id="col2" class="span6">
+        <div class="well">
+            <fieldset>
+                <legend>Privacy Settings</legend>
+                <p>What information would you like included in your public profile?</p>
+                <label for="privacyProfilePicture" class="checkbox">
+                    <input id="privacyProfilePicture" 
+                           name="privacyProfilePicture" type="checkbox" 
+                           class="fineGrainedPrivacy"/>
+                    My profile picture
+                </label>
+                <label for="privacyBadges" class="checkbox">
+                    <input id="privacyBadges" name="privacyBadges" 
+                           type="checkbox" class="fineGrainedPrivacy"/>
+                    My badges
+                </label>
+                <label for="privacyCategoryContributions" class="checkbox">
+                    <input id="privacyCategoryContributions" 
+                           name="privacyCategoryContributions"
+                           type="checkbox" class="fineGrainedPrivacy"/>
+                    The categories where I submit/review
+                </label>
+                <label for="privacyRoles" class="checkbox">
+                    <input id="privacyRoles" name="privacyRoles" type="checkbox" 
+                           class="fineGrainedPrivacy"/>
+                    My roles (reviewer, pro interviewer, etc.)
+                </label>
+                <label for="privacyQuestionSubmissions" class="checkbox">
+                    <input id="privacyQuestionSubmissions" 
+                           name="privacyQuestionSubmissions" type="checkbox" 
+                           class="fineGrainedPrivacy"/>
+                    Questions I've submitted
+                </label>
+                #{if user.isReviewer()}
+                    <label for="privacyQuestionsReviewed" class="checkbox">
+                        <input id="privacyQuestionsReviewed" 
+                               name="privacyQuestionsReviewed"
+                               type="checkbox" class="fineGrainedPrivacy"/>
+                        Questions I've reviewed
+                    </label>
+                #{/if}
+                <!-- Pro-reviewer options should go here once that functionality is
+                  -- in place. -->
+                <hr/>
+                <label for="privacyKillSwitch" class="checkbox">
+                    <input id="privacyKillSwitch" name="privacyKillSwitch" 
+                           type="checkbox" #{if user.privacyLockdown}checked="checked"#{/if}/>
+                    Hide all information except my display name and street cred
+                </label>
+            </fieldset>
+        </div>
+        <div class="form-actions">
+            <a href="@{Application.home()}"><button id="cancelButton" type="button" class="btn no-change-check">Cancel</button></a>
+            <button id="submitButton" class="btn btn-primary no-change-check" type="submit">Save</button>
+        </div>
+    </div>
+</div>
+#{/form}
+
+<script type="text/javascript">
+    
+    var privacyPreferencesIgnoringLockdown = {
+        privacyProfilePicture: ${user.picturePublic},
+        privacyBadges: ${user.badgesPublic},
+        privacyCategoryContributions: ${user.contributingCategoriesPublic},
+        privacyRoles: ${user.statusLevelPublic},
+        privacyQuestionSubmissions: ${user.submittedQuestionsPublic},
+        privacyQuestionsReviewed: ${user.reviewedQuestionsPublic}
+    };
+    
+    $(document).ready(function(){
+        $(".fineGrainedPrivacy").change(function() {
+            var jqThis = $(this);
+            
+            privacyPreferencesIgnoringLockdown[jqThis.attr("id")] = 
+                    jqThis.is(":checked");
+        });
+        
+        $("#privacyKillSwitch").change(function() {
+            var fineGrainedEnabled = !$(this).is(":checked");
+            
+            $(".fineGrainedPrivacy").each(function (){
+                var jqThis = $(this);
+                if (fineGrainedEnabled) {
+                    jqThis.removeAttr("disabled");
+                    jqThis.attr("checked", privacyPreferencesIgnoringLockdown[
+                            jqThis.attr("id")]);
+                }
+                else {
+                    jqThis.attr("checked", false);
+                    jqThis.attr("disabled", true);
+                }
+            });
+        });
+        
+        $("#privacyKillSwitch").change();
+        
+        //We've programmatically made some changes, but just to bring us up
+        //to date.  Starting now we're clean
+        $.fn.changeAlert('setChanged', false);
+    });
+</script>

@@ -1,0 +1,130 @@
+# This file defines all module routes (Higher priority routes first)
+#
+# import these routes in the main app as :
+# *     /                                   module:prep
+#
+# ~~~~
+
+# Base routes used to get to various sections within the prep application
+GET     /                                   prep.base.Main.home
+GET     /login                              prep.base.Main.home
+GET     /register                           prep.base.Main.home
+GET     /dashboard                          prep.base.Main.home
+GET     /myAccount                          prep.base.Main.home
+GET     /subscribe                            prep.base.Main.home
+GET     /card                            prep.base.Main.home
+GET     /styleGuide                         prep.base.Main.home
+GET     /forgotPassword                     prep.base.Main.home
+GET     /forgotPasswordRequest              prep.base.Main.home
+
+GET     /interviewer                        prep.base.Main.home
+GET     /interviewer/{interviewId}/view     prep.base.Main.home
+GET     /interviewer/categoryList           prep.base.Main.home
+GET     /interviewer/{interviewId}/review   prep.base.Main.home
+GET     /interviewer/{interviewId}/join     prep.base.Main.home
+
+GET     /scheduler                          prep.base.Main.home
+
+GET     /logout                             prep.base.Main.logout
+
+
+# Routes for RESTful controllers the ?{<.*path>} syntax included on many of these routes specifies an optional url fragment
+# that will be bound to a request param named "path" which can be used to "drilldown" into the JSON data rendered by
+# the request.  For example /interview/1234/questions  will return only the questions list associated with interview 1234
+
+# Categories
+GET     /category/{id}/?{<.*>path}          prep.rest.Categories.get
+GET     /category/?					        prep.rest.Categories.list
+
+# Emails
+POST    /emails/{type}/{id}                 prep.rest.Emails.create
+
+# Jobs
+GET     /jobs/{id}/?{<.*>path}              prep.rest.Jobs.get
+
+# Job Matches
+GET     /jobmatch/?				         	prep.rest.JobMatches.get
+
+# Interviews
+POST    /interview/?                        prep.rest.Interviews.create
+GET     /interview/?					    prep.rest.Interviews.list
+GET     /interview/{id}/review/{reviewKey}/?{<.*>path}          prep.rest.Interviews.getReview
+GET     /interview/{id}/review                                  prep.rest.Interviews.listReviews
+PUT     /interview/{id}/review/{reviewKey}/?                    prep.rest.Interviews.updateReview
+DELETE  /interview/{id}/review/{reviewKey}                      prep.rest.Interviews.deleteReview
+POST    /interview/review/?                 prep.rest.Interviews.createReview
+GET     /interview/review/{id}/resend       prep.rest.Interviews.resendEmail
+GET     /interview/{id}/?{<.*>path}    	    prep.rest.Interviews.get
+PUT     /interview/{id}         		    prep.rest.Interviews.update
+DELETE  /interview/{id}         		    prep.rest.Interviews.delete
+
+
+# Question Reviews
+PUT     /questionreview/{id}	    	    prep.rest.QuestionReviews.update
+POST     /questionreview/?	    	    	prep.rest.QuestionReviews.create
+
+# Interview Builds
+GET     /interviewbuild/{id}/?{<.*>path}    	    prep.rest.InterviewBuilds.get
+POST    /interviewbuild/?             		        prep.rest.InterviewBuilds.create
+
+#Interview Category List Builds
+GET     /interviewcategorylistbuild/{id}/?{<.*>path}    	    prep.rest.InterviewCategoryListBuilds.get
+POST    /interviewcategorylistbuild/?             		        prep.rest.InterviewCategoryListBuilds.create
+
+# Interview Category Lists
+GET     /interviewcategorylist/{id}/?{<.*>path}	prep.rest.InterviewCategoryLists.get
+
+# Questions
+GET     /question/{id}/video				prep.rest.Questions.getVideo
+DELETE     /question/{id}/video				prep.rest.Questions.deleteVideo
+GET     /question/?					    	prep.rest.Questions.list
+GET     /question/{id}/?{<.*>path}          prep.rest.Questions.get
+POST    /question/             		        prep.rest.Questions.create
+PUT     /question/{id}         		        prep.rest.Questions.update
+DELETE  /question/{id}         		        prep.rest.Questions.delete
+
+
+# Users
+GET     /user/?					            prep.rest.Users.list
+GET     /user/{id}/?{<.*>path}              prep.rest.Users.get
+POST    /user/?             		        prep.rest.Users.create
+PUT     /user/{id}         		            prep.rest.Users.update
+DELETE  /user/{id}         		            prep.rest.Users.delete
+
+# Sessions
+POST    /session/?                          prep.rest.Sessions.create
+DELETE  /session/?                          prep.rest.Sessions.delete
+
+#S3 Uploads
+POST   /s3upload/?                          prep.rest.S3Uploads.create
+
+#Answer Videos
+POST    /answervideo/?                      prep.rest.AnswerVideos.create
+PUT    	/answervideo/{id}                   prep.rest.AnswerVideos.update
+GET     /answervideo/{id}		            prep.rest.AnswerVideos.get
+DELETE  /answervideo/{id}         		    prep.rest.AnswerVideos.delete
+*       /answervideo/encodingCallback/?      prep.rest.AnswerVideos.encodingCallback
+GET     /answervideo/videosforrinterview/{interviewId}            prep.rest.AnswerVideos.getVideosForInterview
+
+POST    /answervideobuilds/?                 prep.rest.AnswerVideoBuilds.create
+
+#LinkedIn Token exchange
+GET     /linkedintoken/?					prep.rest.LinkedInTokens.get
+
+POST    /card/{id}							prep.rest.Cards.create
+PUT     /card/{id}							prep.rest.Cards.update
+
+POST    /discount/?{id}?                    prep.rest.Discounts.create
+
+POST 	/subscription/{id}					prep.rest.Subscriptions.create
+PUT 	/subscription/{id}					prep.rest.Subscriptions.update
+
+GET     /public/                            staticDir:public
+
+PUT     /forgotpasswordrequest/?            prep.rest.ForgotPasswordRequest.update
+
+PUT     /forgotpassword/?                   prep.rest.ForgotPassword.update
+
+*       /                                   module:press
+
+*       /{controller}/{action}              prep.{controller}.{action}

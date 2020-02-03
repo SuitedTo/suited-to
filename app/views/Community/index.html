@@ -1,0 +1,48 @@
+#{extends 'standardPage.html' /}
+#{set title:'SuitedTo' /}
+
+
+<div class="jumbotron masthead">
+    <div class="row">
+        <div class="inner subhead span12">
+            <h1>SuitedTo: Get the Right Employees <strong>IN</strong></h1>
+        </div>
+    </div>
+    <div class="loginWrapper">
+        <div class="row-fluid">
+            <div class="span4">
+                <div class="well">
+                    <h3>Sign up, foo'.</h3>
+                    <ul class="nav nav-tabs nav-stacked">
+                        <li><a id="individualSignup" href='@{Registration.selfRegistration()}'>Sign Up Now</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="span4">
+                <div class="well">
+                    <strong>Java version:</strong> ${System.getProperty("java.vendor")} ${System.getProperty("java.version")}
+                </div>
+            </div>
+
+            <div class="span4">
+                <div class="well">
+                    <h3>Log in, foo'.</h3>
+                    #{if !_loggingIn}
+                        #{form @Security.authenticate(), class:'form-vertical', autocomplete:"off"}
+                        <label for="username" class="control-label required visuallyhidden">&{'username'}</label>
+                        <input type="text" class="input-block-level" name="username" id="username" value="${flash.username}" placeholder="&{'username'}" />
+                        <label for="password" class="control-label required visuallyhidden">&{'password'}</label>
+                        <input type="password" class="input-block-level" name="password" id="password" value="${flash.password}" placeholder="&{'password'}" />
+                        <label class="checkbox" id="remember-label" for="remember"><input type="checkbox" name="remember" id="remember" class="inline" value="true" ${flash.remember ? 'checked="true"' : ''} />  &{'secure.stayLogged'}</label>
+                        <input type="submit" class="btn btn-primary btn-block" id="signin" value="Log in" />
+                        <br />
+                        <a href="@{Security.oAuth()}" class="btn btn-block"><img src="/public/images/google-ico-32x32.png" style="height:16px;width:16px;" alt="Google"> Log in with Google</a>
+                        #{/form}
+                    #{/if}
+                </div>
+            </div>
+
+        </div>
+        </div>
+    </div>

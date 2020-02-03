@@ -1,0 +1,103 @@
+#{extends 'standardPage.html' /}
+#{set _loggingIn:'true' /}
+#{set title: 'SuitedTo | Log In' /}
+#{set 'moreStyles'}
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <h1>Log In</h1>
+    </div>
+</div>
+
+<div class="loginWrapper">
+<div class="row-fluid">
+    <div class="span12">
+    %{ customError = flash.customError }%
+    #{if customError}
+        #{if customError == 'fixPayment'}<div id="delinquentError" class=" alert alert-error">There was a problem with the payment on file for your account. <a id="fixDelinquentAccount" href="@{CompanyManagement.manage(flash.companyId, controllers.CompanyManagement.Mode.PAYMENT)}">Fix it here.</a></div>#{/if}
+        #{elseif customError == 'endOfFreeTrialAdmin'}<div id="delinquentError" class="alert alert-error">We hope you've enjoyed your free trial of SuitedTo! <a id="fixDelinquentAccount" href="@{CompanyManagement.manage(flash.companyId, controllers.CompanyManagement.Mode.TRIAL_EXPIRED)}">Click here.</a> to update your company profile with payment information and continue to take advantage of all SuitedTo has to offer!</div>#{/elseif}
+        #{elseif customError == 'endOfFreeTrial'}<div id="delinquentError" class=" alert alert-error"> We hope you have enjoyed your free trial of SuitedTo!  Please contact your company administrator to upgrade your account and continue using SuitedTo and all of it's awesomeness!</div> #{/elseif}
+        #{else}
+            <div class=" alert alert-error">&{customError}</div>
+        #{/else}
+    #{/if}
+    #{elseif flash.error}
+        <div class="alert alert-error">&{flash.error}</div>
+    #{/elseif}
+    #{elseif flash.success}
+        <div class="alert alert-success">&{flash.success}</div>
+    #{/elseif}
+    </div>
+</div>
+<div class="row-fluid">
+    <div class="span6"><div class="well">			
+		#{form @Security.authenticate(), class:'form-vertical', autocomplete:"off"}
+			<legend>Welcome! Log in below</legend>
+			<fieldset>
+				<div class="control-group" id="usernameGroup">
+					<label class="control-label visuallyhidden" for="username">&{'username'}</label>
+					<div class="controls">
+						<input type="text" class="input-block-level" name="username" id="username" value="${flash.username}" placeholder="&{'username'}" />
+					</div>
+				</div>
+				<div class="control-group" id="passwordGroup">
+					<label class="control-label visuallyhidden" for="password">&{'password'}</label>
+					<div class="controls">
+						<input type="password" class="input-block-level" name="password" id="password" value="${flash.password}" placeholder="&{'password'}" />
+					</div>
+				</div>
+				<div class="control-group" id="checkboxGroup">
+					<div class="controls">
+						<label class="checkbox" id="remember-label" for="remember"><input type="checkbox" name="remember" id="remember" class="inline" value="true" ${flash.remember ? 'checked="true"' : ''} />  &{'secure.stayLogged'}</label>
+					</div>
+				</div>
+				<div class="control-group" id="signinGroup">
+					<div class="controls">
+						<input type="submit" class="btn btn-large btn-primary btn-block" id="signin" value="Log in" />
+						<br /><span class="help-block"><a id="forgot-ref" class="">&{'secure.forgot'}</a></span>
+					</div>
+				</div>
+			</fieldset>
+			
+		#{/form}
+		
+    #{form @security.validateUser(), id:'forgotForm'}
+	    <p>
+	    	<input type="hidden" id="forgotData" name="userName">
+	    	<input type="hidden" name="context" value="reset">
+	    </p>
+	#{/form}
+	</div></div>
+	<div class="span1">
+		<div class="loginOrDivider">OR</div>
+		<div class="loginHrDivider hidden-phone"></div>
+	</div>
+	<div class="span5"><div class="well">
+		<legend>Log in with Google</legend>
+		<p class="muted">Registered for SuitedTo using your Google Account?</p>
+        <div class="control-group">
+            <a id="openIDButton" href="@{Security.oAuth()}" class="btn btn-block"><img src="/public/images/google-ico-32x32.png" alt="Google"> Log in with Google</a>
+        </div>
+	</div></div>
+</div>
+</div><!-- end .loginWrapper -->
+
+<script type="text/javascript">
+
+	$(document).ready(function () {
+		$('.loginNav').hide();
+    $('a:empty').remove(); // todo: this is a temporary fix, we need to find the underlying issue of why empty <a> tags are being pushed to the view.
+	})
+	
+	$('#forgot-ref').css("cursor", "pointer");
+
+    function submitForgotForm(){
+         $('#forgotData').val($('#username').val());
+         $('#forgotForm').submit();
+    }
+	$('#forgot-ref').click( function() {
+	    submitForgotForm();
+     })
+    
+</script>

@@ -1,0 +1,65 @@
+#{extends 'blowyEmail.html' /}
+<!-- // Begin Module: Standard Content \\ -->
+<table border="0" cellpadding="20" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div mc:edit="std_content01">
+                <h3 class="h3">Your category has been put into ${newStatus} status!</h3>
+                <hr class="hr">
+
+                <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                    <tr>
+                        <td valign="top"></td>
+                        <td><h4 class="h4">
+                            #{if category.creator.displayName}
+                                ${category.creator.displayName}
+                            #{/if}
+                            #{else}
+                                ${category.creator.fullName}
+                            #{/else}
+                            ,</h4>
+
+                            *{Please note: This template will have an empty body if fed an incorrect status change}*
+                            #{if oldStatus.equals(models.Category.CategoryStatus.NEW)}
+                            #{if newStatus.equals(models.Category.CategoryStatus.BETA)}
+                            Congratulations! Your category ${category.name} has been put into beta.<br><br>
+                            A beta category is like a public category since it is available to everyone, but the questions in a beta category haven’t been reviewed yet. Just a heads up!
+                            #{/if}
+                            #{elseif newStatus.equals(models.Category.CategoryStatus.PRIVATE)}
+                            Your category ${category.name} has been moved to private status.<br><br>
+                            Private categories can only be viewed by the users within the company that created the question. Private categories tend to be more company specific than public categories.
+                            #{/elseif}
+                            #{elseif newStatus.equals(models.Category.CategoryStatus.PUBLIC)}
+                            Congratulations! Your category ${category.name} is now public.<br><br>
+                            A public category can be viewed by all SuitedTo users and can be tagged to any question.  Public categories already have questions and reviewers ready!
+                            #{/elseif}
+                            #{/if}
+                            #{elseif oldStatus.equals(models.Category.CategoryStatus.BETA) && newStatus.equals(models.Category.CategoryStatus.PUBLIC)}
+                            Congratulations! Your category ${category.name} is now public.<br><br>
+                            A public category can be viewed by all SuitedTo users and can be tagged to any question.  Public categories already have questions and reviewers ready!
+                            #{/elseif}
+                            #{elseif oldStatus.equals(models.Category.CategoryStatus.PRIVATE) && newStatus.equals(models.Category.CategoryStatus.BETA)}
+                            Congratulations! Your category ${category.name} has been put into beta.<br><br>
+                            A beta category is like a public category since it is available to everyone, but the questions in a beta category haven’t been reviewed yet. Just a heads up!
+                            #{/elseif}
+                            <br><br>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td valign="top"></td>
+                        <td>
+                            Sincerely, <br>
+                            The SuitedTo TEAM
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
+<!-- // End Module: Standard Content \\ -->

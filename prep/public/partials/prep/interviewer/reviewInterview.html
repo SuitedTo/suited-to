@@ -1,0 +1,142 @@
+<div class="interviewReview">
+
+    <div class="container interviewReviewTop" ng-show="interview">
+
+        <div class="reviewHeader">
+            <div class="innerWrap">
+
+                <h1 ng-show="global.connectedUser && !global.isReviewer">Congrats, {{ global.connectedUser.firstName }}!</h1>
+                <h1 ng-hide="global.connectedUser && !global.isReviewer">{{ global.connectedUser.firstName }}</h1>
+
+                <h1 ng-show="global.isReviewer"> {{review.interviewerName}} </h1>
+
+                <h2 ng-show="global.connectedUser && !global.isReviewer">You've completed the practice interview!</h2>
+                <h2 ng-hide="global.connectedUser && !global.isReviewer">{{ interview.name }}</h2>
+
+                <p class="askedAnswered">
+            <span ng-show="interview && !global.isReviewer" ng-cloak>
+                We asked you <em>{{ interview.questions.length }} <ng-pluralize count="interview.questions.length" when="{'one':'question', 'other':'questions'}"></ng-pluralize></em>.
+                You answered <em>{{ numQuestionsAnswered }}.</em>
+            </span>
+            <span ng-show="interview && global.isReviewer" ng-cloak>
+                They were asked <em>{{ interview.questions.length }} <ng-pluralize count="interview.questions.length" when="{'one':'question', 'other':'questions'}"></ng-pluralize></em>
+                and answered <em>{{ numQuestionsAnswered }}.</em>
+            </span>
+                    <span ng-hide="interview" id="interviewLoaderBar"><img src="/public/images/prep/ajax-loader-bar.gif"></span>
+                    <!--<span>You answered <em>{{ getNumAnsweredQuestions() }} <ng-pluralize count="getNumAnsweredQuestions()" when="{'one':'question', 'other':'questions'}"></ng-pluralize></em> and flagged <em>TODO</em>.</span></p>-->
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="container interviewReviewBottom" ng-show="interview">
+
+        <div class="row">
+            <div class="span12">
+
+
+                <h2 class="letsReview clearfix"><i class="iconprep-questionBubbles"></i> Let's Review <a class="btn pull-right" id="reviewViewAllAnswers" href="" ng-click="showAnswers()">View all answers</a></h2>
+
+
+                <ul class="questionList">
+                    <li class="questionItem" ng-repeat="question in interview.questions">
+                        <div class="num">{{ $index + 1 }}.</div>
+
+                        <div class="question">{{ question.text }}</div>
+
+                        <div class="actions">
+                            <a href="" ng-click="answerVisible[$index] =! answerVisible[$index]" ng-class="{active: answerVisible[$index]}"><i class="iconprep-view-r" ng-class="{active: answerVisible[$index]}"></i><span class="lbl"></span></a>
+                        </div>
+
+                        <div class="answers" pp-show-slide="answerVisible[$index]">
+                                <p class="lbl" ng-show="question.staticAnswers">Suggested Answers</p>
+                                <p class="answr" ng-show="question.staticAnswers">{{ question.staticAnswers }}</p>
+                                <p class="lbl" ng-show="question.tips">Tips</p>
+                                <p class="answr" ng-show="question.tips">{{ question.tips }}</p>
+                                <p class="lbl" ng-show="global.connectedUser && !global.isReviewer">Your Answer <a class="edit" ng-show="question.answers" href="" ng-click="answerEditable[$index] = !answerEditable[$index]">Edit</a></p>
+                                <p class="lbl" ng-show="global.isReviewer">Their Answer</p>
+                                <p class="answr" ng-hide="answerEditable[$index] || !question.answers">{{ question.answers }}</p>
+                                <div class="videoResponseBlock" id="videoDiv{{$index}}" ng-show="question.videoAnswer">
+                                    <video id="video{{$index}}" class="videoResponse" controls src="{{question.videoAnswer.url}}">
+                                    </video>
+                                </div>
+                                <div class="textResponseBlock" pp-show-slide="textResponseBlock" ng-show="answerEditable[$index]">
+                                    <textarea ng-model="question.answers" placeholder=""></textarea>
+                                    <div class="textResponseActions">
+                                        <a class="cancel" href="" ng-click="cancelAnswer($index)">Cancel</a>
+                                        <a class="save" href="" ng-click="submitAnswer($index)">Save</a>
+                                    </div>
+                                </div>
+                                <p class="lbl" ng-show="global.isReviewer">Your Feedback <a ng-show="review.status != 'COMPLETED'" class="edit" href="" ng-click="reviewEditable[$index] = !reviewEditable[$index]">Edit</a></p>
+                                <p class="answr" ng-hide="reviewEditable[$index]">{{ review.questions[$index].text }}</p>
+                                <div class="textResponseBlock" pp-show-slide="textResponseBlock" ng-show="global.isReviewer && reviewEditable[$index]">
+                                    <textarea ng-model="review.questions[$index].text" placeholder=""></textarea>
+                                    <div class="textResponseActions">
+                                        <a class="cancel" href="" ng-click="cancelQuestionReview($index)">Cancel</a>
+                                        <a class="save" href="" ng-click="submitQuestionReview($index)">Save</a>
+                                    </div>
+                                </div>
+                                <div class="reviewItem" ng-repeat="qr in question.reviews">
+                                    <p class="lbl">{{qr.reviewer}}'s FEEDBACK</p>
+                                    <p class="answr">{{qr.text}}</p>
+                                </div>
+                            </div>
+                    </li>
+                </ul>
+
+                <!--todo: eliminate inline styling by making css classes-->
+                <div class="container" ng-hide="global.isReviewer || global.connectedUser.paymentRequired" style="margin:auto auto 50px 115px;">
+                    <h2 style="color:#ec2e25; font-size:2.4em; text-transform:uppercase;">Share My Results with a Reviewer</h2>
+                    <ul ng-show="reviewers && reviewers.length > 0" ng-cloak style="list-style-type:none;">
+                        <li style="color:#8ad2da; font-weight:bolder; font-size:1.2em;">
+                            <span style="display:inline-block; width:30%">Reviewer</span>
+                            <span style="display:inline-block; width:10%">Status</span>
+                        </li>
+                        <li ng-repeat="reviewer in reviewers">
+                            <span style="display:inline-block; width:30%">{{reviewer.reviewerEmail}}</span>
+                            <span style="display:inline-block; width:10%">{{STATUS_CONSTANTS[reviewer.status]}}</span>
+                            <span ng-show="reviewer.status == 'PENDING'">
+                                <button class="btn btnBlueGrain" ng-click="remindReviewer($index)">Remind</button>
+                                <button class="btn btnBlueGrain" ng-click="removeReviewer($index)">Remove</button>
+                            </span>
+                        </li>
+                    </ul>
+                    <div ng-show="!reviewers || reviewers.length == 0" ng-cloak>
+                        <p style="margin:0 0 10px 25px;">Currently no one has been invited to review this interview.</p>
+                    </div>
+                    <a href="#" ng-click="confirmReviewRequest()" ng-hide="showInvitationFields"><i class="icon-plus-sign"></i> Add a Reviewer</a>
+                    <div id="reviewerInvitation" class="container" ng-show="showInvitationFields">
+                        <input type="email" ng-model="reviewRequest.reviewerEmail" placeholder="Email Address"/><br>
+                        <textarea rows="2" ng-model="reviewRequest.message" placeholder="Optional Message"/><br>
+                        <button ng-click="submitReviewRequest()" ng-disabled="reviewRequest.reviewerEmail == undefined">Submit</button>
+                        <button ng-click="showInvitationFields = false">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="interviewNav" ng-hide="global.connectedUser.paymentRequired || global.isReviewer">
+                    <div id="reviewError" class="alert alert-error" ng-show="reviewError">
+                        {{reviewError}}
+                    </div>
+                    <button ng-hide="confirmRetake || reviewers.length > 0" class="retakeInterview" id="reviewRetakeInterview" ng-click="retakeInterview()">Retake Interview</button>
+                    <button ng-show="confirmRetake" class="retakeInterview btn-warning" id="confirmRetakeInterview" ng-click="confirmRetakeInterview()">Are you sure?</button>
+                    <a href="/dashboard" class="btn finishInterview" id="reviewFinish">Finish</a>
+                </div>
+
+                <div ng-show="!global.isReviewer && global.connectedUser.paymentRequired">
+                    <h2>Once is never enough! Upgrade your account for access to unlimited practice interviews and more.</h2>
+                    <div class="pull-right">
+                        <a href="#" id="noThanks" ng-click="noThanks()">No Thanks</a>&nbsp;
+                        <button class="btn btn-primary" id="upgrade" ng-click="upgrade()">Upgrade</button>
+                    </div>
+                </div>
+                <div ng-show="global.isReviewer && review.status != 'COMPLETED'">
+                    <div class="pull-right">
+                        <button class="btn btn-primary" id="finishReview" ng-click="finishReview()">Finish</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

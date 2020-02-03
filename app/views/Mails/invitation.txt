@@ -1,0 +1,14 @@
+Hey#{if user.fullName} ${user.fullName}#{/if},
+
+${invitingUser.fullName} has just set up an account for you on SuitedTo.  Please
+follow the link below to choose a username and password.
+
+${invitationUrl}
+
+Thanks!
+~The SuitedTo Team
+
+#{if customMessage}
+${invitingUser.fullName} says:
+${customMessage}
+#{/if}

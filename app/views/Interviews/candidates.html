@@ -1,0 +1,125 @@
+#{extends 'standardPage.html' /}
+#{set title:'Interview List' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+#{set tableId:'activeInterviews' /}
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            #{subNav section:"Interviews" /}
+
+            <h1>Candidate Interviews</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+    #{resourceCount type:enums.AccountResource.INTERVIEWS}
+        You are SuitedTo admin.  You create interviews where the lion sleeps.
+    #{/resourceCount}
+        <p class="alert alert-info">Looking to create a new Candidate Interview?
+            <a href="@{Candidates.list()}"><strong>Check here</strong></a>
+            to select a candidate and schedule an interview.</p>
+    </div>
+</div>
+
+#{standardError /}
+
+%{
+	java.util.Calendar c = java.util.Calendar.getInstance();
+    c.add(java.util.Calendar.DATE, -1);
+    java.util.Date yesterdaysDate = c.getTime();
+    java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("MMddyyyy");
+    yesterday = formatter.format(yesterdaysDate);
+}%
+
+<div class="row">
+    <div class="span12 questionListFilter">
+        #{tabbedFilterList}
+            #{tabbedFilterListItem "My Candidate Interviews", filters:"includeByInvolved:\$me", helpText: play.i18n.Messages.get('help.interviewTab.myCandidateInterviews') /}
+            #{if connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+                #{tabbedFilterListItem "All Candidate Interviews", filters:"includeByDateAfter:" + yesterday, helpText: play.i18n.Messages.get('help.interviewTab.allCandidateInterviews') /}
+            #{/if}
+            #{else}
+                #{tabbedFilterListItem "Company Candidate Interviews", filters:"includeByDateAfter:" + yesterday, helpText: play.i18n.Messages.get('help.interviewTab.companyCandidateInterviews') /}
+            #{/else}
+        #{/tabbedFilterList}
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+    	#{dataTable tableId}
+    		#{dataTableColumn "ID", sWidth:"4%", sClass:"dataCol_id"/}
+        	#{dataTableColumn "Interview Name", sWidth:"20%", sClass:"dataCol_interviewname" /}
+        	#{dataTableColumn "Candidate Name", sWidth:"20%", sClass:"dataCol_candidatename" /}
+        	#{dataTableColumn "Date", sWidth:"10%", sClass:"dataCol_date" /}
+        	#{dataTableColumn "Question Count", sWidth:"2%", sClass:"dataCol_numquestions" /}
+        	#{dataTableColumn "Time", sWidth:"2%", sClass:"dataCol_time" /}
+        	#{dataTableColumn "Categories", sWidth:"20%", sClass:"dataCol_categories" /}
+        	#{dataTableColumn "Interviewer", sWidth:"20%", sClass:"dataCol_interviewername" /}
+        	#{dataTableColumn "Status", sWidth:"10%", sClass:"dataCol_status" /}
+		#{/dataTable}
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+    
+    	//Ensure that the inprogress interview is removed from
+    	//cache even when the user arrives at this page by clicking the
+    	//browser's back button
+    	jQuery(window).bind("unload", function() {});
+    	jQuery(window).bind("load", function() {
+    		$.get("@{Interviews.reset()}");
+    	});
+    });
+	
+	var options = {
+    	fnRowCallback: function (nRow, aData, iDisplayIndex) {
+                $(nRow).attr('id', aData[0]);
+                var interviewId = aData[0];
+                var hrefValue = '<a href="@{Interviews.show()}/' + interviewId + '"/>';
+                $('td:eq(' + 1 + ')', nRow).wrapInner(hrefValue);
+                return nRow;
+            },
+          aaSorting: [
+                    [0, 'desc']
+                ],
+          sDom: "<'row'<'span6'l><'span6'f>><'tableWorkingSpace'rt><'row'<'span5'i><'span7'p>>",
+          oLanguage: {
+            	    sProcessing: #{jsString}#{processingDisplay /}#{/jsString},
+            	    sLoadingRecords: #{jsString}#{processingDisplay /}#{/jsString},
+            	    sEmptyTable: "No candidate interviews are available yet..."
+        	    }
+    }
+    
+    
+    var table = Application.DataTable;
+    
+    table.init("#{get 'tableId' /}", "@{Tables.getReport()}", "activeinterview.ActiveInterviewTable", options);
+    
+    var applyFilters = function(filters){
+    	table.load(filters, null);
+    }
+    Application.TabbedFilterManager.init({
+    	tabNameKey: "activeInterviews.tab",
+    	applyFilters: applyFilters
+	});
+	
+</script>

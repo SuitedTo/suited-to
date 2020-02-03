@@ -1,0 +1,66 @@
+#{extends 'standardPage.html' /}
+#{set title:'InvocationExceptions' /}
+#{set 'moreScripts'}
+    #{script 'jquery.dataTables.min.js' /}
+    #{script 'paging.js' /}
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+#{set tableId:'invocationExceptions' /}
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Invocation Exceptions</h1>
+        </div>
+    </div>
+</div>
+
+
+#{standardError /}
+
+
+<div class="row">
+    <div class="span12">
+    	#{dataTable tableId}
+    		#{dataTableColumn "Date", sWidth:"20%", sClass:" invocationexception-date dataCol_date"/}
+    		#{dataTableColumn "Identifier", sWidth:"80%", sClass:" invocationexception-identifier dataCol_identifier"/}
+		#{/dataTable}
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+	
+	var options = {
+		  fnRowCallback: function(nRow, aData, iDisplayIndex) {
+
+            var id = aData[1];
+            var hrefValue = '<a href="@{InvocationExceptions.view()}?identifier=' + id + '"/>';
+            $('td:eq(1)', nRow).wrapInner(hrefValue);
+
+        	},
+          aaSorting: [
+                    [0, 'desc']
+                ],
+          sDom: "<'row'<'span6'l><'span6'f>><'tableWorkingSpace'rt><'row'<'span5'i><'span7'p>>",
+          oLanguage: {
+            	    sProcessing: #{jsString}#{processingDisplay /}#{/jsString},
+            	    sLoadingRecords: #{jsString}#{processingDisplay /}#{/jsString},
+            	    sEmptyTable: "There are no errors..."
+        	    }
+    }
+    
+    
+    var table = Application.DataTable;
+    
+    table.init("#{get 'tableId' /}", "@{Tables.getReport()}", "invocationexception.InvocationExceptionTable", options);
+    
+   	table.load(null, null);
+	
+</script>

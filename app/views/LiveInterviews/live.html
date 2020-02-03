@@ -1,0 +1,1680 @@
+#{extends 'mainV2.html' /}
+#{set title: 'Live Interview' /}
+#{set 'moreScripts'}    
+    #{script 'overthrow.js' /}
+    #{script 'underscore-min.js' /}
+    #{script 'jquery.maxlength-min.js' /}
+#{/set}
+
+<div id="loadingProgressPage" class="hide">#{processingDisplay /}</div>
+<div class="off-canvas overthrow" id="pageWrapper">
+#{if interview}
+
+    <section role="main" id="contentPrimary" class="overthrow">
+        <div class="row-fluid" id="headerPane">
+            <div class="span4">
+                <img src="/public/images/logo-small.png" />
+                #{if play.mode.name() == 'DEV'}
+                    &nbsp;<span><strong>DEV</strong> mode</span>
+                #{/if}
+            </div>
+            <div class="span8" id="interviewNameControl">
+                <p class="intvwName inline"><span class="navbar"><a href="#" class="btn pull-right btn-navbar" id="sidebarButton" ><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a></span>${interview?.name}</p>
+            </div>
+        </div>
+        <div class="row-fluid" id="intervieweePane">
+            <div class="span12">
+                <h1 class="intvwInterviewee"><img src="/public/images/userIcon_small.png" /> ${interview.interviewee?.name}</h1><a class="btn pull-right" id="intervieweeDetailsBtn" ><i class="icon-chevron-down"></i></a>
+            </div>
+        </div>
+        <div id="intervieweeDetailsPane" class="hide">
+            <div class="row-fluid">
+                <div class="span6">
+                    #{if interview.interviewee?.address}
+                        <p>${interview.interviewee.address?.nl2br()}</p>
+                    #{/if}
+                    #{if interview.interviewee?.phoneNumbers}
+                        <p>
+                        #{list items:interview.interviewee?.phoneNumbers, as:'phoneNumber'}
+                            <span id="phoneNumberView${phoneNumber_index}">${phoneNumber?.phoneNumberValue} (${phoneNumber?.phoneNumberType})</span><br />
+                        #{/list}
+                        </p>
+                    #{/if}
+                    #{if interview.interviewee?.emails}
+                        <p>
+                        #{list items:interview.interviewee?.emails, as:'email'}
+                            <span id="emailView${email_index}">${email?.emailAddress} (${email?.emailType})</span><br />
+                        #{/list}
+                        </p>
+                    #{/if}
+                </div>
+                <div class="span6">
+                    #{if interview.interviewee?.externalLinks}
+                        <p>
+                        #{list items:interview.interviewee.externalLinks, as:'socialProfile'}
+                            <a id="socialView${socialProfile_index}" class="socialView ${socialProfile?.externalLinkType?.name()}" href="${socialProfile?.externalLinkType?.urlPrefix}${socialProfile?.externalLinkValue}" target="_blank">${socialProfile?.externalLinkType?.urlPrefix}${socialProfile?.externalLinkValue}</a> 
+                        #{/list}
+                        </p>
+                    #{/if}
+                    #{if interview.interviewee?.files}
+                        <p>
+                        #{list items:interview.interviewee.files, as:'file'}
+                            <span id="candidateFileSpan${file_index}"><a class="btn btn-info btn-small candidateFile" id="candidateFile${file_index}" href="@{Candidates.temporaryCandidateFileRedirect(file.id)}" target="_blank" data-filename="${file?.name}" data-fileid="${file?.id}" data-filetype="${file?.docType}"><i class="icon-download-alt icon-white"></i> ${file?.name}</a></span>
+                        #{/list}
+                        </p>
+                    #{/if}
+                </div>
+            </div>
+        </div>
+
+        <div id="questionPane" class="overthrow">
+            <div id="loadingProgressQuestion">#{processingDisplay /}</div>
+            <div id="questionContent">
+                #{if interview.getQuestionCount() == 0}
+                    <div class="row-fluid"><p>Hmm... there are no questions in this interview. <br />View the questions tab to choose a category of questions to add.</p></div>
+                #{/if}
+            </div>
+            <div id="questionListContent" class="hide">
+                <ul id="questionListFull"></ul>
+                <br />
+                #{form @LiveInterviews.quickAddQuestion(), id:'quickQuestionForm',  class:'form-inline', autocomplete:"off"}
+                    <h4>Add Quick Question</h4>
+                    <input id="interviewId" name="id" type="hidden" value="${interview.id}"/>
+                    <textarea id="quickAddtext" name="text" rows="3" class="input-medium required"  placeholder="New Question..."></textarea>
+                    <button type="submit" id="quickAddQuestionSubmit" class="btn btn-primary no-change-check"><i class="icon-plus icon-white"></i> Add</button>
+                #{/form}
+            </div>
+        </div>
+
+        <div id="interviewNavPane">
+            <div id="relatedQuestionsPane">
+                <div class="wrap">
+                    <h4>Related Questions within Interview</h4>
+                    <ul id="relatedQuestionsList">
+                        <li>Loading...</li>
+                    </ul><div style="clear:both;"></div>
+                </div>
+            </div>
+            <div id="similarQuestionsPane">
+                <div class="wrap">
+                    <h4>Similar Public Questions</h4>
+                    <ul id="similarQuestionsList">
+                        <li>Loading...</li>
+                    </ul><div style="clear:both;"></div>
+                </div>
+            </div>
+
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <ul class="nav">
+                        <li class="li1 prevQuestionBtn"><a href="#" id="prevQuestionBtn"><div><i class="icon-white icon-arrow-left"></i><br /><span class="qNumber"></span></div></a></li>
+                        <li class="li2 similarQuestionBtn"><div id="loadingProgressAddSimilar" class="hide">#{processingDisplay /}</div><a href="#" id="similarQuestionBtn">Add<br />Similar</a></li>
+                        <li class="li3 relatedQuestionBtn"><a href="#" id="relatedQuestionBtn">Show<br />Related</a></li>
+                        <li class="li4 nextQuestionBtn"><a href="#" id="nextQuestionTextBtn" class="qText"></a></li>
+                        <li class="li5 nextQuestionBtn"><a href="#" id="nextQuestionBtn"><i class="icon-white icon-arrow-right"></i><br /><span class="qNumber"></span></a></li>
+                    <div style="clear:both;"></div>
+                    </ul>
+                </div>
+            </div>
+            #{switcheroo /}
+
+        </div>
+
+
+    </section>
+    <section role="complementary" id="contentSecondary" class="overthrow">
+        <ul class="nav nav-tabs">
+            <li class="li1 active"><a href="#tabQuestions" id="tabQuestionsLink" data-toggle="tab"><i class="icon-white icon-list"></i> Questions</a></li>
+            <li class="li2"><a href="#tabNotes" id="tabNotesLink" data-toggle="tab"><i class="icon-white icon-comment"></i> Interview Notes</a></li>
+            <li class="li3"><a href="#tabInfo" id="tabInfoLink" data-toggle="tab"><i class="icon-white icon-info-sign"></i> Info</a></li>
+        </ul>
+        <div class="tab-content overthrow">
+            <div class="tab-pane active" id="tabQuestions">
+                <!-- <h4>All Interview Questions</h4> -->
+                <ul id="questionList">
+
+                #{list items:interview?.interviewQuestions, as:'questions'}
+                    %{ id = "question_" + questions_index }%
+                    <li class="questionItem" id="${id}" data-id="${questions_index}" data-uid="${questions.question.id}">
+                        <span class="orderNum">${questions.sortOrder}.</span>
+                        <span class="qText">${questions.question.text}</span>
+                        <img class="icon-notes hide" src="/public/images/icon-notes.png" />
+
+                        *{<div class="hide">sortOrder: ${questions.sortOrder}<br />
+                        id: ${questions.question.id}<br />
+                        question: ${questions.question.text}<br />
+                        answers: ${questions.question.answers?.nl2br()}<br />
+                        tips: ${questions.question.tips?.nl2br()}<br />
+                        points: ${questions.question.standardScore}<br />
+                        time: ${questions.question.time}<br />
+                        difficulty: ${questions.question.difficulty}<br />
+                        category: ${questions.question.category}<br />
+
+                        ${questions.question.dump()}
+                        <br /><br />
+                        </div>}*
+                    </li>
+                #{/list}
+                </ul>
+
+                <div id="builderQuickAdd">
+                    <h4>Automatically add up to 5 questions</h4>
+                    #{form @LiveInterviews.addQuestionsToInterview(), id: "quickAddCategory", class: "clearfix"}
+                        <input type="text" id="quickAddCategoryText" name="quickAddCategoryText" class="input-block-level" data-provide="typeahead" data-url="@{Categories.getCategoryList()}" autocomplete="off" placeholder="Start typing category name..." />
+                        <label for="quickAddCategoryDifficulty" class="inline">Difficulty:</label>
+                        <select id="quickAddCategoryDifficulty" name="quickAddCategoryDifficulty" class="inline">
+                            <option value="EASY">Easy</option>
+                            <option value="MEDIUM" selected="selected">Medium</option>
+                            <option value="HARD">Hard</option>
+                        </select>
+                        <button type="submit" id="quickAddCategorySubmit" class="btn btn-primary no-change-check pull-right">Find & Add</button>
+                    #{/form}
+
+                </div>
+
+            </div>
+            <div class="tab-pane" id="tabNotes">
+                    <h4>Interview Notes</h4>
+                <div id="intvwNotes">
+                    #{form @LiveInterviews.updateNotes(interview.id), id: "interviewNotesForm"}
+                        <textarea id="interviewNotes" name="interviewNotes" rows="5" placeholder="Add interview notes...">${interview.notes}</textarea>
+                        <button type="submit" id="interviewNotesSubmit" class="btn btn-primary no-change-check pull-right"><i class="icon-hdd icon-white"></i> Save</button>
+                    #{/form}
+                </div>
+
+            </div>
+            <div class="tab-pane" id="tabInfo">
+                <div id="intvwStats">
+                    <div class="row-fluid statsBlock1">
+                        <div class="statHalf s1">
+                            <span class="stat" id="questionCount">${interview.getQuestionCount()}</span><br /><span class="caption">Questions</span>
+                        </div>
+                        <div class="statHalf s2">
+                            <span class="stat" id="timingCount">${interview.getDuration()}</span><br /><span class="caption">Minutes</span>
+                        </div>
+                    </div>
+                    <div class="row-fluid statsBlock2">
+                        #{if interview.anticipatedDate}
+                            <p><i class="icon-white icon-calendar pull-left"></i> ${interview.anticipatedDate?.format('MM/dd/yyyy')}</p>
+                        #{/if}
+                        #{if interview.interviewer?.fullName}
+                            <p><i class="icon-white icon-bullhorn pull-left"></i> ${interview.interviewer?.fullName}</p>
+                        #{/if}
+                        #{if interview.categoriesInUse}
+                            <p><i class="icon-white icon-tags pull-left"></i> ${utils.DisplayUtil.listAsProperlyPunctuatedEnglish(interview.categoriesInUse, "name")}</p>
+                        #{/if}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="secondaryButtons">
+
+            <button class="btn btn-small pull-left quickAddQuestion" type="button" style="width:54%" id="quickAddQuestionBtn"><i class="icon-plus-sign"></i> <span class="lbl">Add </span>Question</button>
+            <button class="btn btn-small pull-right" type="button" style="width:42%" id="viewAllBtn"><i class="icon-list"></i> View All</button>
+            <button class="btn btn-small btn-danger" type="button" style="width:100%" id="endInterviewBtn" data-target="#endConfirmation" data-toggle="modal"><i class="icon-time"></i> End Interview</button>
+
+        </div>
+    </section>
+
+</div>
+#{/if}
+
+<div id="endConfirmation" class="modal fade" style="display:none;">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>End Interview?</h3>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to end this interview? <br />Ending this interview will mark it as completed and your notes and ratings can't be edited.</p>
+    </div>
+    <div class="modal-footer">
+    #{form @endInterview(interview.id), id:'endInterviewForm'}
+        <input type="hidden" id="questionOrder" name="questionOrder" value=""/>
+        <a id="cancelEnd" data-dismiss="modal" class="btn no-change-check">Cancel</a>
+        <a id="returnEnd" href="@{Candidates.show(interview.interviewee.id, null, null, null, false, null)}" class="btn btn-info no-change-check">Return to Candidate</a>
+        <a id="confirmEnd" class="btn btn-danger no-change-check">End Interview</a>
+    #{/form}
+    </div>
+</div>
+
+<div id="noQuestionsModal" class="modal" style="display:none;">
+    <div class="modal-header">
+        <h3>No Questions</h3>
+    </div>
+    <div class="modal-body">
+        <p>This interview has no questions. Please add questions before viewing the live interview.</p>
+    </div>
+    <div class="modal-footer">
+        <a id="noQuestionsReturnEnd" href="@{Candidates.show(interview.interviewee.id, null, null, null, false, null)}" class="btn btn-info no-change-check">Return to Candidate</a>
+    </div>
+</div>
+
+
+<script type="text/template" class="questionTemplate">
+    <div class="row-fluid" id="questionTitlePane">
+        <div class="span12">
+            <div class="intvwQuestionControl">
+                <div class="intvwMetadata">
+                    <% if(!_.isNull(t.standardScore)){ %>
+                    <div class="statThird s1">
+                        <span class="stat"><%= t.standardScore%></span><span class="caption">Strength</span>
+                    </div>
+                    <% } %>
+                    <% if(!_.isNull(t.time)){ %>
+                    <div class="statThird s2">
+                        <% if(t.time == "Quick" || t.time == "QUICK"){ %>
+                            <span class="stat"><span class="full quick"><%= t.time%></span><span class="abbrev">Q</span></span>
+                            <span class="caption">Timing</span>
+                        <% } else if(t.time == "Short" || t.time == "SHORT"){ %>
+                            <span class="stat"><span class="full short"><%= t.time%></span><span class="abbrev">S</span></span>
+                            <span class="caption">Timing</span>
+                        <% } else if(t.time == "Medium" || t.time == "MEDIUM"){ %>
+                            <span class="stat"><span class="full medium"><%= t.time%></span><span class="abbrev">M</span></span>
+                            <span class="caption">Timing</span>
+                        <% } else if(t.time == "Long" || t.time == "LONG"){ %>
+                            <span class="stat"><span class="full long"><%= t.time%></span><span class="abbrev">L</span></span>
+                            <span class="caption">Timing</span>
+                        <% } else { %>
+                            <span class="stat"><%= t.time%></span>
+                            <span class="caption">Timing</span>
+                        <% } %>
+                   </div>
+                    <% } %>
+                    <% if(!_.isNull(t.difficulty)){ %>
+                    <div class="statThird s3">
+                        <% if(t.difficulty == "Easy" || t.difficulty == "EASY"){ %>
+                            <span class="stat"><span class="full easy"><%= t.difficulty%></span><span class="abbrev">E</span></span>
+                            <span class="caption">Difficulty</span>
+                        <% } else if(t.difficulty == "Medium" || t.difficulty == "MEDIUM"){ %>
+                            <span class="stat"><span class="full medium"><%= t.difficulty%></span><span class="abbrev">M</span></span>
+                            <span class="caption">Difficulty</span>
+                        <% } else if(t.difficulty == "Hard" || t.difficulty == "HARD"){ %>
+                            <span class="stat"><span class="full hard"><%= t.difficulty%></span><span class="abbrev">H</span></span>
+                            <span class="caption">Difficulty</span>
+                        <% } else { %>
+                            <span class="stat"><%= t.difficulty%></span>
+                            <span class="caption">Difficulty</span>
+                        <% } %>
+                    </div>
+                    <% } %>
+                </div>
+                <h2 class="intvwQuestion">
+                    <% if(!_.isNull(t.text)){ %><%= t.text%><% } %>
+                </h2>
+            </div>
+        </div>
+    </div>
+    <div class="row-fluid" id="questionContentPane" data-id="<% if(!_.isNull(t.interviewOrder)){ %><%= t.interviewOrder %><% }%>" data-uid="<% if(!_.isNull(t.id)){ %><%= t.id %><% }%>">
+        *{todo: make an alternative raiting implementation for mobile devices}*
+        <div id="liveInterviewRatingScale">
+            <div class="liveRatingScale ratingHeader"></div>
+            <a href="#" onclick="liveInterview.SetCurrentQuestionRating('EXCELLENT', this);"><div class="liveRatingScale rating-excellent <% if(t.rating == 'EXCELLENT') { %>selected<% } %>"></div></a>
+            <a href="#" onclick="liveInterview.SetCurrentQuestionRating('VERY_GOOD', this);"><div class="liveRatingScale rating-veryGood <% if(t.rating == 'VERY_GOOD') { %>selected<% } %>"></div></a>
+            <a href="#" onclick="liveInterview.SetCurrentQuestionRating('GOOD', this);"><div class="liveRatingScale rating-good <% if(t.rating == 'GOOD') { %>selected<% } %>"></div></a>
+            <a href="#" onclick="liveInterview.SetCurrentQuestionRating('FAIR', this);"><div class="liveRatingScale rating-fair <% if(t.rating == 'FAIR') { %>selected<% } %>"></div></a>
+            <a href="#" onclick="liveInterview.SetCurrentQuestionRating('POOR', this);"><div class="liveRatingScale rating-poor <% if(t.rating == 'POOR') { %>selected<% } %>"></div></a>
+        </div>
+        <div id="liveInterviewQuestionFeedback">
+            <% if(!_.isNull(t.answers)){ %>
+                <div class="intvwAnswerControl">
+                    <h3>Possible Answers</h3>
+                    <p class="intvwAnswer">
+                        <%= t.answers %>
+                    </p>
+                </div>
+            <% } %>
+            <% if(t.tips != ""){ %>
+                <div class="intvwTipsControl">
+                    <h3>Tips</h3>
+                    <p class="intvwTips">
+                        <%= t.tips %>
+                    </p>
+                </div>
+            <% } %>
+            <% if(!_.isNull(t.companyNote)){ %>
+                <div class="intvwCompanyNotesControl">
+                    <h3>Company Notes</h3>
+                    <p class="intvwCompanyNotes">
+                        <%= t.companyNote %>
+                    </p>
+                </div>
+            <% } %>
+            <div class="intvwMyNotesControl">
+                <h3>My Notes</h3>
+                <div class="intvwMyNotes">
+                    <textarea id="myNotes" name="myNotes" class="input-xxlarge" rows="5" placeholder="Add question notes..."><% if(t.comment){ %><%= t.comment %><% } %></textarea>
+                </div>
+            </div>
+            <button id="markUnviewedBtn" class="btn btn-small markAsUnviewed" type="button">Mark as unviewed</button>
+            <div class="intvwCategory">
+                <% if(!_.isNull(t.category)){ %>
+                    <span class="stat"><i class="icon-tags"></i> <%= liveInterview.MakeSafe(t.category) %></span>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<script type="text/template" class="listTemplate">
+    <% _.each( t, function( question, index ){ %>
+        <% var order = index+1; %>
+            <li 
+        <% if(order == liveInterview.nav.current){ %>
+            class="questionItem active" 
+        <% } else if ( _.indexOf(liveInterview.nav.activeorder, order) > -1){ %>
+            class="questionItem viewed" 
+        <% } else { %>
+            class="questionItem" 
+        <% } %>
+
+            data-id="<%= order %>" data-id="<%= order %>" data-uid="<%= question.id %>"><a class="deleteQuestionItem pull-right" href="#"><i class="icon-trash"></i> Delete</a><a class="markQuestionUnviewed pull-right" href="#"><i class="icon-eye-open"></i> Mark Unviewed</a> <a class="loadQuestion" href="#" data-id="<%= order %>" data-uid="<%= question.id %>"> <span class="orderNum"><%= order %>.</span> <span class="qText"><%= question.text %></span></a></li>
+    <% }); %>
+</script>
+
+<script type="text/template" class="shortListTemplate">
+    <% _.each( t, function( question, index ){ %>
+        <% var order = index+1; %>
+            <li 
+        <% if(order == liveInterview.nav.current){ %>
+            class="questionItem active" 
+        <% } else if ( _.indexOf(liveInterview.nav.activeorder, order) > -1){ %>
+            class="questionItem viewed" 
+        <% } else { %>
+            class="questionItem" 
+        <% } %>
+            id="question_<%= order %>" data-id="<%= order %>" data-uid="<%= question.id %>"><span class="orderNum"><%= order %>.</span> <span class="qText"><%= question.text %></span></a></li>
+    <% }); %>
+</script>
+
+<script>
+
+var startingQuestionCount = ${interview.getQuestionCount()};
+
+// Set Underscore.js templateSettings Variable
+_.templateSettings.variable = "t";
+
+// Create liveInterview object
+var liveInterview = liveInterview || {
+
+    // Create template object
+    tmpl: {
+        question: _.template($( "script.questionTemplate" ).text()),
+        list: _.template($( "script.listTemplate" ).text()),
+        shortList: _.template($( "script.shortListTemplate" ).text()),
+        qNav: _.template("<%= t.num %>/<%= t.total %>"),
+        qNext: _.template("<span class='next'>Next: </span><%= t.question %>")
+    },
+
+    // Question data
+    questions: [],
+    questionsObj: {},
+    tempObj: {},
+
+    // Navigation history
+    nav: {
+        current: null,
+        currentUid: null,
+        previous: null,
+        previousUid: null,
+        activeorder: [],
+        total: 0
+    },
+
+    // Significant screen responses
+    px: {
+        mobile: 768,
+        tablet: 900
+    },
+
+    Init: function(){
+        // Main initialization function
+
+        // Adjust sidebars and sizes when window is resized
+        $(window).resize(function() {
+
+            if ($(window).width() >= liveInterview.px.mobile /*&& $(window).width() < liveInterview.px.tablet*/){
+                $('body').addClass('active');
+            } else {
+                //$('body').removeClass('active');
+            }
+
+            if($('html').hasClass('overthrow-enabled')){
+                liveInterview.ResetResize();
+            }
+            $('#questionListContent').css('padding-bottom',$(window).height()-$('#headerPane').outerHeight()-$('#intervieweePane').outerHeight()-$('#intervieweeDetailsPane').height()-$('#interviewNavPane').height());
+
+            $('#interviewNotes').height($(window).height()/2.5);
+
+        });
+
+        // On document ready
+        $(document).ready(function() {
+
+            // Trigger resize event
+            $(window).resize();
+            
+            // Hide loading indicator
+            $('#loadingProgressPage').hide();
+        });
+
+
+        if (startingQuestionCount > 0) {
+
+            // Load interview data
+            $.getJSON('/live/data/${interview?.id}',function(data){
+                //console.log(data);
+
+                $.each(data, function(index, value){
+                    liveInterview.questionsObj[value.id] = value;
+                    liveInterview.questions.push(value);
+                    liveInterview.questions = _.sortBy(liveInterview.questionsObj, function(q){ return q.interviewOrder; });
+                    //console.log(value)
+                });
+
+                //liveInterview.nav.total = liveInterview.helper.numKeys(liveInterview.questions);
+                liveInterview.nav.total = _.size(liveInterview.questions);
+
+                //console.log(liveInterview.questions)
+                liveInterview.LoadQuestion(1);
+                liveInterview.LoadList();
+
+                liveInterview.updateFeedbackIndicator();
+
+            });
+
+        } else {
+
+            $('#loadingProgressQuestion').hide();
+//            $('#noQuestionsModal').modal({
+//                backdrop: 'static',
+//                keyboard: false
+//            }).modal('show');
+
+        }
+
+        // Trigger for layout state change / add/remove 'active' class from body
+        $('body').on('layoutState', function(e) {
+            e.preventDefault();
+            $(this).toggleClass('active');
+            setTimeout(self.ResizeLeft,275);
+        });
+
+        // Load click functions
+        this.Clicks();
+        // Load touch functions
+        this.Touches();
+        // Load form functions
+        this.Forms();
+
+    },
+
+    Clicks: function(){
+        // Function to load all click events
+
+        var self = this;
+
+        events = 'click touchstart';
+
+        // Watch for clicks to show the sidebar
+        $('#sidebarButton').on(events, function(e) {
+            e.preventDefault();
+            $('body').trigger('layoutState');
+        });
+
+        // Load specific question data into question pane when question item in #questionList is clicked
+        $('body').on('click','#questionList .questionItem',function(e){
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            var uid = $(this).attr('data-uid');
+            self.questionsObj[self.nav.currentUid].comment = $('#myNotes').val();
+            self.UpdateQuestion(self.nav.currentUid, self.questionsObj[self.nav.currentUid].rating, $('#myNotes').val());
+            self.LoadQuestion(null,uid);
+            self.updateFeedbackIndicator();
+            //if($('body').hasClass('active')){
+            if($(window).width() < self.px.mobile){
+                $('body').trigger('layoutState');
+            }
+        });
+
+        // Load specific question data into question pane when question item in #questionListFull is clicked
+        $('body').on('click','#questionListFull .questionItem a.loadQuestion',function(e){
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            var uid = $(this).attr('data-uid');
+            self.LoadQuestion(null,uid);
+        });
+
+        // Delete specific question from question list and question data
+        $('body').on('click','#questionListFull .questionItem a.deleteQuestionItem',function(e){
+            e.preventDefault();
+            var id = $(this).closest('li').attr('data-id');
+            var uid = $(this).closest('li').attr('data-uid');
+            $(this).closest('li').fadeOut('fast',function(){
+                self.DeleteQuestion(id,uid);
+            });
+        });
+
+        // Show/Hide interviewee details
+        $('#intervieweeDetailsBtn').on(events, function(e){
+            e.preventDefault();
+            $('#intervieweeDetailsPane').slideToggle('fast',function(){
+                self.ResizeLeft();
+            });
+        });
+
+        // View full question list (#questionListFull)
+        $('#viewAllBtn').click(function(e){
+            e.preventDefault();
+            $('#loadingProgressQuestion').show();
+            $('#questionContent').fadeOut('fast',function(){
+                $('#questionListContent').fadeIn('fast',function(){
+                    if ($('#questionPane').hasClass('overthrow')){
+                        $('#questionPane').animate({scrollTop: 0}, 200);
+                    } else {
+                        $('#contentPrimary').animate({scrollTop: 0}, 200);
+                    }
+                });
+            });
+            $('#loadingProgressQuestion').hide();
+            if($('body').hasClass('active')){
+                $('body').trigger('layoutState');
+            }
+        });
+
+        // View Add Quick Question form
+        $('#quickAddQuestionBtn').click(function(e){
+            e.preventDefault();
+            $('#loadingProgressQuestion').show();
+            $('#questionContent').fadeOut('fast',function(){
+                $('#questionListContent').fadeIn('fast',function(){
+                    if ($('#similarQuestionsPane').is(':visible')){
+                        $('#similarQuestionsPane').slideUp('fast');
+                        $('.similarQuestionBtn').removeClass('active');
+                    }
+                    if ($('#relatedQuestionsPane').is(':visible')){
+                        $('#relatedQuestionsPane').slideUp('fast');
+                        $('.relatedQuestionBtn').removeClass('active');
+                    }
+                    //var targetOffset = $('#quickQuestionForm').offset().top;
+                    setTimeout(function(){
+                        var targetOffset = $('#quickQuestionForm').position().top;
+                        if ($('#questionPane').hasClass('overthrow')){
+                            $('#questionPane').animate({scrollTop: targetOffset}, 200);
+                            $('#quickAddtext').focus();
+                        } else {
+                            targetOffset = $('#quickQuestionForm').position().top+$('#headerPane').outerHeight()+$('#intervieweePane').outerHeight()+$('#intervieweeDetailsPane').outerHeight()+100;
+                            $('#contentPrimary').animate({scrollTop: targetOffset}, 200);
+                            $('#quickAddtext').focus();
+                        }
+                    }, 250);
+                    
+
+                });
+            });
+            $('#loadingProgressQuestion').hide();
+           
+            if($('body').hasClass('active')){
+                $('body').trigger('layoutState');
+            }
+        });
+        
+        $('#endInterviewBtn').on(events,function(e){
+            liveInterview.UpdateQuestion(liveInterview.nav.currentUid, liveInterview.questionsObj[liveInterview.nav.currentUid].rating, $('#myNotes').val());
+        });
+
+        // Go to next question
+        $('.nextQuestionBtn').on(events,function(e){
+            e.preventDefault();
+            self.questionsObj[self.nav.currentUid].comment = $('#myNotes').val();
+            self.UpdateQuestion(self.nav.currentUid, self.questionsObj[self.nav.currentUid].rating, $('#myNotes').val());
+            self.LoadQuestion(self.nav.current+1);
+            self.updateFeedbackIndicator();
+        });
+        //new FastClick(document.querySelectorAll('.nextQuestionBtn'));
+
+
+        // Go to previous question
+        $('.prevQuestionBtn').on(events,function(e){
+            e.preventDefault();
+            self.questionsObj[self.nav.currentUid].comment = $('#myNotes').val();
+            self.UpdateQuestion(self.nav.currentUid, self.questionsObj[self.nav.currentUid].rating, $('#myNotes').val());
+            self.LoadQuestion(self.nav.current-1);
+            self.updateFeedbackIndicator();
+        });
+
+        // Show related questions pane
+        $('.relatedQuestionBtn').click(function(e){
+            e.preventDefault();
+            if ($('#similarQuestionsPane').is(':visible')){
+                $('#similarQuestionsPane').slideUp('fast');
+                $('.similarQuestionBtn').removeClass('active');
+            }
+            if ($(this).hasClass('active')){
+                $('#relatedQuestionsPane').slideUp('fast');
+                $(this).removeClass('active');
+            } else {
+                self.ResizeNavOverlays();
+                $('#relatedQuestionsPane').slideDown('fast',function(){
+                    if ($('#contentPrimary').hasClass('overthrow')){
+                        var targetOffset = $('#relatedQuestionsPane').offset().top;
+                        $('#contentPrimary').animate({scrollTop: '+='+targetOffset+'px'}, 400);
+                    }
+                });
+                if(parseInt($('#relatedQuestionsList').attr('data-uid'),10) !== self.nav.currentUid){
+                    self.ShowRelatedQuestions(self.nav.currentUid);
+                }
+                $(this).addClass('active');
+            }
+        });
+
+        // Load related question item
+        $('body').on('click','.relatedQuestionItem',function(e){
+            e.preventDefault();
+            var uid = $(this).attr('data-uid');
+            self.LoadQuestion(null,uid,false);
+        });
+
+        // Show similar questions pane
+        $('.similarQuestionBtn').click(function(e){
+            e.preventDefault();
+            if ($('#relatedQuestionsPane').is(':visible')){
+                $('#relatedQuestionsPane').slideUp('fast');
+                $('.relatedQuestionBtn').removeClass('active');
+            }
+            if ($(this).hasClass('active')){
+                $('#similarQuestionsPane').slideUp('fast');
+                $(this).removeClass('active');
+            } else {
+                self.ResizeNavOverlays();
+                //if(parseInt($('#similarQuestionsList').attr('data-uid'),10) !== liveInterview.nav.currentUid){
+                    $('#loadingProgressAddSimilar').show();
+                    self.ShowSimilarQuestions(self.nav.currentUid);
+                //}
+                $(this).addClass('active');
+            }
+        });
+
+        // Add similar question item to questions list
+        $('body').on('click','.similarQuestionItem',function(e){
+            e.preventDefault();
+            var uid = $(this).attr('data-uid');
+            self.AddQuestion(uid);
+            $(this).addClass('disabled').text('Added');
+            $('body').off('click',$(this));
+        });
+
+        // Mark question as unviewed
+        $('body').on('click','.markAsUnviewed, .markQuestionUnviewed',function(e){
+            e.preventDefault();
+            var id, uid;
+            if($(this).hasClass('markAsUnviewed')){
+                id = $(this).closest('#questionContentPane').attr('data-id');
+                uid = $(this).closest('#questionContentPane').attr('data-uid');
+                $('#loadingProgressQuestion').show();
+                $('#questionContent').fadeOut('fast',function(){
+                    $('#questionListContent').fadeIn();
+                });
+                $('#loadingProgressQuestion').hide();
+                if ($('#similarQuestionsPane').is(':visible')){
+                    $('#similarQuestionsPane').slideUp('fast');
+                    $('.similarQuestionBtn').removeClass('active');
+                }
+                if ($('#relatedQuestionsPane').is(':visible')){
+                    $('#relatedQuestionsPane').slideUp('fast');
+                    $('.relatedQuestionBtn').removeClass('active');
+                }
+                if($('body').hasClass('active')){
+                    $('body').trigger('layoutState');
+                }
+            } else if ($(this).hasClass('markQuestionUnviewed')){
+                id = $(this).closest('li').attr('data-id');
+                uid = $(this).closest('li').attr('data-uid');
+            }
+            id = parseInt(id,10);
+            uid = parseInt(uid,10);
+            //console.log(id,uid)
+            $('#questionList #question_'+id).removeClass('viewed');
+            $('#questionListFull .questionItem[data-id="'+id+'"]').removeClass('viewed');
+            while(_.indexOf(self.nav.activeorder, uid)>-1){
+                self.nav.activeorder.splice(_.indexOf(self.nav.activeorder, uid),1);
+            }
+            if (self.nav.currentUid == uid){
+                $('#questionList #question_'+id).removeClass('active');
+                $('#questionListFull .questionItem[data-id="'+id+'"]').removeClass('active');
+                self.nav.currentUid = _.last(self.nav.activeorder);
+                self.nav.current = self.nav.previous;
+            }
+        });
+        
+        $('#returnEnd').click(function(e){
+            e.preventDefault();
+            $(this).addClass('disabled');
+            var link = $(this).attr('href');
+            $('#interviewNotesForm').ajaxSubmit(function(){
+                window.location.href = link;        
+            });
+        })
+
+        // Submit interview end form
+        $('#confirmEnd').click(function(e){
+            e.preventDefault();
+            $(this).addClass('disabled');
+            // On interview end, add unviewed questions to order array
+            var sendData = self.nav.activeorder;
+            _.each(self.questions, function(num){ 
+                if (!_.contains(self.nav.activeorder, num.id)){
+                    sendData.push(num.id);
+                }
+            });
+            //console.log(sendData);
+            $('#endInterviewForm #questionOrder').val(sendData);
+
+            // Submit the form with the question order which will update the interview, 
+            // mark interview as completed and return to the candidate page
+            $('#interviewNotesForm').ajaxSubmit(function(){
+                $('#endInterviewForm').submit();                
+            });
+        });
+
+        // Track event clicks for google analytics
+        $('body').on('click','a, button, #questionList li.questionItem',function(e){
+            var elm = $(this),
+                txt = elm.text(),
+                id = elm.attr('id'),
+                axn = 'Click',
+                lbl,
+                val = null;
+
+            if ( $(this).hasClass('questionItem') ){
+                lbl = 'questionItem';
+                //val = parseInt(elm.attr('data-uid'),10);
+            } else if ( elm.hasClass('loadQuestion') ){
+                lbl = 'questionItemFull';
+                //val = parseInt(elm.attr('data-uid'),10);
+            } else if ( elm.hasClass('candidateFile') ){
+                lbl = 'candidateFile';
+                //val = parseInt(elm.attr('data-fileid'),10);
+            } else if ( elm.hasClass('markAsUnviewed') ){
+                lbl = 'markAsUnviewed';
+            } else if ( elm.hasClass('markQuestionUnviewed') ){
+                lbl = 'markQuestionUnviewed';
+            } else if ( elm.hasClass('deleteQuestionItem') ){
+                lbl = 'deleteQuestionItem';
+                //val = parseInt(elm.parent().attr('data-uid'),10);
+            } else if ( elm.hasClass('similarQuestionItem') ){
+                lbl = 'similarQuestionItem';
+            } else if ( elm.hasClass('relatedQuestionItem') ){
+                lbl = 'relatedQuestionItem';
+            } else if (id){
+                lbl = id;
+            } else {
+                lbl = txt;
+            }
+
+            //console.log('click', lbl, val)
+            if (typeof _gaq !== 'undefined' && _gaq) { 
+                _gaq.push(['_trackEvent', 'LiveInterview', axn, lbl, val]); 
+            }
+        });
+
+    },
+
+    Forms: function(){
+        // AJAX for Add Quick Question form
+        $('#quickQuestionForm').ajaxForm({
+            beforeSubmit: function validate(formData, jqForm, options) {
+                $('#quickQuestionMessage').remove();
+
+                var result = true;
+                $('#quickQuestionForm .required').each(function(i,item){
+                    if(!item.value){
+                        var name = 'required field';
+                        if(item.name === 'text'){
+                            name = 'question text'
+                        }
+                        $('#quickQuestionForm').append('<div id="quickQuestionMessage" class="alert"><a class="close" data-dismiss="alert">×</a>Please provide a value for ' + name + '.</div>');
+                        result = false;
+                    }
+                });
+
+                return result;
+
+            },
+            success: function(data){
+
+                if (data.result === "success"){
+
+                    var newQuestion = {
+                        active: true,
+                        answers: null,
+                        category: null,
+                        companyNote: null,
+                        created: null,
+                        difficulty: null,
+                        flaggedAsInapropriate: false,
+                        flaggedReason: null,
+                        id: parseInt(data.questionId,10),
+                        interviewOrder: null,
+                        notes: null,
+                        standardScore: null,
+                        status: "QUICK",
+                        submittedTime: null,
+                        text: $('#quickAddtext').val(),
+                        time: "MEDIUM",
+                        tips: null,
+                        updated: null
+                    }
+                    liveInterview.questions.push(newQuestion);
+                    liveInterview.questionsObj[parseInt(data.questionId,10)] = newQuestion;
+
+                    tempQuestion = [];
+                    tempQuestion[liveInterview.nav.total] = liveInterview.GetQuestion("last");
+                    liveInterview.nav.total = _.size(liveInterview.questions);
+
+                    liveInterview.UpdateCount(newQuestion.time,false);
+
+                    $('#questionListFull').append(liveInterview.tmpl.list(tempQuestion));
+                    $('#questionList').append(liveInterview.tmpl.shortList(tempQuestion));
+
+                    $('#quickAddtext').val('');
+
+                    $('#quickQuestionForm').append('<div id="quickQuestionMessage" class="alert alert-success"><a type="button" class="close" data-dismiss="alert">×</a>Question added!</div>');
+                    var newPosition = $('#quickQuestionForm').position().top-$('#quickQuestionForm').height();
+                    if ($('#questionPane').hasClass('overthrow')){
+                        $('#questionPane').animate({scrollTop: newPosition}, 400);
+                        $('#quickAddtext').focus();
+                    } else {
+                        newPosition = $('#quickQuestionForm').position().top;
+                        $('#contentPrimary').animate({scrollTop: newPosition}, 400);
+                        $('#quickAddtext').focus();
+                    }
+                    //setTimeout(function(){ $('#quickQuestionMessage').remove(); }, 3500);
+
+                } else {
+                    $('#quickQuestionForm').append('<div id="quickQuestionMessage" class="alert"><button type="button" class="close" data-dismiss="alert">×</button>There was an error adding the question. Please try again later.</div>');
+                    //alert('There was an error adding the question. Please try again later.');
+                }
+            }
+        });
+        $('#quickAddQuestionSubmit').on('focus',function(){
+            $('#quickQuestionMessage').remove();
+        });
+
+        // AJAX for Notes form
+        $('#interviewNotesForm').ajaxForm(function(data){
+            $('#interviewNotesMessage').remove();
+            if (data.result === "success"){
+                $('#interviewNotes').after('<div id="interviewNotesMessage" class="alert alert-success"><a type="button" class="close" data-dismiss="alert">×</a>Notes saved!</div>');
+            } else {
+                $('#interviewNotes').after('<div id="interviewNotesMessage" class="alert alert-success"><a type="button" class="close" data-dismiss="alert">×</a>There was an error saving the notes! Please try again later!</div>');
+            }
+        });
+        $('#interviewNotesSubmit, #interviewNotes').on('focus',function(){
+            $('#interviewNotesMessage').remove();
+        });
+
+        var makeSafe = function(text) {
+            return text.replace(/[&<>"'`]/g, function (chr) {
+                return '&#' + chr.charCodeAt(0) + ';';
+            });
+        };
+        var autosep = '|||||';
+        $('#quickAddCategoryText').typeahead( {
+            minLength: 2,
+            source: function( query, process ) {
+                var searchterm = query;
+                var form = $('#quickAddCategoryText').data('url');
+                //console.log(query);
+                $.ajax({
+                    type: "GET",
+                    url: form,
+                    data: { term: searchterm },
+                    success: function(data){
+//                        labels = [];
+//                        $.each(data, function (i, item) {
+//                            labels.push(makeSafe(item.label));
+//                            categoryMap[item.label] = item;
+//                        });
+////                        var testing = data.map(function (item) {
+////                            return { id: item.id, name: item.label, count: item.questionCount }
+////                        });
+//                        console.log(categoryMap);
+//                        process(labels);
+                        var categories = [];
+                        for (var i in data) {
+                            categories.push(
+                                    data[i]['id']
+                                    + autosep
+                                    + makeSafe(data[i]['label'])
+                            );
+                        }
+                        return process(categories);
+                    }
+                });
+            },
+            highlighter: function(item) {
+                var parts = item.split(autosep);
+                parts.shift();
+                return parts.join(autosep);
+            },
+            updater: function(item) {
+                var parts = item.split(autosep);
+                $('#quickAddCategoryText').val(autosep);
+                $('#quickAddCategoryText').data('catId',parts.shift());
+                return parts.join(autosep);
+            }
+        });
+
+        $('#quickAddCategorySubmit').on('click',function(e){
+            e.preventDefault();
+            $('#quickAddCategoryMessage').remove();
+            var catId = $('#quickAddCategoryText').data('catId');
+            var catName = $('#quickAddCategoryText').val();
+            $('#quickAddCategoryText').val('');
+            $('#quickAddCategoryText').data('catId','');
+            var difficulty = $('#quickAddCategoryDifficulty').val();
+            if(catId !== undefined && catId !== ''){
+                liveInterview.QuickAddCategory(catId,difficulty,catName);
+            } else {
+                $('#quickAddCategoryText').before('<div id="quickAddCategoryMessage" class="alert alert-error"><a type="button" class="close" data-dismiss="alert">×</a>'+catName+' category does not exist.</div>');
+            }
+        })
+
+    },
+
+    Touches: function(){
+        // Function to load a touch events
+
+        var self = this;
+
+        /* Touch event handling; adapted from Zepto.js */
+        var touch = {},
+            touchTimeout, tapTimeout, swipeTimeout,
+            longTapDelay = 750, longTapTimeout;
+
+        function parentIfText(node) {
+            return 'tagName' in node ? node : node.parentNode
+        }
+        function swipeDirection(x1, x2, y1, y2) {
+            var xDelta = Math.abs(x1 - x2), yDelta = Math.abs(y1 - y2)
+            return xDelta >= yDelta ? (x1 - x2 > 0 ? 'Left' : 'Right') : (y1 - y2 > 0 ? 'Up' : 'Down')
+        }
+        function longTap() {
+            longTapTimeout = null
+            if (touch.last) {
+              touch.el.trigger('longTap')
+              touch = {}
+            }
+        }
+        function cancelLongTap() {
+            if (longTapTimeout) clearTimeout(longTapTimeout)
+            longTapTimeout = null
+        }
+        function cancelAll() {
+            if (touchTimeout) clearTimeout(touchTimeout)
+            if (tapTimeout) clearTimeout(tapTimeout)
+            if (swipeTimeout) clearTimeout(swipeTimeout)
+            if (longTapTimeout) clearTimeout(longTapTimeout)
+            touchTimeout = tapTimeout = swipeTimeout = longTapTimeout = null
+            touch = {}
+        }
+
+        $(document).ready(function(){
+            var now, delta
+            $('#contentPrimary').on('touchstart', function(e){
+                now = Date.now()
+                delta = now - (touch.last || now)
+                //touch.el = $(parentIfText(e.touches[0].target))
+                touch.el = $(this)
+                touchTimeout && clearTimeout(touchTimeout)
+                touch.x1 = e.originalEvent.touches[0].pageX
+                touch.y1 = e.originalEvent.touches[0].pageY
+                if (delta > 0 && delta <= 250) touch.isDoubleTap = true
+                touch.last = now
+                longTapTimeout = setTimeout(longTap, longTapDelay)
+            })
+            .on('touchmove',function(e) {
+                cancelLongTap()
+                touch.x2 = e.originalEvent.touches[0].pageX
+                touch.y2 = e.originalEvent.touches[0].pageY
+                // If touch horizontal then prevents the event and it will suppress scrolling.
+                if(touch.x2 && Math.abs(touch.x1 - touch.x2) > 10) {
+                    e.preventDefault()
+                }
+                /*if (navigator.userAgent.match(/Android/i) && Math.abs(touch.x1 - touch.x2) > 10) {
+                    e.preventDefault()
+                }*/
+            })
+            .on('touchend', function(e){
+                 cancelLongTap()
+
+                // swipe
+                if ((touch.x2 && Math.abs(touch.x1 - touch.x2) > 30) ||
+                    (touch.y2 && Math.abs(touch.y1 - touch.y2) > 30))
+
+                  swipeTimeout = setTimeout(function() {
+                    touch.el.trigger('swipe')
+                    touch.el.trigger('swipe' + (swipeDirection(touch.x1, touch.x2, touch.y1, touch.y2)))
+                    //console.log('swipe' + (swipeDirection(touch.x1, touch.x2, touch.y1, touch.y2)))
+                    touch = {}
+                  }, 0)
+
+                // normal tap
+                else if ('last' in touch)
+
+                  // delay by one tick so we can cancel the 'tap' event if 'scroll' fires
+                  // ('tap' fires before 'scroll')
+                  tapTimeout = setTimeout(function() {
+
+                    // trigger universal 'tap' with the option to cancelTouch()
+                    // (cancelTouch cancels processing of single vs double taps for faster 'tap' response)
+                    var event = $.Event('tap')
+                    event.cancelTouch = cancelAll
+                    touch.el.trigger(event)
+
+                    // trigger double tap immediately
+                    if (touch.isDoubleTap) {
+                      touch.el.trigger('doubleTap')
+                      touch = {}
+                    }
+
+                    // trigger single tap after 250ms of inactivity
+                    else {
+                      touchTimeout = setTimeout(function(){
+                        touchTimeout = null
+                        touch.el.trigger('singleTap')
+                        touch = {}
+                      }, 250)
+                    }
+
+                  }, 0)
+
+            })
+            .on('touchcancel', cancelAll);
+
+            $(window).bind('scroll', cancelAll);
+
+        });
+
+        ['swipe', 'swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown', 'doubleTap', 'tap', 'singleTap', 'longTap'].forEach(function(m){
+            $.fn[m] = function(callback){ return this.bind(m, callback) }
+        })
+
+        // Attach swipeLeft trigger to #contentPrimary
+        $('#contentPrimary').on('swipeLeft',function() {
+            $('body').addClass('active');
+            setTimeout(self.ResizeLeft,275);
+
+        });
+
+        // Attach swipeRight trigger to #contentPrimary
+        $('#contentPrimary, #contentSecondary tab-content').on('swipeRight',function() {
+            $('body').removeClass('active');
+            setTimeout(self.ResizeLeft,275);
+
+        });
+
+    },
+
+    GetQuestion: function(id){
+
+        if (id === "first"){
+            return _.first(liveInterview.questions);
+        } else if (id === "last"){
+            return _.last(liveInterview.questions);
+        } else {
+            return liveInterview.questions[id-1];
+        }
+
+    },
+
+    ChangeNav: function(){
+        var self = this;
+
+        // Nav Previous
+        if ((self.nav.current - 1 > 0) && (self.nav.current - 1 < self.nav.total)){
+            $('.prevQuestionBtn').removeClass('muted');
+            $('.prevQuestionBtn .qNumber').html(self.tmpl.qNav({"num":self.nav.current-1,"total":self.nav.total}));
+        } else {
+            $('.prevQuestionBtn').addClass('muted');
+            $('.prevQuestionBtn .qNumber').html('');
+        }
+        // Nav Next
+        if ((self.nav.current + 1 <= self.nav.total) && (self.nav.current + 1 > 0)){
+            $('.nextQuestionBtn').removeClass('muted');
+            $('.nextQuestionBtn .qNumber').html(self.tmpl.qNav({"num":self.nav.current+1,"total":self.nav.total}));
+            $('.nextQuestionBtn .qText').html(self.tmpl.qNext({"question":self.GetQuestion(self.nav.current+1).text}));
+        } else {
+            $('.nextQuestionBtn').addClass('muted');
+            $('.nextQuestionBtn .qNumber').html('');
+            $('.nextQuestionBtn .qText').html('End of Questions');
+        }
+    },
+
+    UpdateQuestion: function(id, rating, comment) {
+        var action = #{jsAction @LiveInterviews.updateQuestion(':questionId', ':interviewId', ':rating', ':comment')/}
+        $.post(action({questionId: id, interviewId: ${interview.id}, rating: rating, comment: comment}));
+    },
+
+    updateFeedbackIndicator: function() {
+        for(var i = 0; i < liveInterview.questions.length; i++) {
+            var $noteIcon = $('#questionList .icon-notes').eq(i),
+                question = liveInterview.questions[i];
+            if(question.comment != "" || question.rating != null) {
+                $noteIcon.removeClass("hide");
+            } else if(!$noteIcon.hasClass("hide")) {
+                $noteIcon.addClass("hide");
+            }
+        }
+    },
+
+    SetCurrentQuestionRating: function(rating, obj) {
+        $.each($(obj).parent().find('a'), function(k, v) {
+            $(v).find('div').removeClass('selected');
+        });
+        $(obj).find('div').addClass('selected');
+        var self = this;
+        self.questionsObj[self.nav.currentUid].rating = rating;
+    },
+
+    LoadQuestion: function(id,uid,changenav){
+        // Function to load questions
+        // @id = interview question order
+        // @uid = unique interview question id
+        // @changenav = true/false, default is true
+
+        var self = this;
+
+        // Set Defaults
+        id = typeof id !== 'undefined' && id !== null ? parseInt(id,10) : null;
+        uid = typeof uid !== 'undefined' ? parseInt(uid,10) : null;
+        changenav = typeof changenav !== 'undefined' ? changenav : true;
+
+        if(uid === null && id !== null){
+            if (typeof self.questions[id-1] !== 'undefined'){
+                uid = self.questions[id-1].id;
+            } else {
+                return false;
+            }
+        }
+
+        var orderVal = _.find(self.questions, function(num){
+            if (num.id == uid) {
+                return num;
+            } else {
+                return false;
+            }
+        });
+        var isInOrder = _.indexOf(self.questions, orderVal)+1;
+
+        if(id === null){
+            id = isInOrder;
+        }
+
+        //console.log(id,uid,changenav);
+        //console.log(isInOrder);
+        
+        //if ((id > 0) && (id !== liveInterview.nav.current) && (id <= liveInterview.nav.total)){
+        //if ((uid !== liveInterview.nav.currentUid)){
+            $('#loadingProgressQuestion').show();
+
+            // previous first
+            self.nav.previous = self.nav.current;
+            self.nav.previousUid = self.nav.currentUid;
+            // then reset current
+            self.nav.current = id;
+            self.nav.currentUid = uid;
+            while(_.indexOf(self.nav.activeorder, uid)>-1){
+                self.nav.activeorder.splice(_.indexOf(self.nav.activeorder, uid),1);
+            }
+            self.nav.activeorder.push(uid);
+
+            var loadPanes = function(){
+
+                // Load question content
+                $('#questionContent').html(self.tmpl.question(self.questionsObj[uid]));
+                $('#questionList .questionItem[data-uid="'+self.nav.previousUid+'"]').addClass('viewed');
+                $('#questionListFull .questionItem[data-uid="'+self.nav.previousUid+'"]').addClass('viewed');
+
+                $('#questionList .questionItem, #questionListFull li.questionItem').removeClass('active');
+                $('#questionListFull .questionItem[data-uid="'+uid+'"]').addClass('active');
+                $('#questionList .questionItem[data-uid="'+uid+'"]').addClass('active');
+
+                // Sweet looking character countdown for notes
+                $('#myNotes').maxlength({
+                    maxCharacters: 750, // Characters limit
+                    status: true, // True to show status indicator bewlow the element
+                    statusClass: "status", // The class on the status div
+                    statusText: "characters left", // The status text
+                    slider: true
+                });
+
+                if (changenav === true && isInOrder > -1){
+                    self.ChangeNav();
+                }
+
+                // Run resize
+                self.ResizeLeft();
+
+                // Fix nav panels
+                if($('#relatedQuestionsPane').is(':visible')){
+                    self.ShowRelatedQuestions(uid);
+                }
+                if ($('#similarQuestionsPane').is(':visible')){
+                    $('#similarQuestionsPane').slideUp('fast');
+                    $('.similarQuestionBtn').removeClass('active');
+                }
+                if($('#relatedQuestionsPane').is(':visible') || $('#similarQuestionsPane').is(':visible')){
+                    self.ResizeNavOverlays();
+                }
+
+                // Show question content
+                $('#questionContent').fadeIn('fast');
+                $('#loadingProgressQuestion').hide();
+                
+            };
+
+            if($('#questionListContent').is(':visible')){
+                $('#questionListContent').fadeOut('fast',function(){
+                    loadPanes();
+                });
+            } else {
+                $('#questionContent').fadeOut('fast',function(){
+                    loadPanes();
+                });
+            }
+ 
+            // Track load event for google analytics
+            if (typeof _gaq !== 'undefined' && _gaq) { 
+                _gaq.push(['_trackEvent', 'LiveInterview', 'LoadQuestion', 'Question '+uid]); 
+            }
+   
+        //}
+    },
+
+    DeleteQuestion: function(id,uid){
+        // Function to delete questions from the interview
+
+        var self = this;
+        // id = order id (currently required)
+
+        // Remove question from page
+        $('#questionListFull .questionItem[data-id="'+id+'"],#questionList .questionItem[data-id="'+id+'"]').remove();
+
+        var qTime = self.questions[id-1].time;
+
+        // Remove question from array
+        self.questions.splice(id-1,1);
+        self.nav.total = _.size(self.questions);
+
+        // Re-number lists
+        $('#questionListFull .questionItem').each(function(){
+            var newOrder = $(this).index()+1;
+            $(this).attr('data-id',newOrder);
+            $(this).find('.loadQuestion').attr('data-id',newOrder);
+            $(this).find('.orderNum').html(newOrder+'.');
+        });
+        $('#questionList .questionItem').each(function(){
+            var newOrder = $(this).index()+1;
+            $(this).attr('data-id',newOrder);
+            $(this).find('.orderNum').html(newOrder+'.');
+        });
+
+        self.UpdateCount(qTime,true);
+
+        // Post deleted question
+        var action = #{jsAction @LiveInterviews.removeQuestion(':questionId', ':interviewId')/}
+        $.post(action({questionId: uid, interviewId: ${interview.id}}));
+
+    },
+
+    AddQuestion: function(uid,runAjax,addToEnd){
+        runAjax = (runAjax !== undefined) ? runAjax : true;
+        addToEnd = (addToEnd !== undefined) ? addToEnd : false;
+        // Function to add questions to the interview
+        //console.log(addToEnd);
+
+        var self = this;
+        uid = parseInt(uid,10);
+
+        var isInInterview = _.find(liveInterview.questions, function(num){
+            return num.id === uid;
+        });
+
+        if (isInInterview) {
+
+            alert('Question has already been added to your interview.');
+
+        } else {
+
+            // Add questions to question list
+            self.questionsObj[uid] = self.tempObj[uid];
+            if (addToEnd === true){
+                self.questions.push(self.tempObj[uid]);
+            } else {
+                self.questions.splice(self.nav.current,0,self.tempObj[uid]);
+            }
+
+            self.nav.total = _.size(self.questions);
+            tempQuestion = [];
+            tempQuestion[self.nav.total] = self.tempObj[uid];
+            //console.log(tempQuestion);
+            if (addToEnd === true){
+                $('#questionListFull').append(self.tmpl.list(tempQuestion));
+                $('#questionList').append(self.tmpl.shortList(tempQuestion));
+            } else {
+                $('#questionListFull .questionItem[data-id="'+self.nav.current+'"]').after(self.tmpl.list(tempQuestion));
+                $('#questionList .questionItem[data-id="'+self.nav.current+'"]').after(self.tmpl.shortList(tempQuestion));
+            }
+
+            $('#questionListFull .questionItem').each(function(){
+                var newOrder = $(this).index()+1;
+                $(this).attr('data-id',newOrder);
+                $(this).find('.orderNum').html(newOrder+'.');
+            });
+            $('#questionList .questionItem').each(function(){
+                var newOrder = $(this).index()+1;
+                $(this).attr('data-id',newOrder);
+                $(this).find('.orderNum').html(newOrder+'.');
+            });
+
+            var qTime = self.questionsObj[uid].time;
+            self.UpdateCount(qTime,false);
+
+            if (runAjax !== false){
+                //add the question to the interview on the server as well
+                var action = #{jsAction @LiveInterviews.addQuestionToInterview(':questionId', ':interviewId', ':order')/}
+                $.post(action({questionId: uid, interviewId: ${interview.id}, order: self.nav.current+1}));
+            }
+        }
+
+    },
+
+    LoadList: function(){
+
+        $('#questionListFull').prepend(liveInterview.tmpl.list(liveInterview.questions));
+
+    },
+
+    UpdateCount: function(time,remove){
+        // Update Question Count
+        $('#questionCount').text(liveInterview.nav.total);
+
+        var deltaVal = 0;
+        if (time === "Short" || time === "Short"){
+            deltaVal = 1;
+        } else if (time === "MEDIUM" || time === "Medium") {
+            deltaVal = 5;
+        } else if (time === "LONG" || time === "Long") {
+            deltaVal = 10;
+        }
+        if (remove === true){
+            deltaVal = -deltaVal;
+        }
+
+        $('#timingCount').text(parseInt($('#timingCount').text(),10)+deltaVal);        
+
+    },
+
+    GetRelatedQuestions: function(uid){
+        // Function to get related questions
+
+        var self = this;
+
+        var thisCategory = self.questionsObj[uid].category;
+
+        var related = _.filter(self.questions, function(num){
+            if (num.category == thisCategory) {
+                return num;
+            }
+        });
+        return related;
+
+    },
+
+    ShowRelatedQuestions: function(uid){
+        // Function to show related questions
+
+        var self = this;
+
+        var list = '';
+        $('#relatedQuestionsList').attr('data-uid',uid);
+        //console.log(uid);
+
+        if (self.questionsObj[uid].category === null){
+            $('#relatedQuestionsList').html('<li>This question has no category.</li>');
+        } else {
+            var count = 0;
+            var tempArr = [];
+            _.each(self.GetRelatedQuestions(uid), function(item, key){
+                if(!_.include(self.nav.activeorder, item.id)){
+                    tempArr.push(item);
+                    //list += '<li><a href="#" class="relatedQuestionItem">'+item.text+'</a></li>';
+                    //count++;
+                }
+                //console.log(list, count)
+                if (count >= 2){
+                    //return false
+                }
+            });
+            _.each(_.first(tempArr, 4), function(item, key){
+                list += '<li><a href="#" class="relatedQuestionItem" data-uid="'+item.id+'">'+item.text+'</a></li>';
+            });
+            if (list !== ''){
+                $('#relatedQuestionsList').html(list);
+            } else {
+                $('#relatedQuestionsList').html('<li>No related questions.</li>');
+            }
+        }
+
+    },
+
+    ShowSimilarQuestions: function(uid){
+        // Function to show similar questions
+
+        var self = this;
+
+        var list = '';
+        $('#similarQuestionsList').attr('data-uid',uid);
+        //console.log(uid);
+
+        var count = 0;
+        var tempArr = [];
+
+        var displayCallback = function(){
+
+            $('#loadingProgressAddSimilar').hide();
+            $('#similarQuestionsPane').slideDown('fast',function(){
+                if ($('#contentPrimary').hasClass('overthrow')){
+                    var targetOffset = $('#similarQuestionsPane').offset().top;
+                    $('#contentPrimary').animate({scrollTop: '+='+targetOffset+'px'}, 400);
+                }
+            });
+
+        }
+
+        var similarQuestionCallback = function(theData){
+            //console.log(self.GetSimilarQuestions(uid))
+
+            if (!_.isEmpty(theData)){
+
+                _.each(theData, function(item, key){ 
+                    if(!_.include(self.nav.activeorder, item.id)){
+                        tempArr.push(item);
+                        //list += '<li><a href="#" class="relatedQuestionItem">'+item.text+'</a></li>';
+                        //count++;
+                    }
+                    //console.log(list, count)
+                    if (count >= 2){
+                        //return false
+                    }
+                });
+                _.each(_.first(tempArr, 4), function(item, key){ 
+                    self.tempObj[item.id] = item;
+                    list += '<li><a href="#" class="btn btn-small similarQuestionItem pull-right" data-uid="'+item.id+'">Add</a>'+item.text+'</li>';
+                });
+                if (list !== ''){
+                    $('#similarQuestionsList').html(list);
+                } else {
+                    $('#similarQuestionsList').html('<li>No similar questions.</li>');
+                }
+
+            } else {
+                $('#similarQuestionsList').html('<li>No similar questions.</li>');
+            }
+
+            displayCallback();
+
+        }
+
+        var action = #{jsAction @LiveInterviews.findSimilarQuestions(':questionId', ':interviewId', ':candidateId', ':limit')/};
+
+        if (self.nav.currentUid === undefined){
+            $('#similarQuestionsList').html('<li>No similar questions.</li>');
+            displayCallback();
+        } else {
+            $.ajax({
+                url: action({questionId: self.nav.currentUid, interviewId: '${interview.id}', candidateId: ${interview.interviewee.id}, limit: 30}),
+                success: function(data) {
+                    //console.log(data)
+                    similarQuestionCallback(data);
+                },
+                type: 'GET',
+                cache: false,
+                async: true
+            }); 
+        }
+
+    },
+
+    QuickAddCategory: function(catId,difficulty,catName){
+        // Function to show similar questions
+
+        var self = this;
+
+        var quickAddCategoryCallback = function(theData){
+            //console.log(self.GetSimilarQuestions(uid))
+            //console.log(theData);
+
+            if (!_.isEmpty(theData)){
+                _.each(theData, function(item, key){
+                    self.tempObj[item.id] = item;
+                    self.AddQuestion(item.id,false,true);
+                });
+                $('#quickAddCategoryText').before('<div id="quickAddCategoryMessage" class="alert alert-warning"><a type="button" class="close" data-dismiss="alert">×</a>'+_.size(theData)+' "'+catName+'" questions added.</div>');
+                if (self.nav.current === null){
+                    // If first question in total question list, load question
+                    self.LoadQuestion(1);
+                } else {
+                    // If last question in quick add category
+                    self.ChangeNav();
+                }
+            } else {
+                $('#quickAddCategoryText').before('<div id="quickAddCategoryMessage" class="alert alert-warning"><a type="button" class="close" data-dismiss="alert">×</a>No "'+catName+'" questions available.</div>');
+            }
+
+        }
+
+        var action = #{jsAction @LiveInterviews.addQuestionsToInterview(':interviewId', ':categoryId', ':difficulties', ':limit')/};
+
+        $.ajax({
+            url: action({interviewId: ${interview.id}, categoryId: catId, difficulties: difficulty, limit: '5'}),
+            success: function(data) {
+                //console.log(data)
+                quickAddCategoryCallback(data);
+            },
+            type: 'GET',
+            cache: false,
+            async: true
+        });
+
+    },
+
+    ResizeRight: function(){
+
+        var newContentHeight = /*$('#contentSecondary').height()*/$(window).height() - ($('#contentSecondary .nav').outerHeight() + $('#contentSecondary .secondaryButtons').outerHeight());
+        $('#contentSecondary .tab-content').height(newContentHeight);
+
+    },
+
+    ResizeLeft: function(){
+
+        if ($('#interviewNavPane .navbar .nextQuestionBtn .qText').is(':visible')){
+            $('#interviewNavPane .navbar a:not(".qText")').height($('#interviewNavPane .navbar .nextQuestionBtn .qText').parent().height());
+        } else {
+            $('#interviewNavPane .navbar a').css('height','');
+        }
+        if($('#questionPane').hasClass('overthrow')){
+            newContentHeight = '70%';
+            if ($('#intervieweeDetailsPane').is(':visible')){
+                newContentHeight = /*$('#contentPrimary').height()*/$(window).height() - ($('#headerPane').outerHeight() + $('#intervieweePane').outerHeight() + $('#intervieweeDetailsPane').outerHeight() + $('#interviewNavPane').outerHeight());   
+            } else {
+                newContentHeight = /*$('#contentPrimary').height()*/$(window).height() - ($('#headerPane').outerHeight() + $('#intervieweePane').outerHeight() + $('#interviewNavPane').outerHeight());
+            }
+            $('#questionPane').height(newContentHeight);
+        }
+
+    },
+
+    ResizeNavOverlays: function(){
+
+        if($(window).height() < 550){
+            $('#relatedQuestionsPane').css({'position':'relative','bottom':'0'});
+            $('#similarQuestionsPane').css({'position':'relative','bottom':'0'});
+        } else {
+            $('#relatedQuestionsPane').css({'position':'absolute','bottom':$('#interviewNavPane').outerHeight()});
+            $('#similarQuestionsPane').css({'position':'absolute','bottom':$('#interviewNavPane').outerHeight()});
+        }
+
+    },
+
+    ResetResize: function(q){
+
+        if($(window).height() < 350){
+            overthrow.forget();
+            $('#questionPane').css('height','auto').removeClass('overthrow');
+            $('#contentSecondary .tab-content').css('height','auto').removeClass('overthrow');
+            overthrow.set();
+        } else if(($(window).height() < 550) || (q === false)){
+            overthrow.forget();
+            $('#questionPane').css('height',$(window).height()).css('height','auto').removeClass('overthrow');
+            $('#contentSecondary .tab-content').addClass('overthrow');        
+            overthrow.set();
+            liveInterview.ResizeRight();
+        } else {
+            $('#questionPane, #contentSecondary .tab-content').addClass('overthrow');        
+            liveInterview.ResizeLeft();
+            liveInterview.ResizeRight();
+        }
+        liveInterview.ResizeNavOverlays();
+
+    },
+
+    Test: function(){
+
+        var self = this;
+
+        console.log('Current Question ID: ', self.nav.currentUid);
+        console.log('Current Question Order: ', self.nav.current);
+        console.log('Current Question Data: ', self.questionsObj[self.nav.currentUid]);
+        console.log('Previous Question ID: ', self.nav.previousUid);
+        console.log('Previous Question Order: ', self.nav.previous);
+        console.log('Active Order: ', self.nav.activeorder);
+
+    },
+
+    MakeSafe: function(text) {
+        return text.replace(/[&<>"'`]/g, function (chr) {
+            return '&#' + chr.charCodeAt(0) + ';';
+        });
+    }
+
+};
+
+liveInterview.Init();
+
+</script>

@@ -1,0 +1,47 @@
+*{ Displays a message indicating how many of a limited resource are being used
+ { and possibly a link to upgrade the account to get more. The body should be
+ { a frightfully witty message to display to SuitedTo admins, who do not have
+ { such restrictions.
+ {
+ { This tag expects that there is a logged-in user.
+ {
+ { Arguments:
+ {   _type: The type of resource.
+ }*
+
+%{
+    connectedUser = controllers.Security.connectedUser();
+    canUpgrade = !connectedUser.getAccountUpgradeOptions().isEmpty();
+}%
+ 
+#{if connectedUser.hasRole(enums.RoleValue.APP_ADMIN)}
+    #{doBody /}<br/><br/>
+#{/if}
+#{else}
+    %{
+        def company = connectedUser.company;
+        def accountType = connectedUser.getAccountType();
+        def max = accountType.getMax(_type);
+    }%
+
+    #{if max == 0}
+        ${accountType.toString().capitalizeWords()} accounts do not
+        have ${_type.toString()}.
+        #{if canUpgrade}
+            <a href="@{Application.upgradeAccount()}">Click here</a>
+            to get some.
+        #{/if}
+        <br/><br/>
+    #{/if}
+    #{elseif max == null}
+    *{do nothing if no max defined}*
+    #{/elseif}
+    #{else}
+        You are using ${connectedUser.getResourceUsage(_type)} of ${max} ${_type.toString()}.
+        #{if canUpgrade}              
+            <a href="@{Application.upgradeAccount()}">Click here</a>
+            to get more.
+        #{/if}
+        <br/><br/>
+    #{/else}
+#{/else}

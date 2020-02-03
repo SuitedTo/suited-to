@@ -1,0 +1,16 @@
+
+<div class="well">
+    <h5>${_user.getPublicDisplayName()}'s Stats</h5>
+    <ul class="userData">
+        *{<li>Street Cred: ${_user.streetCred}</li>}*
+    %{
+        submitted = _user.publicQuestionSubmissionCount
+        accepted = _user.acceptedPublicQuestionCount
+        }%
+        <li><span class="val">${submitted}</span> <span class="lbl">Questions Submitted</span></li>
+        <li><span class="val">${accepted}</span> <span class="lbl">Questions Accepted</span></li>
+    #{if submitted && accepted}
+        <li><span class="val">${((accepted/submitted)*100).format('00.0')}%</span> <span class="lbl">Acceptance Rate</span></li>
+    #{/if}
+    </ul>
+</div>

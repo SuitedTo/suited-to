@@ -1,0 +1,68 @@
+#{extends 'standardPage.html' /}
+#{set title:'Add Question' /}
+#{set 'moreScripts'}
+
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+
+<div class="row">
+    <div class="span12">
+        <h1>Add Questions to Interview</h1>
+        <p>Find questions for your interview by using the search function. Click on any question to select it.</p>
+    </div>
+</div>
+
+#{set filters:(candidate == null)?"":"includeTailoredForCandidate:" + candidate.id + ","/}
+
+<div class="row">
+    <div class="span12">
+        #{questionTable mode:"addQuestionsToInterview", 
+                selectionMode:'multiple', selectionCallback:'questionSelected', 
+                filters: filters + "NotInCachedInterview,excludeByActiveStatus:false"/}
+    </div>
+</div>
+
+
+
+<div class="row tableFooter">
+	<div class="span7" id="emptySubmitAlert"></div>
+    <div class="span5">
+		<div class="controls pull-right">
+			<a id="cancelAddQuestionToInterviewBtn" href="#" onClick="cancel()"><button type="button" class="btn no-change-check">Cancel</button></a>
+    		<button id="addQuestionToInterviewBtn" class="btn btn-info" onClick="addQuestionsToInterview()"><i class="icon-white icon-plus-sign"></i> Add Selected Questions</button>
+		</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function clearTableState() {
+        $(".dataTables_filter input").val('');
+        oTable.fnFilter('');
+    }
+
+	function questionSelected(id){
+		$('#emptySubmitAlert').html('<div id="emptySubmitAlert"></div>');
+	}
+	
+	function addQuestionsToInterview(){
+		
+		var selected = $('#selectedQuestionIds').val().split(',');
+		
+		if((selected.length > 0) && selected[0]){
+			window.location.href = '@{Interviews.addQuestions()}?questionIds=' + selected.join(',');
+		}else{
+			var message = "<strong>No Questions Have Been Selected!</strong> Please select one or more questions.";
+           	$('#emptySubmitAlert').html('<div id="emptySubmitAlert" class="alert"><span>'+message+'</span></div>')
+		
+		}
+	}
+	
+	function cancel(){
+		window.location.href = '@{Interviews.addQuestions()}';
+	}
+</script>
+

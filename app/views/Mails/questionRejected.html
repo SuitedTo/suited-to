@@ -1,0 +1,41 @@
+#{extends 'blowyEmail.html' /}
+<!-- // Begin Module: Standard Content \\ -->
+<table border="0" cellpadding="20" cellspacing="0" width="100%">
+    <tr>
+        <td valign="top">
+            <div mc:edit="std_content01">
+                <h3 class="h3">Your question has been reviewed</h3>
+                <hr class="hr">
+
+                <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                    <tr>
+                        <td valign="top"></td>
+                        <td><h4 class="h4">${name},</h4>
+
+                            Your question "${question.text}" has been reviewed and needs your attention for the following reason:
+                            <br><br>
+                            ${rejectComment}
+                            <br><br>
+                            Simply select the question below to view the reviewer's comments.  You can make any updates and save the question, which will direct the question back to a reviewer. <br><br>
+                            <a href="@@{Questions.view(question.id)}" title="Review Me!"><img src="http://content.suitedto.com/email-content/btn-takemethere.png"></a>
+                            <br><br>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+                        <td valign="top"></td>
+                        <td>
+                            Sincerely, <br>
+                            The SuitedTo TEAM
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </td>
+    </tr>
+</table>
+<!-- // End Module: Standard Content \\ -->

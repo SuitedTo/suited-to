@@ -1,0 +1,457 @@
+*{ Renders the list of questions in one of four modes:
+ {     "question", used for general question display;
+ {     "interview", used when managing questions within an interview;
+ {     "addQuestionsToInterview", used for selecting one or more questions to
+ {           add to an interview;
+ {     "review", used when displaying the review pool.
+ {
+ { This tag exposes a function called registerRemoveListener() that takes a 
+ { callback as its sole parameter.  Whenever a question is removed from the list
+ { via the user clicking the "Remove Question" button, the callback will be 
+ { called with the question ID as the first parameter and the question's 
+ { original ordering index as the second.
+ {
+ { Parameters:
+ {   _mode: A string naming the mode in which to display.  If omitted, defaults
+ {         to "question".
+ {   _sourceName: A string naming a table in the BaseTable hierarchy to use as
+ {         the data source.  If omitted, defaults to "question.QuestionTable".
+ {   _filters: A comma-delimited String of filters to be applied to the source
+ {         table.  Each filter takes the form 
+ {         "{include|exclude}By<FilterName>:value", e.g., "excludeById:5". If
+ {         omitted, no filters will be applied.
+ {   _selectionMode: A String describing the manner in which questions may be 
+ {         selected from this list.  Options are "none" or "multiple".  If 
+ {         omitted, "none" is assumed.
+ {   _selectionCallback: A function-valued String of javascript (probably a
+ {         function name) to be called when a question is selected (which can
+ {         only ever occur if selecitonMode is not "none").  The id of the
+ {         selected question will be passed as its sole parameter.  If omitted,
+ {         nothing will be called when a selection is made.
+ {   _textHrefCallback: A function-valued String of javascript (probably a
+ {         function name) to be called when the question text is clicked (onclick).
+ {         The id of the clicked question will be passed as its sole parameter. 
+ {         If this parameter (or _textHrefLink) is omitted, the text will not be 
+ {         link-ified.
+ {   _textHrefLink: A string for the link to be called when the question text 
+ {         is clicked (href).
+ {         The id of the clicked question will be passed as its sole parameter. 
+ {         If this parameter is omitted, the text will not be link-ified.
+ }*
+ 
+#{set 'moreScripts'}
+    #{get 'moreScripts' /}
+    #{script 'jquery.tablednd.0.7.min.js' /}
+#{/set}
+
+#{set processing:play.Play.configuration.get("dataTable.processing")/}
+
+%{
+    if (!_mode) {
+        _mode = "question";
+    }
+    mode = _mode;
+
+    if (!_selectionMode) {
+        _selectionMode = "none";
+    }
+    selectionMode = _selectionMode;
+
+    if (!_sourceName) {
+        _sourceName = "question.QuestionTable";
+    }
+    sourceName = _sourceName;
+
+    if (!_filters) {
+        _filters = "";
+    }
+    filters = _filters;
+    
+    if (_textHrefCallback) {
+        textHrefCallback = _textHrefCallback;
+    }
+    if (_textHrefLink) {
+        textHrefLink = _textHrefLink;
+    }
+    
+    if (_selectionCallback) {
+        selectionCallback = _selectionCallback;
+    }
+}%
+
+<table id="questions" class="table ${_mode == "interview" ? "" : "table-striped"}">
+    <thead>
+    <tr>
+    	#{if _mode == 'interview' }
+            <th></th>
+    	#{/if}    	
+        <th>ID</th>
+        #{if _mode != 'interview'}
+            <th>Status</th>
+        #{/if}
+        <th>Question</th>
+        <th>Timing</th>
+        <th>Difficulty</th>
+        <th>Strength <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.strength'}" data-original-title="Question Rating Strength">?</a></th>
+        <th>Category <a href="#" class="help" rel="popover" data-content="&{'help.hoverOver.category'}" data-original-title="Category">?</a></th>
+        #{if _mode == 'interview' }
+            <th>Order</th>
+            <th></th>
+        #{/if}
+    </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+    <input type="hidden" id="selectedQuestionIds">
+</table>
+
+<script type="text/javascript">
+    var oTable;
+    var selectedQuestionIds =  [];
+	
+    $.fn.dataTableExt.oApi.fnSearchHighlighting = function(oSettings) {
+        // Initialize regex cache
+    	oSettings.oPreviousSearch.oSearchCaches = {};
+
+    	oSettings.oApi._fnCallbackReg( oSettings, 'aoRowCallback', function( nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            // Initialize search string array
+            var searchStrings = [];
+            var oApi = this.oApi;
+            var cache = oSettings.oPreviousSearch.oSearchCaches;
+            // Global search string
+            // If there is a global search string, add it to the search string array
+            if (oSettings.oPreviousSearch.sSearch) {
+                var sSplit = oSettings.oPreviousSearch.sSearch.split(",");
+                for(var i = 0; i < sSplit.length; ++i){
+                    searchStrings.push(sSplit[i]);
+                }
+            }
+            // Individual column search option object
+            // If there are individual column search strings, add them to the search string array
+            if ((oSettings.aoPreSearchCols) && (oSettings.aoPreSearchCols.length > 0)) {
+                for (var i in oSettings.aoPreSearchCols) {
+                        if (oSettings.aoPreSearchCols[i].sSearch) {
+                                searchStrings.push(oSettings.aoPreSearchCols[i].sSearch);
+                        }
+                }
+            }
+            // Create the regex built from one or more search string and cache as necessary
+            if (searchStrings.length > 0) {
+            var sSregex = searchStrings.join("|");
+            if (!cache[sSregex]) {
+                var regRules = "(";
+                var regRulesSplit = sSregex.split(' ');
+
+                regRules += "("+ sSregex +")";
+                for(var i=0; i<regRulesSplit.length; i++) {
+                    regRules += "|("+ regRulesSplit[i] +")";
+                }
+                regRules += ")";
+
+                // This regex will avoid in HTML matches
+                cache[sSregex] = new RegExp(regRules+"(?!([^<]+)?>)", 'ig');
+            }
+            var regex = cache[sSregex];
+            }
+            // Loop through the rows/fields for matches
+            jQuery('td', nRow).each( function(i) {
+                // Take into account that ColVis may be in use
+                var j = oApi._fnVisibleToColumnIndex( oSettings,i);
+                // Only try to highlight if the cell is not empty or null
+                if (aData[j]) {
+                    // If there is a search string try to match
+                    if ((typeof sSregex !== 'undefined') && (sSregex)) {
+                        var colString = String(aData[j]);
+                        this.innerHTML = colString.replace( regex, function(matched) {
+                            return "<span class='search-match'>"+matched+"</span>";
+                        });
+                    }
+                    // Otherwise reset to a clean string
+                    else {
+                        this.innerHTML = String(aData[j]);
+                    }
+                }
+            });
+            return nRow;
+    	}, 'row-highlight');
+    return this;
+    };
+
+    
+	
+    var removeListeners = [];
+    function registerRemoveListener(callback) {
+        removeListeners.push(callback);
+    }
+        
+    function removeQuestion(questionId, questionOrder) {
+        var removeAction = #{jsAction @Interviews.removeQuestion(':questionId') /};
+        $.get(removeAction({questionId:questionId}), function(data) {
+                refreshTable();
+        	for (index in removeListeners) {
+                    removeListeners[index](questionId, questionOrder);
+        	}
+            });
+        
+        $.fn.changeAlert('markChanged');
+    }
+
+    function reorderQuestion(rowId, newOrder){
+        var reorderAction = #{jsAction @Interviews.reorderQuestion(':questionId', ':newOrder') /};
+        $.get(reorderAction({questionId: rowId, newOrder: newOrder}));
+        
+        $(".remove-link", $("#" + rowId)).attr("onclick", onclickScript(rowId, newOrder));
+        
+        $.fn.changeAlert('markChanged');
+    }
+
+    function onclickScript(questionID, tablePosition) {
+        return 'removeQuestion(' + questionID + ', ' + tablePosition + ')';
+    }
+    
+    function deleteCookie(name) {
+    	setCookie(name,"",-1);
+    }
+
+    function setCookie(name,value,days) {
+        if (days) {
+            var date = new Date();
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            var expires = "; expires="+date.toGMTString();
+        }
+        else var expires = "";
+        document.cookie = name+"="+value+expires+"; path=/";
+    }
+
+    function getCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }
+    
+    var dataTableKey = dataTableKey || "DataTables_questions_list";
+
+    function recordDataTableState(oSettings, oData){
+        setCookie( dataTableKey, JSON.stringify(oData) );
+    }
+	
+    function loadRecordedDataTableState(oSettings){
+        var data = getCookie(dataTableKey);
+        if(data){
+            return JSON.parse(data)
+        }
+        return null;
+    }
+
+    var refreshTable;
+
+
+    $(function () {
+        #{if _mode != 'interview'}
+            var aDataIndices = {id:0, status:1, questionText:2, timing:3, difficulty:4, points:5, category:6};
+            var colIndices = {id:0, status:1, questionText:2, timing:3, difficulty:4, points:5, category:6};
+        #{/if}
+        #{else}
+            var aDataIndices = {remove:0, id:1, questionText:2, timing:3, difficulty:4, points:5, category:6, order:7};
+            var colIndices = {remove:0, id:1, questionText:2, timing:3, difficulty:4, points:5, category:6, order:7};
+        #{/else}
+
+        #{ajaxTable 'questions', source: _sourceName,
+                objectTableName: '_oTable',
+                filters: filters,
+                refreshFunctionName: "_refreshTable"}
+            
+            bStateSave: true,
+            fnStateSave: function(oSettings, oData) { recordDataTableState(oSettings, oData); },
+            fnStateLoad: function(oSettings) { return loadRecordedDataTableState(oSettings); },
+            fnRowCallback: function (nRow, aData, iDisplayIndex) {
+                $(nRow).attr('id', aData[aDataIndices.id]);
+
+                #{if selectionMode == 'multiple'}
+                    if ( jQuery.inArray(aData[aDataIndices.id], selectedQuestionIds) != -1 ){
+                        $(nRow).addClass('rowSelected');
+                    }else{
+                        $(nRow).addClass('selectableRow');
+                    }
+                #{/if}
+
+                *{remove: only available in interview mode}*
+                #{if mode == 'interview'}
+                    var questionId = aData[aDataIndices.id];
+                    $('td:eq(' + colIndices.remove + ')', nRow).html('<a href="#" class="remove-link" onclick="' + onclickScript(questionId, aData[aDataIndices.order]) + '"><i class="icon-trash" title="Remove"></i></a>')
+                #{/if}
+
+
+                #{if textHrefCallback != null || textHrefLink != null}
+                    var questionId = aData[aDataIndices.id];
+                    var hrefValue = '<a ';
+
+                    #{if textHrefCallback != null && textHrefLink == null}
+                        hrefValue += 'href="#" onClick="${_textHrefCallback}(' + questionId + ');return false;"';
+                    #{/if}
+                    #{elseif textHrefCallback != null}
+                        hrefValue += 'onClick="${_textHrefCallback}(' + questionId + ')"';
+                    #{/elseif}
+                    #{if textHrefLink != null }
+                        hrefValue += 'href="${_textHrefLink}/' + questionId + '"';
+                    #{/if}
+                    
+                    hrefValue += '/>';
+                    $('td:eq(' + colIndices.questionText + ')', nRow).wrapInner(hrefValue);
+                #{/if}
+
+                *{categories available in all modes}*
+
+                return nRow;
+            },
+            
+            #{if mode == 'interview'}
+                oLanguage: {sZeroRecords: "No questions selected yet."},
+                fnDrawCallback: function() {
+                    $('#questions').tableDnD({
+                        onDrop: function(table, row) {
+                            var order;
+                            var rows = table.tBodies[0].rows;
+                            for (var i=0; i<rows.length; i++) {
+                                var currentRow = rows[i];
+                                if(currentRow == row){
+                                    reorderQuestion(row.id, i+1); //sort order on interview question is 1-based
+                                    break;
+                                }
+                            }
+                        },
+                        dragHandle: ".grip-cell"
+                    });
+
+                    $('tr',this).hover(
+                        function(){ 
+                            $(this).not($("thead>tr")).addClass("highlighted-row");
+                            $(".grip-cell", this).not("th").addClass("grip");
+                        },
+                        function(){ 
+                            $(this).removeClass("highlighted-row");
+                            $(".grip-cell", this).not("th").removeClass("grip"); 
+                        }
+                    );
+
+                    if (hasTouch) {
+                        $(".grip-cell").not("th").addClass("grip");
+
+                        $(".grip-cell").on('touchstart',function() {
+                            $(this).parent().not($("thead>tr")).addClass("highlighted-row");
+                        });
+                        $(".grip-cell").on('touchend',function() {
+                            $(this).parent().removeClass("highlighted-row");
+                        });
+                    }
+
+                },
+                bSort: false,
+                sDom: "<'row'r>tr<'row'>",
+                aoColumns: [
+                    {sWidth:"5%", sClass:"dataCol_id"},
+                    {sWidth:"4%", sClass:"dataCol_status"},                
+                    {sWidth:"46%", sClass:"dataCol_question"},
+                    {sWidth:"8%", sClass:"dataCol_timing"},
+                    {sWidth:"8%", sClass:"dataCol_difficulty"},
+                    {sWidth:"13%", sClass:"dataCol_points"},
+                    {sWidth:"19%", sClass:"dataCol_category"},
+                    {
+                        bSearchable:false,
+                        bVisible:false
+                    },
+                    {sWidth:"2%", mDataProp: null, sClass:"grip-cell", 
+                        fnRender:function() {
+                            return "";
+                        }
+                    }
+                ]
+            #{/if}
+            #{else}
+                aaSorting: [
+                    [colIndices.id, 'desc']
+                ],
+                sDom: "<'row'<'span6'l><'span6'f>><'tableWorkingSpace'rt><'row'<'span5'i><'span7'p>>",
+                aoColumns: [
+                    {sWidth:"4%", sClass:"dataCol_id"},
+                    {sWidth:"6%", sClass:"dataCol_status"},
+                    {sWidth:"42%", sClass:"dataCol_question"},
+                    {sWidth:"8%", sClass:"dataCol_timing"},
+                    {sWidth:"8%", sClass:"dataCol_difficulty"},
+                    {sWidth:"15%", sClass:"dataCol_points"},
+                    {
+                        sWidth:"21%",
+                        iDataSort:7,
+                        sClass:"dataCol_category"
+                    },
+                    {
+                        bSearchable:false,
+                        bVisible:false
+                    }
+                ]
+            #{/else}
+        #{/ajaxTable}
+        
+        refreshTable = _refreshTable;
+        oTable = _oTable;
+        
+        //Uncomment to show highlights in search results
+        //oTable.fnSearchHighlighting(oTable.dataTableSettings[0]);
+        
+        #{if selectionMode == 'multiple'}
+        
+            /* Click event handler */
+            $('#questions tbody tr').live('click', function () {
+                var aData = oTable.fnGetData( this );
+                var iId = aData[aDataIndices.id];
+
+                if ( jQuery.inArray(iId, selectedQuestionIds) == -1 ){
+                    selectedQuestionIds[selectedQuestionIds.length++] = iId;
+                }else{
+                    selectedQuestionIds = jQuery.grep(selectedQuestionIds, 
+                            function(value) {
+                                return value != iId;
+                            });
+                }
+
+                $('#selectedQuestionIds').val(selectedQuestionIds.join(','));
+
+                #{if selectionCallback != null}
+                    ${selectionCallback}(iId);
+                #{/if}
+
+                $(this).toggleClass('rowSelected');
+            });
+        #{/if}
+
+        oTable.bind('init', function () {
+            $('#clearSearch').off('click').on('click',function(e){
+                e.preventDefault();
+                deleteCookie(dataTableKey);
+                $('.dataTables_filter label input').val('').removeClass('search-match');
+                oTable.dataTableSettings[0].oPreviousSearch.sSearch = '';
+                oTable.dataTableSettings[0].aaSorting = [[0, 'desc']];
+                refreshTable();
+            });
+        });
+
+    });
+
+    $.extend($.fn.dataTableExt.oStdClasses, {
+        "sSortAsc":"header headerSortDown",
+        "sSortDesc":"header headerSortUp",
+        "sSortable":"header sorting"
+    });
+
+    $.extend( $.fn.dataTableExt.oStdClasses, {
+        "sWrapper": "dataTables_wrapper form-inline"
+    } );
+    
+    
+</script>

@@ -1,0 +1,81 @@
+#{extends 'standardPageNoNav.html' /}
+#{set title:'Choose Usage Type' /}
+#{set 'moreScripts'}
+
+#{/set}
+#{set 'moreStyles'}
+
+#{/set}
+
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1 class="center-text">How would you like to use SuitedTo?</h1>
+        </div>
+    </div>
+</div>
+
+<div class="registrationWrapper">
+
+<div class="row-fluid">
+    <div class="span6">
+        <a href="@{Application.saveUsageType(enums.RoleValue.CONTRIBUTOR)}" class="btn regBtn contributor" id="registerAsContributorBtn">
+            <h3>Contributer</h3>
+            <ul>
+                <li>Add my questions to SuitedTo</li>
+                <li>Rate and review interview questions</li>
+                <li>Earn Street Cred and Badges</li>
+                <li>Become a Pro Interviewer</li>
+                <li class="highlight">FREE</li>
+            </ul>
+            <span class="btn btn-large btn-primary btn-block">Get Started As A Contributor Now &raquo;</a>
+        </a>
+    </div>
+    <div class="span6">
+        <a href="@{Application.saveUsageType(enums.RoleValue.COMPANY_ADMIN)}" class="btn regBtn company" id="registerAsCompanyBtn">
+        <h3>Company</h3>
+        <ul class="">
+            <li>Conduct awesome interviews for my company</li>
+            <li>Access thousands of interview questions</li>
+            <li>Build interview templates</li>
+            <li>Use simple feedback tools</li>
+            <li class="highlight">Free 14 day trial | $50/month after</li>
+        </ul>
+        <span class="btn btn-large btn-primary btn-block">Get Started Conducting Interviews &raquo;</a>
+        </a>
+    </div>
+</div>
+<br />
+<div class="row-fluid">
+    <div class="span12">
+        <a class="btn btn-small pull-right" href="@{Application.saveUsageType()}" id="registerAsNoneBtn">Hmm... I don't know right now</a>
+    </div>
+</div>
+
+</div>
+%{
+def cf = play.Play.configuration;
+def conversionId = cf.get('google.conversionId');
+def conversionLabel = cf.get('google.conversionLabel');
+def isConfiguredForConversionTracking = '${GOOGLE_CONVERSION_ID}' != conversionId;
+}%
+#{if isConfiguredForConversionTracking}
+<!-- Google Code for SuitedTo Sign-up Conversion Page -->
+<script type="text/javascript">
+    /* <![CDATA[ */
+    var google_conversion_id = ${conversionId};
+    var google_conversion_language = "en";
+    var google_conversion_format = "2";
+    var google_conversion_color = "ffffff";
+    var google_conversion_label = "${conversionLabel}";
+    var google_conversion_value = 0;
+    /* ]]> */
+</script>
+<script type="text/javascript" src="https://www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+    <div style="display:inline;">
+        <img height="1" width="1" style="border-style:none;" alt="" src="https://www.googleadservices.com/pagead/conversion/${conversionId}/?value=0&amp;label=${conversionLabel}&amp;guid=ON&amp;script=0"/>
+    </div>
+</noscript>
+#{/if}

@@ -1,0 +1,22 @@
+#{extends 'email.html' /}
+<tr>
+    <td>
+        <img src="http://content.suitedto.com/logo-standard.png" alt="SuitedTo Logo">
+    </td>
+</tr>
+<tr><td></td></tr>
+<tr>
+    <td>
+        Hey
+        #{if user != null && user.fullName != null}${user.fullName}#{/if}#{else}${email}#{/else},<br><br>
+        We received your feedback regarding the candidate
+        #{if candidateLink}
+            <a href="@@{Candidates.show}/${candidate.id}">${candidate.name}<a/>
+        #{/if}
+        #{else}
+            ${candidate.name}
+        #{/else}
+            via email.
+                <br>Thanks for using SuitedTo!!!
+    </td>
+</tr>

@@ -1,0 +1,418 @@
+#{extends 'standardPage.html' /}
+#{set title:'Prep Job' /}
+#{set 'moreScripts'}
+    #{script 'jquery-ui-1.9.0.custom.min.js' /}
+#{/set}
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Edit Prepado Job</h1>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12">
+        <div id="errorDiv"  class="alert alert-error"  style="display : none;">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span8 form-horizontal">
+        <input type="hidden" name="prepJobId" id="prepJobId" value="${prepJob?.id}"/>
+        <div class="control-group">
+            <label for="primaryName" class="required control-label">Primary Name</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge" id="primaryName" name="primaryName" value="${prepJob?.primaryName?.name}"/>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label for="additionalNames" class="control-label">Additional Names</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge" id="additionalNames" name="additionalNames" value="${additionalNames}"/>
+                <p class="help-block"><small><span class="muted">Comma-separated list of job names</span></small></p>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <div class="controls">
+                <button id="editPrepJobNamesButton" style="#{if !prepJob?.hasBeenSaved()}display:none#{/if}" onclick="editPrepJobNames()" class="btn btn-primary no-change-check" type="button">Edit Names</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<div class="row">
+    <div class="span12">
+
+        <div id="categoriesDiv" style="#{if !prepJob?.hasBeenSaved()}display:none#{/if}">
+            <h2>PrepJob Categories</h2>
+
+            <table id="prepJobCategoriesTable" width="100%" border="0" class="table table-hover">
+                <tr id="categoriesTableHeadings">
+                    <th>Delete</th>
+                    <th>PrepCategory</th>
+                    <th>Skill Level</th>
+                    <th>Primary?</th>
+                    <th>Difficulty</th>
+                    <th>Weight</th>
+                    <th>Edit</th>
+                </tr>
+            </table>
+
+            <hr>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="span12 form-horizontal">
+
+    <h2>Add a PrepJobCategory</h2>
+
+        <div class="control-group">
+            <label class="control-label">PrepCategory</label>
+            <div class="controls">
+                <input type="text" class="input-large" id="categoryName" name="categoryName"/>
+                <p class="help-block"><small><span class="muted">Go to the <a href="@{Categories.export()}">export page</a> to prepify externally available categories</span></small></p>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">Skill Level</label>
+            <div id="skillLevelDiv" class="controls">
+
+            </div>
+        </div>
+        <br>
+
+        <div class="control-group">
+            <label class="control-label">Primary Category?</label>
+            <div id="primaryCategoryDiv" class="controls">
+            </div>
+        </div>
+        <br>
+
+        <div class="control-group">
+            <label class="control-label">Difficulty</label>
+            <div id="difficultyDiv" class="controls">
+            </div>
+        </div>
+        <br>
+
+        <div class="control-group">
+            <label class="control-label">Weight</label>
+            <div id="weightDiv" class="controls">
+            </div>
+        </div>
+        <br>
+
+        <div class="control-group">
+            <div class="controls">
+                <a href="@{PrepAdmin.listPrepJob}"><button id="cancelButton" class="btn no-change-check" type="button">Cancel</button></a>
+                <button id="savePrepJobButton" style="#{if prepJob?.hasBeenSaved()}display:none#{/if}"  onclick="savePrepJob()" class="btn btn-primary no-change-check" type="button">Save</button>
+                <button id="addPrepJobCategoryButton" style="#{if !prepJob?.hasBeenSaved()}display:none#{/if}" onclick="addPrepJobCategory()" class="btn btn-primary no-change-check" type="button">Add PrepJobCategory</button>
+                <button id="deletePrepJobBTN" onclick="confirmDeletePrepJob()" class="btn btn-danger no-change-check" type="button" style="#{if !prepJob?.hasBeenSaved()}display:none#{/if}">Delete</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="deletePrepJobConfirmation" class="modal hide fade">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>Confirmation</h3>
+    </div>
+    <div class="modal-body">
+        <p>Are you really, really, really sure that you want to delete this Prep Job?</p>
+    </div>
+    <div class="modal-footer">
+        <a id="cancelPrepJobDeleteBtn" data-dismiss="modal" class="btn no-change-check">Cancel</a>
+        <a id="prepJobDeleteBtn" href="@{PrepAdmin.deletePrepJob(prepJob?.id)}"><button id="submitPrepJobDelete" class="btn btn-danger no-change-check" type="submit">Delete</button></a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    var skillLevelOptions = ['ENTRY', 'MID', 'SENIOR'];
+    var primaryCategoryOptions = ['true', 'false'];
+    var difficultyOptions = ['EASY', 'MEDIUM', 'HARD'];
+    var weightoptions = ['SMALL', 'MEDIUM', 'LARGE'];
+
+    function addPrepCategoryAutocomplete(textInput) {
+
+        var categoryListAction = #{jsAction @PrepCategories.getPrepCategoryList() /};
+
+        textInput.autocomplete({
+            source:categoryListAction(textInput.val())
+        }).data("autocomplete")._renderItem = function (ul, item) {
+            return $("<li></li>")
+                    .data("item.autocomplete", item)
+                    .append("<a>" + item.label)
+                    .appendTo(ul);
+        };
+    }
+
+    function savePrepJob() {
+        var primaryName = $('#primaryName').val();
+        var additionalNames = $('#additionalNames').val();
+        var categoryName = $('#categoryName').val();
+        var skillLevel = $('#skillLevel').val();
+        var primaryCategory = $('#primaryCategory').val();
+        var difficulty = $('#difficulty').val();
+        var weight = $('#weight').val();
+
+        if(primaryName == "") {
+            showAndAddError("Please enter a PrepCategory name.");
+            return;
+        }
+
+        var newPrepJobAction = #{jsAction @PrepAdmin.newPrepJob(':primaryName', ':additionalNames', ':categoryName', ':skillLevel', ':primaryCategory', ':difficulty', ':weight') /};
+
+        var savePrepJobButton = $('#savePrepJobButton');
+        replaceWithSpinner(savePrepJobButton);
+
+        $.ajax({
+            url: newPrepJobAction({primaryName:primaryName,categoryName:categoryName, additionalNames:additionalNames, skillLevel:skillLevel, primaryCategory:primaryCategory, difficulty:difficulty, weight:weight}),
+            success: function(data) {
+
+                if(data.hasOwnProperty("Error")) {
+                    showAndAddError(data.Error);
+                    $('#savePrepJobButton').html("Save");
+                }
+                else{
+                    $('#prepJobId').val(data.id);
+
+                    $('#savePrepJobButton').hide();
+                    $('#addPrepJobCategoryButton').show();
+                    $('#editPrepJobNamesButton').show();
+                    $('#categoriesDiv').show();
+                    $('#cancelButton').html('PrepJob List');
+
+                    clearPrepJobCategoryForm();
+
+                    for(var i = 0; i < data.prepJobCategories.length; i++) {
+                        addCategoryTableRow(data.prepJobCategories[i]);
+                    }
+                    $('#errorDiv').hide();
+                    $('#cancelButton').html('PrepJob List');
+
+                    $('#deletePrepJobBTN').show()
+                    var deletionHref = $('#prepJobDeleteBtn').attr('href');
+                    deletionHref = deletionHref + "/" + data.id;
+                    $('#prepJobDeleteBtn').attr('href', deletionHref);
+                }
+            }
+        })
+    }
+
+    function addCategoryTableRow(prepJobCategory) {
+        row = '<tr id="categoryRow'+ prepJobCategory.id +'">';
+
+        deleteButton = '<td><button id="delete' + prepJobCategory.id + '" onclick="deletePrepJobCategory(' + prepJobCategory.id + ')" class="btn btn-primary no-change-check">X</button></td>'
+        categoryTD = '<td>' + '<input type="text" class="prepCategoryInput" input-large ui-autocomplete-input" value="' + prepJobCategory.prepCategory + '">' + '</td>';
+        //skillTD = '<td>' + prepJobCategory.level + '</td>';
+        skillTD = '<td>' + createSelectBox('skillSelect', skillLevelOptions, prepJobCategory.level) + '</td>';
+        primaryTD = '<td>' + createSelectBox('primarySelect', primaryCategoryOptions, prepJobCategory.primaryCategory.toString()) + '</td>';
+        difficultyTD = '<td>' + createSelectBox('difficultySelect', difficultyOptions, prepJobCategory.difficulty) + '</td>';
+        weightTD = '<td>' + createSelectBox('weightSelect', weightoptions, prepJobCategory.weight) + '</td>';
+        editButton = '<td><button id="edit' + prepJobCategory.id + '" onclick="editPrepJobCategory(' + prepJobCategory.id + ')" class="btn btn-primary no-change-check">Make Changes</button></td>'
+
+        row  += deleteButton + categoryTD + skillTD + primaryTD + difficultyTD + weightTD + editButton;
+        row += '</tr>';
+        $('#prepJobCategoriesTable tr:last').after(row);
+        addPrepCategoryAutocomplete($('#prepJobCategoriesTable tr:last').find(".prepCategoryInput"));
+    }
+
+    function addPrepJobCategory() {
+        var prepJobId = $('#prepJobId').val();
+        var categoryName = $('#categoryName').val();
+        var skillLevel = $('#skillLevel').val();
+        var primaryCategory = $('#primaryCategory').val();
+        var difficulty = $('#difficulty').val();
+        var weight = $('#weight').val();
+
+        if(categoryName == "") {
+            showAndAddError("Please enter a PrepCategory name.");
+            return;
+        }
+
+        var addPrepJobCategoryAction = #{jsAction @PrepAdmin.addPrepJobCategory(':prepJobId',':categoryName', ':skillLevel', ':primaryCategory', ':difficulty', ':weight') /};
+
+        var addPrepJobCategoryButton = $('#addPrepJobCategoryButton');
+        replaceWithSpinner(addPrepJobCategoryButton);
+
+        $.ajax({
+            url: addPrepJobCategoryAction({prepJobId:prepJobId,categoryName:categoryName, skillLevel:skillLevel, primaryCategory:primaryCategory, difficulty:difficulty, weight:weight}),
+            success: function(data) {
+
+                if(data.hasOwnProperty("Error")) {
+                    showAndAddError(data.Error);
+                }
+                else{
+                    addCategoryTableRow(data);
+                    clearPrepJobCategoryForm();
+                    $('#errorDiv').hide();
+                }
+                addPrepJobCategoryButton.html('Add PrepJobCategory');
+            }
+        })
+    }
+
+    function editPrepJobCategory(id) {
+        categoryRow = $('#categoryRow' + id);
+        categoryName = categoryRow.find('.prepCategoryInput').val();
+        skillLevel = categoryRow.find('.skillSelect').val();
+        primaryCategory = categoryRow.find('.primarySelect').val();
+        difficulty = categoryRow.find('.difficultySelect').val();
+        weight = categoryRow.find('.weightSelect').val();
+
+        var editPrepJobCategoryAction = #{jsAction @PrepAdmin.editPrepJobCategory(':id',':categoryName', ':skillLevel', ':primaryCategory', ':difficulty', ':weight') /};
+
+        var editButton = $('[id^=edit' + id + ']');
+        replaceWithSpinner(editButton);
+
+        $.ajax({
+            url: editPrepJobCategoryAction({id:id, categoryName:categoryName, skillLevel:skillLevel, primaryCategory:primaryCategory, difficulty:difficulty, weight:weight }),
+            success: function(data) {
+                if(data.hasOwnProperty("Error")) {
+                    showAndAddError(data.Error);
+                }
+                else {
+                    $('#errorDiv').hide();
+                }
+                editButton.html('Make Changes');
+            }
+        })
+    }
+
+    function deletePrepJobCategory(id) {
+        var deletePrepJobCategoryAction = #{jsAction @PrepAdmin.deletePrepJobCategory(':id') /};
+
+        var deletePrepJobCategoryButton = $('[id^=delete' + id + ']');
+        replaceWithSpinner(deletePrepJobCategoryButton);
+
+        $.ajax({
+            url: deletePrepJobCategoryAction({id:id}),
+            success: function(data) {
+                if(data.hasOwnProperty("Error")) {
+                    showAndAddError(data.Error);
+                }
+                else {
+                    console.log(data.Success);
+                    $('#categoryRow' + id).remove();
+                    $('#errorDiv').hide();
+                }
+                deletePrepJobCategoryButton.html('X');
+            }
+        })
+    }
+
+    function createSelectBox(className, options, selected, id) {
+        select = '<select style="width : 100px;" class="' + className + '"';
+        if(id != undefined) {
+            select += ' id="' + id + '" '
+        }
+        select += '>';
+        for(var i = 0; i < options.length; i++) {
+            select += '<option';
+            if(options[i] == selected) {
+                select += ' selected="selected"';
+            }
+            select += ' value="' + options[i] + '"';
+            select += '>' + options[i] + '</option>';
+        }
+        select += '</select>';
+
+        return select;
+    }
+
+    function replaceWithSpinner(element) {
+        element.html('<img style="background-color: #fff;" src="/public/images/ajax-loader.gif">');
+    }
+
+    function clearPrepJobCategoryForm() {
+        $('#categoryName').val("");
+        $('#skillLevel').prop('selectedIndex',0);
+        $('#primaryCategory').prop('selectedIndex',0);
+        $('#difficulty').prop('selectedIndex',0);
+        $('#weight').prop('selectedIndex',0);
+    }
+
+    function editPrepJobNames() {
+        var id = $('#prepJobId').val();
+        var primaryName = $('#primaryName').val();
+        var additionalNames = $('#additionalNames').val();
+        var editPrepJobNamesButton = $('#editPrepJobNamesButton');
+        replaceWithSpinner(editPrepJobNamesButton);
+
+
+        var editPrepJobNamesAction = #{jsAction @PrepAdmin.editPrepJobNames(':id', ':primaryName', ':additionalNames') /};
+
+        $.ajax({
+            url: editPrepJobNamesAction({id:id,primaryName:primaryName, additionalNames:additionalNames}),
+            success: function(data) {
+
+                if(data.hasOwnProperty("Error")) {
+                    showAndAddError(data.Error);
+                }
+                else {
+                    $('#errorDiv').hide();
+                }
+                editPrepJobNamesButton.html('Edit Names')
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+            }
+        })
+    }
+
+    function showAndAddError(msg) {
+        $('#errorDiv').show();
+        $('#errorDiv').empty();
+        $('#errorDiv').append(msg);
+        $(window).scrollTop(0);
+    }
+
+    function confirmDeletePrepJob() {
+        $('#deletePrepJobConfirmation').modal('show')
+    }
+
+    $(document).ready(function () {
+
+        addPrepCategoryAutocomplete($("#categoryName"));
+
+        $('#skillLevelDiv').append(createSelectBox("", skillLevelOptions, skillLevelOptions[0], "skillLevel"));
+        $('#primaryCategoryDiv').append(createSelectBox("", primaryCategoryOptions, primaryCategoryOptions[0], "primaryCategory"));
+        $('#difficultyDiv').append(createSelectBox("", difficultyOptions, difficultyOptions[0], "difficulty"));
+        $('#weightDiv').append(createSelectBox("", weightoptions, weightoptions[0], "weight"));
+
+    #{if prepJob?.hasBeenSaved()}
+            // Populate categories table
+
+            var getPrepJobCategoriesAction = #{jsAction @PrepAdmin.getPrepJobCategories(':prepJobId') /};
+            var prepJobId = $('#prepJobId').val();
+
+            $.ajax({
+                url: getPrepJobCategoriesAction({prepJobId:prepJobId}),
+                success: function(data) {
+
+                    if(data.hasOwnProperty("Error")) {
+                        showAndAddError(data.Error);
+                    }
+                    else{
+                        for(var i= 0; i < data.categories.length; i++) {
+                            addCategoryTableRow(data.categories[i]);
+                        }
+                        $('#errorDiv').hide();
+                    }
+                }
+            });
+        #{/if}
+    });
+</script>

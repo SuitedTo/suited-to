@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Application Error</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=${_response_encoding}"/>
+#{if !play.mode.name().equals('DEV')}
+    #{stylesheet 'bootstrap.css' /}
+    #{stylesheet 'application.css' /}
+#{/if}
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <link id="headerLogo" rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+</head>
+
+<body>
+#{if play.mode.name() == 'DEV'}
+    #{500 exception /}
+#{/if}
+#{else}
+    #{headerNoNav /}
+    <div class="container">
+        <section id="error_block">
+            <h1>Oopsy daisy.</h1>
+            <p>Looks like something unexpected popped up!</p>
+            <p>This exception has been logged with ID <strong>${exception.id}</strong>
+                We apologize for this inconvenience. </p>
+            <a class="btn btn-large btn-primary" href="@{Community.index()}">Return Home</a>
+        </section>
+    </div>
+#{/else}
+</body>
+
+</html>
+
+
+
+

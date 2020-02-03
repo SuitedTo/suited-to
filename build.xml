@@ -1,0 +1,60 @@
+<project basedir=".">
+	<property environment="env" />
+	<!-- We need the play path in the path -->
+	<property name="play.path" value="${env.PLAY_PATH}" />
+	<!-- We need the ant path in the path -->
+	<property name="ant.path" value="/usr/share/ant"/>
+	<!-- Use the default play build.xml -->
+	<import file="${play.path}/resources/application-build.xml" />
+	<!-- Use sonar ant task -->
+	<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml" >
+		<classpath path="CInD/sonar-ant-task-1.3.jar"/>
+	</taskdef>
+	<!-- The sonar task code analysis -->
+	<target name="sonar">
+		<!-- Project name -->
+		<property name="sonar.projectName" value="SPARCin" />
+		<!-- Location of the compiled classes -->
+		<property name="sonar.binaries" value="precompiled/java/controllers"/>
+		<!-- Source folder -->
+		<property name="sonar.sources" value="app"/>
+		<!-- Sonar hist -->
+		<property name="sonar.host.url" value="http://sonar.dev.sparcedge.com:9000"/>
+		<!--
+		<property name="sonar.jdbc.url" value="jdbc:derby://sonar.dev.sparcedge.com:1527/sonar"/>
+		<property name="sonar.jdbc.driverClassName" value="org.apache.derby.jdbc.ClientDriver"/>
+		-->
+		<property name="sonar.jdbc.url" 
+		         value="jdbc:mysql://sonar.dev.sparcedge.com:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
+	   	<property name="sonar.jdbc.driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="sonar.jdbc.username" value="sonar" />
+		<property name="sonar.jdbc.password" value="sonar" />
+		<property name="sonar.dynamicAnalysis" value="reuseReports" />
+		<property name="sonar.surefire.reportsPath" value="test-result" />
+		<property name="sonar.cobertura.reportPath" value="test-result/code-coverage/coverage.xml" />
+		<!-- This will create a project in sonar -->
+		<sonar:sonar key="com.sparcedge:SPARCin" version="0.1-SNAPSHOT" xmlns:sonar="antlib:org.sonar.ant"/>
+	</target>
+	<!-- Cleanup test results task -->
+	<target name="clean-tests-results">
+		<delete dir="test-result" />
+	</target>
+	<!-- Run play auto-test comand -->
+	<target name="autotest">
+		<exec executable="play">
+			<arg value="auto-test" />
+		</exec>
+	</target>
+	<target name="compile">
+		<exec executable="play">
+			<arg value="precompile" />
+		</exec>
+	</target>
+	<target name="deps">
+		<exec executable="play">
+			<arg value="dependencies" />
+		</exec>
+	</target>
+	<!-- Run play auto-test comand -->
+	<target name="quality" depends="deps, clean-tests-results, compile, autotest, sonar" />
+</project>

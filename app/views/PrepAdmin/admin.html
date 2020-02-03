@@ -1,0 +1,22 @@
+#{extends 'standardPage.html' /}
+#{set title:'Prep Admin' /}
+#{set 'moreScripts'}
+#{/set}
+<div class="row">
+    <div class="span12">
+        <div class="page-header">
+            <h1>Prepado Admin Utilities</h1>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="span4">
+        <ul class="nav nav-tabs nav-stacked">
+            <li><a id="prepJobs" href="@@{PrepAdmin.listPrepJob()}">Prepado Jobs</a></li>
+            <li><a id="categoryExport" href="@@{Categories.export()}">Prepado Categories</a></li>
+            <li><a id="prepUsers" href="@@{PrepAdmin.listPrepUsers()}">Prepado Users</a></li>
+            <li><a id="prepInterviews" href="@@{PrepAdmin.listPrepInterviews()}">Prepado Interviews</a></li>
+            <li><a id="prepCoupons" href="@@{PrepAdmin.showPrepCoupon()}">Prepado Coupons</a></li>
+        </ul>
+    </div>
+</div>

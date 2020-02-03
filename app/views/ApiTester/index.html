@@ -1,0 +1,22 @@
+#{extends 'standardPage.html' /}
+#{set title:'API Tester' /}
+
+<h1>This is where you can test some API stuff</h1>
+<h4>Fill in the correct data on this page to retrieve an OAuth request token that is authorized for the user that
+is currently logged in to SuitedTo.  That authorized request token may be exchanged for an access token on the next page<br/><br/></h4>
+
+<div class="row">
+<div class="span9">
+#{form @requestToken(), id:'apiform'}
+    <label>Request Token URL</label>
+    <input type="text" name="url" id="url" class="span5" placeholder=""/>
+    <label>Consumer Token</label>
+    <input type="text" name="token" id="token" class="span4" placeholder=""/>
+    <label>Consumer Secret</label>
+    <input type="text" name="secret" id="secret" class="span4" placeholder=""/>
+    <label></label>
+    <button type="submit" class="btn btn-primary">Go!</button>
+#{/form}
+</div>
+</div>
+

@@ -1,0 +1,31 @@
+#{if play.mode.name() == 'DEV'}
+<div id="app-info" class="row-fluid">
+    <div class="span12"><div class="innerWrap">You're running SuitedTo in <strong>DEV</strong> mode</div></div>
+</div>
+#{/if}
+*{check for DISPLAY_APP_INFO config environments that have this set to any not-null value will show available information}*
+#{elseif !play.configuration.displayAppInfo.equals('${DISPLAY_APP_INFO}')}
+<div id="app-info" class="row-fluid">
+    %{
+        version = play.configuration.version
+        commitId= play.configuration.commitId
+        buildDate=play.configuration.buildDate
+    }%
+    <div class="span12">
+    <dl class="dl-horizontal">
+        #{if version}
+            <dt>Version</dt>
+            <dd>${version}</dd>
+        #{/if}
+        #{if commitId}
+            <dt>Git Commit Id</dt>
+            <dd>${commitId}</dd>
+        #{/if}
+        #{if buildDate}
+            <dt>BuildDate</dt>
+            <dd>${buildDate}</dd>
+        #{/if}
+    </dl>
+    </div>
+</div>
+#{/elseif}
